@@ -61,4 +61,4 @@ Disallow: /
 User-agent: ZoominfoBot
 Disallow: /
 
-Sitemap: http://Jungle430.github.io/sitemap.xml
+Sitemap: https://Jungle430.github.io/sitemap.xml
