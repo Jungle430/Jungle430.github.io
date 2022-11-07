@@ -783,7 +783,7 @@ assume an is top, a1 is bottom.
 <blockquote>
 <p>Converting infix expressions into postfix</p>
 <p>$Infix: [A * B + C * D]$</p>
-<p>Postfix: $ [A B * C D * +]$</p>
+<p>$Postfix: [A B * C D * +]$</p>
 </blockquote>
 <p>Example:</p>
 <div class="highlight"><div class="chroma">
