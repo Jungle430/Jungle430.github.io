@@ -85,6 +85,7 @@ Operation： ……
 </span><span class="lnt">51
 </span><span class="lnt">52
 </span><span class="lnt">53
+</span><span class="lnt">54
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">    <span class="n">StrAssign</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="p">,</span> <span class="n">chars</span><span class="p">)</span> <span class="c1">//string assignment
@@ -127,7 +128,8 @@ Operation： ……
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="n">Index</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span> <span class="c1">//String index
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span> <span class="n">and</span> <span class="n">T</span><span class="err">，</span><span class="n">T</span> <span class="n">is</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span><span class="p">,</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nl">Output</span><span class="p">:</span> <span class="n">If</span> <span class="n">the</span> <span class="n">there</span> <span class="n">is</span> <span class="n">a</span> <span class="n">substring</span> <span class="n">T</span> <span class="n">in</span> <span class="n">S</span><span class="p">,</span><span class="k">return</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">sub</span><span class="o">-</span><span class="n">string</span> <span class="n">T</span> <span class="n">occurs</span> <span class="n">first</span> <span class="n">time</span> <span class="n">after</span> <span class="n">pos</span><span class="p">,</span> <span class="n">otherwise</span> <span class="k">return</span> <span class="mf">0.</span>
+</span></span><span class="line"><span class="cl">    <span class="nl">Output</span><span class="p">:</span> <span class="n">If</span> <span class="n">the</span> <span class="n">there</span> <span class="n">is</span> <span class="n">a</span> <span class="n">substring</span> <span class="n">T</span> <span class="n">in</span> <span class="n">S</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">sub</span><span class="o">-</span><span class="n">string</span> <span class="n">T</span> <span class="n">occurs</span> <span class="n">first</span> <span class="n">time</span> <span class="n">after</span> <span class="n">pos</span><span class="p">,</span> <span class="n">otherwise</span> <span class="k">return</span> <span class="mf">0.</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="n">Replace</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span> <span class="c1">//String replacement
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="n">and</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span> <span class="n">is</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span><span class="p">.</span>
@@ -387,7 +389,7 @@ Operation： ……
 and deletions can be performed in only one position, namely,
 the end of the list. Access the list from the top.</p>
 <ol>
-<li>First in, last out (FILO)lists</li>
+<li>First in, last out (FILO) lists</li>
 <li>Or last in, first out (LIFO) lists.</li>
 </ol>
 <h4 id="basic-concepts">Basic Concepts</h4>
@@ -397,7 +399,7 @@ the end of the list. Access the list from the top.</p>
 <p>Push: Insert an element into the end of the list.</p>
 <p>Pop: Delete an element from the end of the list.</p>
 </blockquote>
-<p>$Bottom\rightarrow [a_1] [a_2]&hellip;&hellip;[a_{n-1}] [a_n]\leftarrow Top\$</p>
+<p>$Bottom\rightarrow [a_1] [a_2]&hellip;&hellip;[a_{n-1}] [a_n]\leftarrow Top$</p>
 <p>$Operation\$</p>
 <p>$[a_1] [a_2]&hellip;&hellip;[a_{n-1}] [a_n]^{\rightarrow Pop}_{\leftarrow Push}$</p>
 <h4 id="adt">ADT</h4>
@@ -780,8 +782,8 @@ assume an is top, a1 is bottom.
 </ol>
 <blockquote>
 <p>Converting infix expressions into postfix</p>
-<p>$Infix: [A <em>B + C</em> D]$</p>
-<p>$Postfix: [A B <em>C D</em> +]$</p>
+<p>$Infix: [A * B + C * D]$</p>
+<p>Postfix: $ [A B * C D * +]$</p>
 </blockquote>
 <p>Example:</p>
 <div class="highlight"><div class="chroma">
@@ -1228,14 +1230,21 @@ ClearList(&amp;L):make L be an empty list(L has been initialized)
 ListLength(L):return the size of elements in the list(L has been initialized)
 ListEmpty(L):return if the list is an empty list(L has been initialized)
 
-GetElem(L, i, &amp;e): make e equaled to the ith element in the list(L has been initialized and 1 &lt;= i &lt;= ListLength(L))
-LocateElem(L, e, compare()): return the rank that the rank of the element is the first element which compare(element[rank], e) is true(L has been initialized), if no element satisfy it, return 0
+GetElem(L, i, &amp;e): 
+make e equaled to the ith element in the list(L has been initialized and 1 &lt;= i &lt;= ListLength(L))
+LocateElem(L, e, compare()): 
+return the rank that the rank of the element is the first element which compare(element[rank], e) is true(L has been initialized),
+if no element satisfy it, return 0
 
-PriorElem(L, cur_e, &amp;pre_e): make the pre_e equal the predecessor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
-NextElem(L, cur_e, &amp;next_e):make the next_e equal the successor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
+PriorElem(L, cur_e, &amp;pre_e): 
+make the pre_e equal the predecessor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
+NextElem(L, cur_e, &amp;next_e):
+make the next_e equal the successor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
 
-ListInsert(&amp;L, i, e): insert the element in the ith rank of the list(L has been initialized)
-ListDelete(&amp;L, i, &amp;e):delete the ith element in the list(L has been initialized and not be empty)
+ListInsert(&amp;L, i, e): 
+insert the element in the ith rank of the list(L has been initialized)
+ListDelete(&amp;L, i, &amp;e):
+delete the ith element in the list(L has been initialized and not be empty)
 
 ListTraverse(&amp;L, visit()):
     for (begin, end)
@@ -1243,7 +1252,7 @@ ListTraverse(&amp;L, visit()):
 (L has been initialized)
 </code></pre>
 <p>}</p>
-<p>Example: make $ListA \bigcup ListB\$</p>
+<p>Example: make $ListA \bigcup ListB$</p>
 <h3 id="the-code">The code</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1339,9 +1348,9 @@ ListTraverse(&amp;L, visit()):
 <p>The address of the ith element:-&gt;Loc(ai) = Loc(a1) + (i-1)*k</p>
 </blockquote>
 </blockquote>
-<p>$logic Element: [a_0, a_1, &hellip;, a_n]\$
-$Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
-<p>$!!!\ Storage\ structure: random\ storage\$</p>
+<p>$logic Element: [a_0, a_1, &hellip;, a_n]$
+$Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}$</p>
+<p>$!!!\ Storage\ structure: random\ storage$</p>
 <p>about data</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1462,7 +1471,7 @@ $Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
 <p>!!!The number of elements moved depends on the length of the order table and the location of the inserted element.</p>
 </blockquote>
 <p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i=0}^n i}{n + 1} = \frac{\frac{n(n + 1)}{2}}{n + 1} = \frac {n}{2} = O(n)\$</p>
+<p>$T(n) = \frac{\sum_{i=0}^n i}{n + 1} = \frac{\frac{n(n + 1)}{2}}{n + 1} = \frac {n}{2} = O(n)$</p>
 <p>delete</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1494,7 +1503,7 @@ $Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
 <p>!!!The number of elements moved depends on the length of the order table and the location of the deleted element</p>
 </blockquote>
 <p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i = 0}^{n - 1} i}{n} = \frac{\frac{n(n - 1)}{2}}{n} = \frac{n - 1}{2} = O(n)\$</p>
+<p>$T(n) = \frac{\sum_{i = 0}^{n - 1} i}{n} = \frac{\frac{n(n - 1)}{2}}{n} = \frac{n - 1}{2} = O(n)$</p>
 <h4 id="advantage">Advantage</h4>
 <ol>
 <li>Logic is Contiguous, and physical is Contiguous</li>
@@ -1920,7 +1929,7 @@ node</p>
 <p>Any node in the list can be found by tracing back and forth from any given node.</p>
 </blockquote>
 <p>structure</p>
-<p>$[a_{i-1}]^\rightarrow_\leftarrow[prior] [data] [next]^\rightarrow_\leftarrow[a_{i + 1}]\$</p>
+<p>$[a_{i-1}]^\rightarrow_\leftarrow[prior] [data] [next]^\rightarrow_\leftarrow[a_{i + 1}]$</p>
 <blockquote>
 <p>no empty list</p>
 </blockquote>
@@ -1987,11 +1996,11 @@ $head.prior\rightarrow[a_n]\$</p>
 <blockquote>
 <p>without head</p>
 </blockquote>
-<p>$head\rightarrow prior = [a_n]\ a_n\rightarrow next = head\$</p>
+<p>$head\rightarrow prior = [a_n]\ a_n\rightarrow next = head$</p>
 <blockquote>
 <p>empty</p>
 </blockquote>
-<p>$head\rightarrow prior = head\rightarrow next = head\$</p>
+<p>$head\rightarrow prior = head\rightarrow next = head$</p>
 <p>Summary</p>
 <p>Advantage</p>
 <ol>
@@ -2046,7 +2055,7 @@ rearranging the entries.</li>
 </ol>
 <p>Application of Linked list:</p>
 <p>Example: Polynomials</p>
-<p>$P(x) = a_0 + a_1x + a_2x^2 + &hellip; + a_nx^n\$</p>
+<p>$P(x) = a_0 + a_1x + a_2x^2 + &hellip; + a_nx^n$</p>
 <blockquote>
 <p>Array-based implementation:Disadvantage: for sparse polynomials
 -&gt;waste memory!</p>
@@ -2095,9 +2104,9 @@ to be followed to solve a problem.(not a program)</p>
 <li>compare relative growth</li>
 <li>compare only algorithms</li>
 </ol>
-<p>$f(n) \rightarrow Frequency\ Count\$
-$Then\ T(n) = O(f(n))\$
-$if\ T(n) = O(f(n)),then\ T(n) \leq C*f(n), C \in R\$</p>
+<p>$f(n) \rightarrow Frequency\ Count$</p>
+<p>$Then\ T(n) = O(f(n))$</p>
+<p>$if\ T(n) = O(f(n)),then\ T(n) \leq C*f(n), C \in R$</p>
 <p>Constants can be ignored!!!</p>
 <p>Lower order terms are ignored!!!</p>
 <p>Example</p>
@@ -2119,8 +2128,8 @@ $if\ T(n) = O(f(n)),then\ T(n) \leq C*f(n), C \in R\$</p>
 </span></span><span class="line"><span class="cl">    <span class="o">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>$f(n) = 1 + n + n + 1 = 2n + 2\$</p>
-<p>$T(n) = O(f(n)) = O(2n + 2) = O(n) \rightarrow Linear\ order\$</p>
+</div><p>$f(n) = 1 + n + n + 1 = 2n + 2$</p>
+<p>$T(n) = O(f(n)) = O(2n + 2) = O(n) \rightarrow Linear\ order$</p>
 <p>Time complexity is related with input
 Example:</p>
 <div class="highlight"><div class="chroma">
@@ -2183,12 +2192,12 @@ Example:</p>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>$T(n)\ can\ be\ O(n), but\ also\ can\ O(n^2)\$</p>
+</div><p>$T(n)\ can\ be\ O(n), but\ also\ can\ O(n^2)$</p>
 <h4 id="relations">Relations</h4>
-<p>$O(1) &lt; O(\log n) &lt; O(n) &lt; O(n\log n) &lt; O(n^2) &lt; O(n^3) &lt; O(2^n) &lt; O(n!) &lt; O(n^n)\$</p>
-<p>$if\ T1(n) = O(f(n))\ and\ T2(n) = O(g(n))\ then\$</p>
-<p>a) $T1(n) + T2(n) = max (O(f(n)), O(g(n)))\$</p>
-<p>b) $T1(n) <em>T2(n) = O(f(n)</em> g(n))\$</p>
+<p>$O(1) &lt; O(\log n) &lt; O(n) &lt; O(n\log n) &lt; O(n^2) &lt; O(n^3) &lt; O(2^n) &lt; O(n!) &lt; O(n^n)$</p>
+<p>$if\ T1(n) = O(f(n))\ and\ T2(n) = O(g(n))\ then$</p>
+<p>a) $T1(n) + T2(n) = max (O(f(n)), O(g(n)))$</p>
+<p>b) $T1(n) * T2(n) = O(f(n)* g(n))$</p>
 <h3 id="about-homework">About Homework</h3>
 <blockquote>
 <p>analysis of the running time</p>
@@ -2228,8 +2237,8 @@ Example:</p>
 </span></span><span class="line"><span class="cl">    
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>$so the step = 1 + 1 + 1 + i + 1 + 1 + &hellip; + 2i + 1 + 1 + &hellip; + i * i\$
-$= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)\$</p>
+</div><p>$so the step = 1 + 1 + 1 + i + 1 + 1 + &hellip; + 2i + 1 + 1 + &hellip; + i * i$
+$= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)$</p>
 <p>so the code became</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2241,7 +2250,7 @@ $= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)\$</p>
 </span></span><span class="line"><span class="cl">        <span class="n">O</span><span class="o">(</span><span class="n">i</span><span class="o">^</span><span class="n">3</span><span class="o">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>$so\ T(n) = O(n^4)\$</p>
+</div><p>$so\ T(n) = O(n^4)$</p>
 <blockquote>
 <p>Give an efficient algorithm to determine if there exists an &gt;integer i such that ai = i in an array of integers a1&lt; a2 &lt; &gt;a3&lt; . . . &lt; an. What is the running time of your algorithm?</p>
 </blockquote>
@@ -2443,83 +2452,9 @@ implementation of the operations.</p>
 $T_1, T_2, … T_k$, each of whose roots are connected
 by a direct edge from r.</p>
 </blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">root((root))
-</span></span><span class="line"><span class="cl">T1((T1))
-</span></span><span class="line"><span class="cl">T2((T2))
-</span></span><span class="line"><span class="cl">T3((T3))
-</span></span><span class="line"><span class="cl">Tn((Tn))
-</span></span><span class="line"><span class="cl">root--&gt;T1
-</span></span><span class="line"><span class="cl">root--&gt;T2
-</span></span><span class="line"><span class="cl">root--&gt;T3
-</span></span><span class="line"><span class="cl">root--&gt;Tn
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">root((root))
-</span></span><span class="line"><span class="cl">T1((T1))
-</span></span><span class="line"><span class="cl">T2((T2))
-</span></span><span class="line"><span class="cl">T3((T3))
-</span></span><span class="line"><span class="cl">T4((T4))
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((D))
-</span></span><span class="line"><span class="cl">E((E))
-</span></span><span class="line"><span class="cl">root--&gt;T1
-</span></span><span class="line"><span class="cl">root--&gt;T2
-</span></span><span class="line"><span class="cl">root--&gt;T3
-</span></span><span class="line"><span class="cl">root--&gt;T4
-</span></span><span class="line"><span class="cl">T1--&gt;A
-</span></span><span class="line"><span class="cl">T1--&gt;B
-</span></span><span class="line"><span class="cl">T2--&gt;C
-</span></span><span class="line"><span class="cl">T4--&gt;D
-</span></span><span class="line"><span class="cl">T4--&gt;E
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="terminology">Terminology</h3>
+<div class="mermaid" id="id-1"></div>
+<div class="mermaid" id="id-2"></div>
+<h3 id="terminology">Terminology</h3>
 <blockquote>
 <p>Parent:Node A is the parent of node B, if B is the &gt;root of one subtree of A.</p>
 <p>Child:Node B is the child of node A, if A is the parent of B.</p>
@@ -2580,90 +2515,28 @@ than two children.</p>
 <li>Binary with left and right trees</li>
 <li>Binary tree with no left tree</li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A((/))
-</span></span><span class="line"><span class="cl">B[EmptyBinaryTree]
-</span></span><span class="line"><span class="cl">B--&gt;A
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">C((A))
-</span></span><span class="line"><span class="cl">D[Binary tree with only one node]
-</span></span><span class="line"><span class="cl">D--&gt;C
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">E((A))
-</span></span><span class="line"><span class="cl">F((B))
-</span></span><span class="line"><span class="cl">E--&gt;F
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">G((A))
-</span></span><span class="line"><span class="cl">H((B))
-</span></span><span class="line"><span class="cl">K((C))
-</span></span><span class="line"><span class="cl">G--&gt;H
-</span></span><span class="line"><span class="cl">G--&gt;K
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="full-binary-tree">Full Binary Tree</h3>
+<div class="mermaid" id="id-3"></div>
+<h3 id="full-binary-tree">Full Binary Tree</h3>
 <p>A full binary tree of depth k is a binary tree of depth k having $2^k-1$ nodes</p>
 <h3 id="complete-binary-tree">Complete Binary Tree</h3>
 <p>A complete binary tree: a binary tree with n nodes and depth k is complete if its nodes correspond to the nodes numbered from 1 to n in the full binary tree of depth k</p>
 <h3 id="skewed-tree">Skewed Tree</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((D))
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">B--&gt;C
-</span></span><span class="line"><span class="cl">C--&gt;D
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="properties-of-binary-trees">Properties of binary trees</h3>
+<div class="mermaid" id="id-4"></div>
+<h3 id="properties-of-binary-trees">Properties of binary trees</h3>
 <h4 id="maximum-number-of-nodes">Maximum number of nodes</h4>
 <p>Maximum number of nodes</p>
 <ol>
-<li>$The\ maximum\ number\ of\ nodes\ on\ level\ i\ of\ a\ binary\ tree\ is\ 2^{i-1}, i\geq 1$</li>
-<li>$The\ maximum\ number\ of\ nodes\ in\ a\ binary\ tree\ of\ depth\ k\ is 2^{k-1}, k\geq 1.(\sum^{k-1}_02^k = 2^k - 1)$</li>
+<li>$The\ maximum\ number\ of\ nodes\ on\ level\ i\ of\ a\ binary\ tree\ is\  2^{i-1}, i\geq 1$</li>
+<li>$The\ maximum\ number\ of\ nodes\ in\ a\ binary\ tree\ of\ depth\ k\ is\  2^{k-1}, k\geq 1.(\sum^{k-1}_02^k = 2^k - 1)$</li>
 </ol>
 <p>Relation between number of leaf nodes and degree-2 nodes</p>
 <p>For any nonempty binary tree T, if $n_0$ is the number of leaf nodes and $n_2$ is the number of nodes of degree 2,then $n_0 = n_2 + 1(n_0 = 2^{i-1}\ and\ n_2 = 2^{i - 1} - 1)$</p>
 <p>!!!The height（depth）of a [complete binary tree] with n nodes is
 $\lfloor\log_2n\rfloor + 1$</p>
-<p>$2^{k-1}-1 &lt; n \leq 2^k – 1\$
-$2^{k-1}\leq n &lt; 2^k\$
-$k-1\leq \log_2n &lt;k\$
-$k=\lfloor\log_2n\rfloor + 1\$</p>
+<p>$2^{k-1}-1 &lt; n \leq 2^k – 1$</p>
+<p>$2^{k-1}\leq n &lt; 2^k$</p>
+<p>$k-1\leq \log_2n &lt;k$</p>
+<p>$k=\lfloor\log_2n\rfloor + 1$</p>
 <p>If a complete binary tree with n nodes is represented sequentially, then for any node with index i, $1 \leq i \leq n$,we have</p>
 <ol>
 <li>parent(i) is at $\lfloor\frac{i}{2}\rfloor$ if $i \not= 1$. If i = 1, i is the root and has no parent.</li>
@@ -2674,25 +2547,8 @@ $k=\lfloor\log_2n\rfloor + 1\$</p>
 <p>Too much memory is wasted!</p>
 <h3 id="linked-implement-of-tree">Linked implement of Tree</h3>
 <h4 id="linked-implement-of-binary-tree">Linked implement of Binary Tree</h4>
+<div class="mermaid" id="id-5"></div>
 <div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">Data((Data))
-</span></span><span class="line"><span class="cl">point1[LeftChild]
-</span></span><span class="line"><span class="cl">point2[RightChild]
-</span></span><span class="line"><span class="cl">Data--&gt;point1
-</span></span><span class="line"><span class="cl">Data--&gt;point2
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -2740,31 +2596,8 @@ $k=\lfloor\log_2n\rfloor + 1\$</p>
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="triple-linked-list">Triple Linked List</h4>
+<div class="mermaid" id="id-6"></div>
 <div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Parent((Parent))
-</span></span><span class="line"><span class="cl">Data((Data))
-</span></span><span class="line"><span class="cl">point1[LeftChild]
-</span></span><span class="line"><span class="cl">point2[RightChild]
-</span></span><span class="line"><span class="cl">Data--&gt;point1
-</span></span><span class="line"><span class="cl">Data--&gt;point2
-</span></span><span class="line"><span class="cl">Data--&gt;Parent
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -2781,68 +2614,9 @@ $k=\lfloor\log_2n\rfloor + 1\$</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="application-of-binary-trees-expression-trees">Application of Binary Trees: Expression Trees</h4>
-<p>$(a+b<em>c)+((d</em>e+f)*g)$</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">A((+))
-</span></span><span class="line"><span class="cl">B((+))
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">C((a))
-</span></span><span class="line"><span class="cl">D((*))
-</span></span><span class="line"><span class="cl">B--&gt;C
-</span></span><span class="line"><span class="cl">B--&gt;D
-</span></span><span class="line"><span class="cl">E((b))
-</span></span><span class="line"><span class="cl">F((c))
-</span></span><span class="line"><span class="cl">D--&gt;E
-</span></span><span class="line"><span class="cl">D--&gt;F
-</span></span><span class="line"><span class="cl">G((*))
-</span></span><span class="line"><span class="cl">A--&gt;G
-</span></span><span class="line"><span class="cl">K((+))
-</span></span><span class="line"><span class="cl">H((g))
-</span></span><span class="line"><span class="cl">I((*))
-</span></span><span class="line"><span class="cl">L((d))
-</span></span><span class="line"><span class="cl">M((e))
-</span></span><span class="line"><span class="cl">N((f))
-</span></span><span class="line"><span class="cl">G--&gt;H
-</span></span><span class="line"><span class="cl">G--&gt;K
-</span></span><span class="line"><span class="cl">K--&gt;I
-</span></span><span class="line"><span class="cl">K--&gt;N
-</span></span><span class="line"><span class="cl">I--&gt;L
-</span></span><span class="line"><span class="cl">I--&gt;M
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Algorithm to convert postfix expression into expression tree</p>
+<p>$(a+b * c)+((d * e+f) * g)$</p>
+<div class="mermaid" id="id-7"></div>
+<p>Algorithm to convert postfix expression into expression tree</p>
 <p>Read the expression one symbol at a time</p>
 <ol>
 <li>If symbols are operands, build a single node tree and push it on the stack</li>
@@ -3153,33 +2927,16 @@ $k=\lfloor\log_2n\rfloor + 1\$</p>
 <p>preorder or postorder + Inorder is OK</p>
 <h4 id="threaded-binary-trees">Threaded Binary Trees</h4>
 <blockquote>
-<p>$n\ nodes\ (Binary\ linked\ list):\$
-$number\ of\ pointers=2n\$
-$one\ node\ have\ it&rsquo;s\ own\ pointer, expect\ root\ node\$
-$so\ the\ number\ of\ empty\ pointers=2n-(n-1)=n+1\$</p>
+<p>$n\ nodes\ (Binary\ linked\ list):$</p>
 </blockquote>
+<p>$number\ of\ pointers=2n$</p>
+<p>$one\ node\ have\ it&rsquo;s\ own\ pointer, expect\ root\ node$</p>
+<p>$so\ the\ number\ of\ empty\ pointers=2n-(n-1)=n+1$</p>
 <p>Definition: Threaded Binary Trees use n+1 null pointer field to store node&rsquo;s precursor and successor information</p>
 <p>Example: preorder traverse:$A\ B\ C\ D\ E\ F\ G\ H\ K$
 so in Threaded Binary Tree:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">D((D))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">E((E))
-</span></span><span class="line"><span class="cl">D==precursor==&gt;C
-</span></span><span class="line"><span class="cl">D==successor==&gt;E
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>implementation</p>
+<div class="mermaid" id="id-8"></div>
+<p>implementation</p>
 <p>Add &ldquo;Ltag&rdquo; and &ldquo;Rtag&rdquo; to the binary linked list as two flag fields</p>
 <p>$[lchild] [Ltag] [data] [Rtag] [rchild]$</p>
 <blockquote>
@@ -3208,37 +2965,8 @@ so in Threaded Binary Tree:</p>
 <p>And this node is used as the precursor of the first node traversed and the successor of the last node</p>
 <p>Finally, the head pointer is used to point to the node</p>
 <p>empty Threaded binary tree</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">LeftChild[LeftChild]
-</span></span><span class="line"><span class="cl">LeftChild----Ltag
-</span></span><span class="line"><span class="cl">LeftChild--&gt;LeftChild
-</span></span><span class="line"><span class="cl">Ltag((Ltag = 0))
-</span></span><span class="line"><span class="cl">Ltag----Data
-</span></span><span class="line"><span class="cl">Data((Data))
-</span></span><span class="line"><span class="cl">Rtag((Rtag = 1))
-</span></span><span class="line"><span class="cl">Data----Rtag
-</span></span><span class="line"><span class="cl">RightChild[RightChild]
-</span></span><span class="line"><span class="cl">Rtag----RightChild
-</span></span><span class="line"><span class="cl">RightChild--&gt;RightChild
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>A binary tree of this structure is also called a binary tree threaded list</p>
+<div class="mermaid" id="id-9"></div>
+<p>A binary tree of this structure is also called a binary tree threaded list</p>
 <p>A pointer to a precursor or successor is called a thread</p>
 <p>A binary tree with a clue is called a threaded binary tree</p>
 <p>The process of traversing a binary tree with a rule to turn it into a threaded binary tree is called threading</p>
@@ -3297,88 +3025,10 @@ so in Threaded Binary Tree:</p>
 <p>A forest is a set of $n \geq 0$ disjoint trees</p>
 </blockquote>
 <p>Forest</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((D))
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">A--&gt;C
-</span></span><span class="line"><span class="cl">A--&gt;D
-</span></span><span class="line"><span class="cl">E((E))
-</span></span><span class="line"><span class="cl">F((F))
-</span></span><span class="line"><span class="cl">E--&gt;F
-</span></span><span class="line"><span class="cl">G((G))
-</span></span><span class="line"><span class="cl">H((H))
-</span></span><span class="line"><span class="cl">I((I))
-</span></span><span class="line"><span class="cl">G--&gt;H
-</span></span><span class="line"><span class="cl">G--&gt;I
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Tree</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((D))
-</span></span><span class="line"><span class="cl">E((E))
-</span></span><span class="line"><span class="cl">F((F))
-</span></span><span class="line"><span class="cl">G((G))
-</span></span><span class="line"><span class="cl">H((H))
-</span></span><span class="line"><span class="cl">I((I))
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">B--&gt;C
-</span></span><span class="line"><span class="cl">C--&gt;D
-</span></span><span class="line"><span class="cl">A--&gt;E
-</span></span><span class="line"><span class="cl">E--&gt;F
-</span></span><span class="line"><span class="cl">E--&gt;G
-</span></span><span class="line"><span class="cl">G--&gt;H
-</span></span><span class="line"><span class="cl">H--&gt;I
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="trees-implementation">Trees Implementation</h3>
+<div class="mermaid" id="id-10"></div>
+<p>Tree</p>
+<div class="mermaid" id="id-11"></div>
+<h3 id="trees-implementation">Trees Implementation</h3>
 <h4 id="parent-pointer-implementation">Parent Pointer Implementation</h4>
 <p>have a pointer that points the parent</p>
 <blockquote>
@@ -3392,115 +3042,14 @@ so in Threaded Binary Tree:</p>
 <p>$[data] [degree] [child_1] [child_2] &hellip; [child_{degree}], degree\ is\ the\ node&rsquo;s\ degree$</p>
 <p>Problem: nodes structure is inconsistent</p>
 <p>From3</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">A--&gt;C
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((NULL))
-</span></span><span class="line"><span class="cl">A--point--&gt;B
-</span></span><span class="line"><span class="cl">B--point--&gt;C
-</span></span><span class="line"><span class="cl">C--point--&gt;D
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>From4</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph TB
-</span></span><span class="line"><span class="cl">A_Parent((A_Parent))
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">A_Parent--&gt;A
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">A--&gt;C
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">A_Parent((A_Parent))
-</span></span><span class="line"><span class="cl">A((A))
-</span></span><span class="line"><span class="cl">B((B))
-</span></span><span class="line"><span class="cl">C((C))
-</span></span><span class="line"><span class="cl">D((NULL))
-</span></span><span class="line"><span class="cl">A--point--&gt;A_Parent
-</span></span><span class="line"><span class="cl">A--point--&gt;B
-</span></span><span class="line"><span class="cl">B--point--&gt;C
-</span></span><span class="line"><span class="cl">C--point--&gt;D
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="leftmost-childright-sibling">Leftmost Child/Right Sibling</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">A[firstChild]
-</span></span><span class="line"><span class="cl">B[data]
-</span></span><span class="line"><span class="cl">C[nextSibling]
-</span></span><span class="line"><span class="cl">A-.-B
-</span></span><span class="line"><span class="cl">B-.-C
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="implementation-of-leftmost-childright-sibling">Implementation of Leftmost Child/Right Sibling</h3>
+<div class="mermaid" id="id-12"></div>
+<div class="mermaid" id="id-13"></div>
+<p>From4</p>
+<div class="mermaid" id="id-14"></div>
+<div class="mermaid" id="id-15"></div>
+<h4 id="leftmost-childright-sibling">Leftmost Child/Right Sibling</h4>
+<div class="mermaid" id="id-16"></div>
+<h3 id="implementation-of-leftmost-childright-sibling">Implementation of Leftmost Child/Right Sibling</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1

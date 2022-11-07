@@ -26,7 +26,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/Jungle430.github.io\/posts\/list\/"
-        },"genre": "posts","keywords": "Data Structure","wordcount":  2211 ,
+        },"genre": "posts","keywords": "Data Structure","wordcount":  2213 ,
         "url": "https:\/\/Jungle430.github.io\/posts\/list\/","datePublished": "2022-11-06T22:35:11+08:00","dateModified": "2022-11-06T22:35:11+08:00","publisher": {
             "@type": "Organization",
             "name": "Jungle"},"author": {
@@ -101,7 +101,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">List</h2><div class="post-meta">
                 <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/data-structure/"><i class="far fa-folder fa-fw"></i>Data Structure</a></span></div>
-                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-06">2022-11-06</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2211 字</span>&nbsp;
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-06">2022-11-06</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2213 字</span>&nbsp;
                     <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟</span>&nbsp;</div>
             </div>
             
@@ -179,14 +179,21 @@ ClearList(&amp;L):make L be an empty list(L has been initialized)
 ListLength(L):return the size of elements in the list(L has been initialized)
 ListEmpty(L):return if the list is an empty list(L has been initialized)
 
-GetElem(L, i, &amp;e): make e equaled to the ith element in the list(L has been initialized and 1 &lt;= i &lt;= ListLength(L))
-LocateElem(L, e, compare()): return the rank that the rank of the element is the first element which compare(element[rank], e) is true(L has been initialized), if no element satisfy it, return 0
+GetElem(L, i, &amp;e): 
+make e equaled to the ith element in the list(L has been initialized and 1 &lt;= i &lt;= ListLength(L))
+LocateElem(L, e, compare()): 
+return the rank that the rank of the element is the first element which compare(element[rank], e) is true(L has been initialized),
+if no element satisfy it, return 0
 
-PriorElem(L, cur_e, &amp;pre_e): make the pre_e equal the predecessor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
-NextElem(L, cur_e, &amp;next_e):make the next_e equal the successor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
+PriorElem(L, cur_e, &amp;pre_e): 
+make the pre_e equal the predecessor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
+NextElem(L, cur_e, &amp;next_e):
+make the next_e equal the successor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
 
-ListInsert(&amp;L, i, e): insert the element in the ith rank of the list(L has been initialized)
-ListDelete(&amp;L, i, &amp;e):delete the ith element in the list(L has been initialized and not be empty)
+ListInsert(&amp;L, i, e): 
+insert the element in the ith rank of the list(L has been initialized)
+ListDelete(&amp;L, i, &amp;e):
+delete the ith element in the list(L has been initialized and not be empty)
 
 ListTraverse(&amp;L, visit()):
     for (begin, end)
@@ -194,7 +201,7 @@ ListTraverse(&amp;L, visit()):
 (L has been initialized)
 </code></pre>
 <p>}</p>
-<p>Example: make $ListA \bigcup ListB\$</p>
+<p>Example: make $ListA \bigcup ListB$</p>
 <h3 id="the-code">The code</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -290,9 +297,9 @@ ListTraverse(&amp;L, visit()):
 <p>The address of the ith element:-&gt;Loc(ai) = Loc(a1) + (i-1)*k</p>
 </blockquote>
 </blockquote>
-<p>$logic Element: [a_0, a_1, &hellip;, a_n]\$
-$Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
-<p>$!!!\ Storage\ structure: random\ storage\$</p>
+<p>$logic Element: [a_0, a_1, &hellip;, a_n]$
+$Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}$</p>
+<p>$!!!\ Storage\ structure: random\ storage$</p>
 <p>about data</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -413,7 +420,7 @@ $Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
 <p>!!!The number of elements moved depends on the length of the order table and the location of the inserted element.</p>
 </blockquote>
 <p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i=0}^n i}{n + 1} = \frac{\frac{n(n + 1)}{2}}{n + 1} = \frac {n}{2} = O(n)\$</p>
+<p>$T(n) = \frac{\sum_{i=0}^n i}{n + 1} = \frac{\frac{n(n + 1)}{2}}{n + 1} = \frac {n}{2} = O(n)$</p>
 <p>delete</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -445,7 +452,7 @@ $Physical Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\$</p>
 <p>!!!The number of elements moved depends on the length of the order table and the location of the deleted element</p>
 </blockquote>
 <p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i = 0}^{n - 1} i}{n} = \frac{\frac{n(n - 1)}{2}}{n} = \frac{n - 1}{2} = O(n)\$</p>
+<p>$T(n) = \frac{\sum_{i = 0}^{n - 1} i}{n} = \frac{\frac{n(n - 1)}{2}}{n} = \frac{n - 1}{2} = O(n)$</p>
 <h4 id="advantage">Advantage</h4>
 <ol>
 <li>Logic is Contiguous, and physical is Contiguous</li>
@@ -871,7 +878,7 @@ node</p>
 <p>Any node in the list can be found by tracing back and forth from any given node.</p>
 </blockquote>
 <p>structure</p>
-<p>$[a_{i-1}]^\rightarrow_\leftarrow[prior] [data] [next]^\rightarrow_\leftarrow[a_{i + 1}]\$</p>
+<p>$[a_{i-1}]^\rightarrow_\leftarrow[prior] [data] [next]^\rightarrow_\leftarrow[a_{i + 1}]$</p>
 <blockquote>
 <p>no empty list</p>
 </blockquote>
@@ -938,11 +945,11 @@ $head.prior\rightarrow[a_n]\$</p>
 <blockquote>
 <p>without head</p>
 </blockquote>
-<p>$head\rightarrow prior = [a_n]\ a_n\rightarrow next = head\$</p>
+<p>$head\rightarrow prior = [a_n]\ a_n\rightarrow next = head$</p>
 <blockquote>
 <p>empty</p>
 </blockquote>
-<p>$head\rightarrow prior = head\rightarrow next = head\$</p>
+<p>$head\rightarrow prior = head\rightarrow next = head$</p>
 <p>Summary</p>
 <p>Advantage</p>
 <ol>
@@ -997,7 +1004,7 @@ rearranging the entries.</li>
 </ol>
 <p>Application of Linked list:</p>
 <p>Example: Polynomials</p>
-<p>$P(x) = a_0 + a_1x + a_2x^2 + &hellip; + a_nx^n\$</p>
+<p>$P(x) = a_0 + a_1x + a_2x^2 + &hellip; + a_nx^n$</p>
 <blockquote>
 <p>Array-based implementation:Disadvantage: for sparse polynomials
 -&gt;waste memory!</p>
