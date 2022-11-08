@@ -402,7 +402,7 @@ the end of the list. Access the list from the top.</p>
 <p>Pop: Delete an element from the end of the list.</p>
 </blockquote>
 <p>$Bottom\rightarrow [a_1] [a_2]&hellip;&hellip;[a_{n-1}] [a_n]\leftarrow Top$</p>
-<p>$Operation\$</p>
+<p>$Operation$</p>
 <p>$[a_1] [a_2]&hellip;&hellip;[a_{n-1}] [a_n]^{\rightarrow Pop}_{\leftarrow Push}$</p>
 <h4 id="adt">ADT</h4>
 <p>ADT Stack {</p>
