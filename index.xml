@@ -2460,14 +2460,12 @@ Example:</p>
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="c1">//-&gt;step = 1
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span> <span class="c1">//-&gt;step j when j = ki
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">sum</span><span class="o">++;</span>
-</span></span><span class="line"><span class="cl"> 
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>$so the step = 1 + 1 + 1 + i + 1 + 1 + &hellip; + 2i + 1 + 1 + &hellip; + i * i$
