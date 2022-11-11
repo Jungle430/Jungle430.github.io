@@ -4,9 +4,164 @@
         <link>https://Jungle430.github.io/</link>
         <description>Welcome to Jungle&#39;s blog.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>SunYingCe@bupt.edu.cn (Jungle)</managingEditor>
-            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Tue, 08 Nov 2022 11:39:47 &#43;0800</lastBuildDate>
+            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Fri, 11 Nov 2022 19:53:36 &#43;0800</lastBuildDate>
             <atom:link href="https://Jungle430.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Graph</title>
+    <link>https://Jungle430.github.io/posts/graph/</link>
+    <pubDate>Fri, 11 Nov 2022 19:53:36 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/graph/</guid>
+    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
+<h2 id="graph">Graph</h2>
+<p>Definition: A graph G consists of two sets</p>
+<blockquote>
+<p>a finite, nonempty set of vertices V(G)</p>
+<p>a finite, possible empty set of edges E(G)</p>
+<p>G(V,E) represents a graph</p>
+<p>The number of vertices is written $|V|(n)$, and the number of edges is written $|E|(e)$</p>
+</blockquote>
+<p>General graphs differ from trees</p>
+<ol>
+<li>need not have a root node</li>
+<li>no implicit parent-child relationship</li>
+<li>may be several (or no) paths from one vertex to another</li>
+</ol>
+<h3 id="definition">Definition</h3>
+<h4 id="for-a-directed-graph">For a Directed graph</h4>
+<p>$if\ u, v\ are\ two\ vertices,then\ &lt;u, v&gt; is\ an\ arc(edge), u\ is\ called\ as\ tail, v\ is\ called\ head$</p>
+<p>$Example:$</p>
+<p>$[u]\rightarrow[v]\ is\ called &lt;u, v&gt;, and\ [v]\rightarrow[u] is\ called &lt;v, u&gt;$</p>
+<p>$$
+[u]\rightarrow[v]
+$$</p>
+<div class="mermaid" id="id-1"></div>
+<p>$$
+[v]\rightarrow[u]
+$$</p>
+<div class="mermaid" id="id-2"></div>
+<p>A directed graph is one in which each edge is a directed pair of vertices, $&lt; u,v &gt; \neq &lt; v,u &gt;$</p>
+<h4 id="for-an-undirected-graph">For an undirected graph</h4>
+<p>An undirected graph is one in which the pair of vertices in an edge is unordered, $（u,v）= （v,u）$
+$$
+(u, v)=(v, u)
+$$</p>
+<div class="mermaid" id="id-3"></div>
+<h4 id="complete-graph">Complete graph</h4>
+<p>A complete graph is a graph that has the $maximum\ number\ of\ edges$; A complete graph is a graph in which $there\ is\ an\ edge\ between\ every\ pair\ of\ vertices$.</p>
+<blockquote>
+<p>for a $undirected\ graph$ with $n\ vertices$, the maximum number of edges is $\frac {n(n-1)}{2}(C_n^2)$</p>
+</blockquote>
+<blockquote>
+<p>for a $directed\ graph$ with n vertices, the maximum number of edges is $n(n-1)$</p>
+</blockquote>
+<h4 id="sparse-graph-and-dense-graph">Sparse Graph and Dense Graph</h4>
+<p>If the edges of a graph is $e&lt;n\log n$, the graph is called <strong>Sparse Graph</strong> ,otherwise, it is called as <strong>Dense Graph</strong></p>
+<h4 id="examples-for-graph">Examples for Graph</h4>
+<h5 id="undirected-graph">Undirected graph</h5>
+<p>$$
+V(G_1)={0,1,2,3}\
+and\ E(G_1)={(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)}
+$$</p>
+<p>$$
+Graph \rightarrow G_1
+$$</p>
+<div class="mermaid" id="id-4"></div>
+<h5 id="directed-graph">Directed graph</h5>
+<p>$$
+V(G_2)={0,1,2}\
+and\ E(G_2)={&lt;0, 1&gt;,&lt;1, 0&gt;,&lt;1, 2&gt;}
+$$</p>
+<p>$$
+Graph\rightarrow G_2
+$$</p>
+<div class="mermaid" id="id-5"></div>
+<h4 id="adjacent-and-incident">Adjacent and Incident</h4>
+<p>If $(v_0 ,v_1 )$ is an edge in an $undirected\ graph$</p>
+<blockquote>
+<p>$v_0$ and $v_1$ are $adjacent$</p>
+<p>The edge $(v_0 , v_1)$ is $incident$ on vertices $v_0\ and\ v_1$</p>
+</blockquote>
+<p>If $&lt;v_0 , v_1&gt;$ is an edge in a $directed\ graph$</p>
+<blockquote>
+<p>$v_0$ is $adjacent\ to$ $v_1$ , and $v_1$ is $adjacent\ from$ $v_0$ .</p>
+<p>The edge $&lt;v_0 , v_1&gt;$ is $incident$ on $v_0$ and $v_1$</p>
+</blockquote>
+<h4 id="weighted-graphnetwork">Weighted graph(network)</h4>
+<p>There is some <strong>cost</strong> or <strong>weight</strong> associated with each edge</p>
+<h4 id="subgraph">Subgraph</h4>
+<p>A subgraph of $G$ is a graph $G&rsquo;$ such that $V(G’)$ is a subset of $V(G)$ and $E(G’)$ is a subset of $E(G)$
+$$
+V(G)\supseteq V(G&rsquo;)\
+E(G)\supseteq E(G&rsquo;)
+$$</p>
+<h4 id="degree">Degree</h4>
+<p>The degree of a vertex (TD: Total Degree) is the number of edges incident to that vertex</p>
+<h5 id="in-degree-and-out-degreefor-a-directed-graph">In-degree and Out-degree(for a directed graph)</h5>
+<p>The <strong>in-degree</strong> of a vertex v (ID) is the number of edges that have <em>v</em> as the <strong>head</strong></p>
+<p>The <strong>out-degree</strong> of a vertex v (OD) is the number of edges that have <em>v</em> as the <strong>tail</strong></p>
+<h5 id="conclusion">Conclusion:</h5>
+<p>if $d_i$ is the degree of a vertex $i$ in a graph $G$ with $n$ vertices and $e$ edges, the number of edges is
+$$
+e=\frac{\sum_{i=1}^n d_i}{2}
+$$</p>
+<h5 id="examples-for-degree">Examples for degree</h5>
+<p>directed graph:</p>
+<div class="mermaid" id="id-6"></div>
+<p>$$
+0\rightarrow in=1\ and\ out=1\
+1\rightarrow in=1\ and\ out=2\
+2\rightarrow in=1\ and\ out=0
+$$</p>
+<p>Undirected graph:</p>
+<div class="mermaid" id="id-7"></div>
+<p>$$
+0\rightarrow 2,[1,2]\rightarrow 3,[3, 4, 5, 6] \rightarrow 1
+$$</p>
+<h4 id="path">Path</h4>
+<h5 id="definition-1">Definition</h5>
+<p>$A\ path\ from\ vertex\ v_p\ to\ v_q\ in\ a\ graph\ G\ is\ a\ sequence\ of\ vertices,v_p , v_{i_1} , v_{i_2} , &hellip;, v_{i_n}, v_{q}\ such\ that (v_p , v_{i_1}), (v_{i_1} ,v_{i_2} ), &hellip;, (v_{i_n}, v_q) are\ edges\ in\ a\ graph$</p>
+<h5 id="length-of-a-path">Length of a path</h5>
+<p>The length of a path is <strong>the number of edges</strong> on it</p>
+<h5 id="simple-path">Simple path</h5>
+<p>A simple path is a path in which all vertices are <strong>distinct</strong></p>
+<h5 id="simple-circle">Simple Circle</h5>
+<p>A simple cycle is a path in which all vertices,<strong>except the first and the last</strong>, are distinct. <strong>The first and the last vertices are the same</strong></p>
+<h4 id="example-of-graph">Example of Graph</h4>
+<h5 id="traffic-flow-can-be-modeled-by-a-graph">Traffic flow can be modeled by a graph</h5>
+<blockquote>
+<p>Each street intersection represents a vertex, each street is an edge</p>
+<p>Edge costs could represent, among other things, a <strong>speed limit or capacity</strong></p>
+<p>We could ask for <strong>the shortest route</strong> or use this information to find the most likely location for <strong>bottleneck</strong></p>
+</blockquote>
+<h3 id="adt">ADT</h3>
+<p>Graph</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">Objects: a nonempty set of vertices and a set of edges
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Functions: for all graph in Graph, v, v1 and v2 in Vertices
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Graph Create(): return an empty graph
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Graph DeleteEdge(graph, v1, v2): return a graph in which the edge (v1, v2) is removed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">......
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="graph-implementation">Graph Implementation</h3>
+]]></description>
+</item>
+<item>
     <title>Dynamic Programming</title>
     <link>https://Jungle430.github.io/posts/dynamic-programming/</link>
     <pubDate>Tue, 08 Nov 2022 11:39:47 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/dynamic-programming/</guid>

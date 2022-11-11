@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Graph - Jungle&#39;s Blog</title><meta name="description" content="Welcome to Jungle&#39;s blog."><meta property="og:title" content="Graph" />
+<meta property="og:description" content="Data Structure Graph Definition: A graph G consists of two sets
+a finite, nonempty set of vertices V(G)
+a finite, possible empty set of edges E(G)
+G(V,E) represents a graph
+The number of vertices is written $|V|(n)$, and the number of edges is written $|E|(e)$
+General graphs differ from trees
+need not have a root node no implicit parent-child relationship may be several (or no) paths from one vertex to another Definition For a Directed graph $if\ u, v\ are\ two\ vertices,then\ &lt;u, v&gt; is\ an\ arc(edge), u\ is\ called\ as\ tail, v\ is\ called\ head$" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://Jungle430.github.io/posts/graph/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-11-11T19:53:36+08:00" />
+<meta property="article:modified_time" content="2022-11-11T19:53:36+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Graph"/>
+<meta name="twitter:description" content="Data Structure Graph Definition: A graph G consists of two sets
+a finite, nonempty set of vertices V(G)
+a finite, possible empty set of edges E(G)
+G(V,E) represents a graph
+The number of vertices is written $|V|(n)$, and the number of edges is written $|E|(e)$
+General graphs differ from trees
+need not have a root node no implicit parent-child relationship may be several (or no) paths from one vertex to another Definition For a Directed graph $if\ u, v\ are\ two\ vertices,then\ &lt;u, v&gt; is\ an\ arc(edge), u\ is\ called\ as\ tail, v\ is\ called\ head$"/>
+<meta name="application-name" content="Jungle&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://Jungle430.github.io/posts/graph/" /><link rel="prev" href="https://Jungle430.github.io/posts/dynamic-programming/" /><link rel="stylesheet" href="/css/page.min.css"><link rel="stylesheet" href="/css/home.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Graph",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/Jungle430.github.io\/posts\/graph\/"
+        },"genre": "posts","keywords": "Data Structure","wordcount":  719 ,
+        "url": "https:\/\/Jungle430.github.io\/posts\/graph\/","datePublished": "2022-11-11T19:53:36+08:00","dateModified": "2022-11-11T19:53:36+08:00","publisher": {
+            "@type": "Organization",
+            "name": "Jungle"},"author": {
+                "@type": "Person",
+                "name": "Jungle"
+            },"description": ""
+    }
+    </script></head><body data-header-desktop="auto" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><div class="menu-item"><a href="javascript:void(0);" class="theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div></div>
+    </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">Graph</h2><div class="post-meta">
+                <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/data-structure/"><i class="far fa-folder fa-fw"></i>Data Structure</a></span></div>
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-11">2022-11-11</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 719 字</span>&nbsp;
+                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟</span>&nbsp;</div>
+            </div>
+            
+            <hr><div class="details toc" id="toc-static"  data-kept="">
+                    <div class="details-summary toc-title">
+                        <span>目录</span>
+                        <span><i class="details-icon fas fa-angle-right"></i></span>
+                    </div>
+                    <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#graph">Graph</a>
+      <ul>
+        <li><a href="#definition">Definition</a>
+          <ul>
+            <li><a href="#for-a-directed-graph">For a Directed graph</a></li>
+            <li><a href="#for-an-undirected-graph">For an undirected graph</a></li>
+            <li><a href="#complete-graph">Complete graph</a></li>
+            <li><a href="#sparse-graph-and-dense-graph">Sparse Graph and Dense Graph</a></li>
+            <li><a href="#examples-for-graph">Examples for Graph</a>
+              <ul>
+                <li><a href="#undirected-graph">Undirected graph</a></li>
+                <li><a href="#directed-graph">Directed graph</a></li>
+              </ul>
+            </li>
+            <li><a href="#adjacent-and-incident">Adjacent and Incident</a></li>
+            <li><a href="#weighted-graphnetwork">Weighted graph(network)</a></li>
+            <li><a href="#subgraph">Subgraph</a></li>
+            <li><a href="#degree">Degree</a>
+              <ul>
+                <li><a href="#in-degree-and-out-degreefor-a-directed-graph">In-degree and Out-degree(for a directed graph)</a></li>
+                <li><a href="#conclusion">Conclusion:</a></li>
+                <li><a href="#examples-for-degree">Examples for degree</a></li>
+              </ul>
+            </li>
+            <li><a href="#path">Path</a>
+              <ul>
+                <li><a href="#definition-1">Definition</a></li>
+                <li><a href="#length-of-a-path">Length of a path</a></li>
+                <li><a href="#simple-path">Simple path</a></li>
+                <li><a href="#simple-circle">Simple Circle</a></li>
+              </ul>
+            </li>
+            <li><a href="#example-of-graph">Example of Graph</a>
+              <ul>
+                <li><a href="#traffic-flow-can-be-modeled-by-a-graph">Traffic flow can be modeled by a graph</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#adt">ADT</a></li>
+        <li><a href="#graph-implementation">Graph Implementation</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </div><div class="content" id="content"><h1 id="data-structure">Data Structure</h1>
+<h2 id="graph">Graph</h2>
+<p>Definition: A graph G consists of two sets</p>
+<blockquote>
+<p>a finite, nonempty set of vertices V(G)</p>
+<p>a finite, possible empty set of edges E(G)</p>
+<p>G(V,E) represents a graph</p>
+<p>The number of vertices is written $|V|(n)$, and the number of edges is written $|E|(e)$</p>
+</blockquote>
+<p>General graphs differ from trees</p>
+<ol>
+<li>need not have a root node</li>
+<li>no implicit parent-child relationship</li>
+<li>may be several (or no) paths from one vertex to another</li>
+</ol>
+<h3 id="definition">Definition</h3>
+<h4 id="for-a-directed-graph">For a Directed graph</h4>
+<p>$if\ u, v\ are\ two\ vertices,then\ &lt;u, v&gt; is\ an\ arc(edge), u\ is\ called\ as\ tail, v\ is\ called\ head$</p>
+<p>$Example:$</p>
+<p>$[u]\rightarrow[v]\ is\ called &lt;u, v&gt;, and\ [v]\rightarrow[u] is\ called &lt;v, u&gt;$</p>
+<p>$$
+[u]\rightarrow[v]
+$$</p>
+<div class="mermaid" id="id-1"></div>
+<p>$$
+[v]\rightarrow[u]
+$$</p>
+<div class="mermaid" id="id-2"></div>
+<p>A directed graph is one in which each edge is a directed pair of vertices, $&lt; u,v &gt; \neq &lt; v,u &gt;$</p>
+<h4 id="for-an-undirected-graph">For an undirected graph</h4>
+<p>An undirected graph is one in which the pair of vertices in an edge is unordered, $（u,v）= （v,u）$
+$$
+(u, v)=(v, u)
+$$</p>
+<div class="mermaid" id="id-3"></div>
+<h4 id="complete-graph">Complete graph</h4>
+<p>A complete graph is a graph that has the $maximum\ number\ of\ edges$; A complete graph is a graph in which $there\ is\ an\ edge\ between\ every\ pair\ of\ vertices$.</p>
+<blockquote>
+<p>for a $undirected\ graph$ with $n\ vertices$, the maximum number of edges is $\frac {n(n-1)}{2}(C_n^2)$</p>
+</blockquote>
+<blockquote>
+<p>for a $directed\ graph$ with n vertices, the maximum number of edges is $n(n-1)$</p>
+</blockquote>
+<h4 id="sparse-graph-and-dense-graph">Sparse Graph and Dense Graph</h4>
+<p>If the edges of a graph is $e&lt;n\log n$, the graph is called <strong>Sparse Graph</strong> ,otherwise, it is called as <strong>Dense Graph</strong></p>
+<h4 id="examples-for-graph">Examples for Graph</h4>
+<h5 id="undirected-graph">Undirected graph</h5>
+<p>$$
+V(G_1)={0,1,2,3}\
+and\ E(G_1)={(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)}
+$$</p>
+<p>$$
+Graph \rightarrow G_1
+$$</p>
+<div class="mermaid" id="id-4"></div>
+<h5 id="directed-graph">Directed graph</h5>
+<p>$$
+V(G_2)={0,1,2}\
+and\ E(G_2)={&lt;0, 1&gt;,&lt;1, 0&gt;,&lt;1, 2&gt;}
+$$</p>
+<p>$$
+Graph\rightarrow G_2
+$$</p>
+<div class="mermaid" id="id-5"></div>
+<h4 id="adjacent-and-incident">Adjacent and Incident</h4>
+<p>If $(v_0 ,v_1 )$ is an edge in an $undirected\ graph$</p>
+<blockquote>
+<p>$v_0$ and $v_1$ are $adjacent$</p>
+<p>The edge $(v_0 , v_1)$ is $incident$ on vertices $v_0\ and\ v_1$</p>
+</blockquote>
+<p>If $&lt;v_0 , v_1&gt;$ is an edge in a $directed\ graph$</p>
+<blockquote>
+<p>$v_0$ is $adjacent\ to$ $v_1$ , and $v_1$ is $adjacent\ from$ $v_0$ .</p>
+<p>The edge $&lt;v_0 , v_1&gt;$ is $incident$ on $v_0$ and $v_1$</p>
+</blockquote>
+<h4 id="weighted-graphnetwork">Weighted graph(network)</h4>
+<p>There is some <strong>cost</strong> or <strong>weight</strong> associated with each edge</p>
+<h4 id="subgraph">Subgraph</h4>
+<p>A subgraph of $G$ is a graph $G&rsquo;$ such that $V(G’)$ is a subset of $V(G)$ and $E(G’)$ is a subset of $E(G)$
+$$
+V(G)\supseteq V(G&rsquo;)\
+E(G)\supseteq E(G&rsquo;)
+$$</p>
+<h4 id="degree">Degree</h4>
+<p>The degree of a vertex (TD: Total Degree) is the number of edges incident to that vertex</p>
+<h5 id="in-degree-and-out-degreefor-a-directed-graph">In-degree and Out-degree(for a directed graph)</h5>
+<p>The <strong>in-degree</strong> of a vertex v (ID) is the number of edges that have <em>v</em> as the <strong>head</strong></p>
+<p>The <strong>out-degree</strong> of a vertex v (OD) is the number of edges that have <em>v</em> as the <strong>tail</strong></p>
+<h5 id="conclusion">Conclusion:</h5>
+<p>if $d_i$ is the degree of a vertex $i$ in a graph $G$ with $n$ vertices and $e$ edges, the number of edges is
+$$
+e=\frac{\sum_{i=1}^n d_i}{2}
+$$</p>
+<h5 id="examples-for-degree">Examples for degree</h5>
+<p>directed graph:</p>
+<div class="mermaid" id="id-6"></div>
+<p>$$
+0\rightarrow in=1\ and\ out=1\
+1\rightarrow in=1\ and\ out=2\
+2\rightarrow in=1\ and\ out=0
+$$</p>
+<p>Undirected graph:</p>
+<div class="mermaid" id="id-7"></div>
+<p>$$
+0\rightarrow 2,[1,2]\rightarrow 3,[3, 4, 5, 6] \rightarrow 1
+$$</p>
+<h4 id="path">Path</h4>
+<h5 id="definition-1">Definition</h5>
+<p>$A\ path\ from\ vertex\ v_p\ to\ v_q\ in\ a\ graph\ G\ is\ a\ sequence\ of\ vertices,v_p , v_{i_1} , v_{i_2} , &hellip;, v_{i_n}, v_{q}\ such\ that (v_p , v_{i_1}), (v_{i_1} ,v_{i_2} ), &hellip;, (v_{i_n}, v_q) are\ edges\ in\ a\ graph$</p>
+<h5 id="length-of-a-path">Length of a path</h5>
+<p>The length of a path is <strong>the number of edges</strong> on it</p>
+<h5 id="simple-path">Simple path</h5>
+<p>A simple path is a path in which all vertices are <strong>distinct</strong></p>
+<h5 id="simple-circle">Simple Circle</h5>
+<p>A simple cycle is a path in which all vertices,<strong>except the first and the last</strong>, are distinct. <strong>The first and the last vertices are the same</strong></p>
+<h4 id="example-of-graph">Example of Graph</h4>
+<h5 id="traffic-flow-can-be-modeled-by-a-graph">Traffic flow can be modeled by a graph</h5>
+<blockquote>
+<p>Each street intersection represents a vertex, each street is an edge</p>
+<p>Edge costs could represent, among other things, a <strong>speed limit or capacity</strong></p>
+<p>We could ask for <strong>the shortest route</strong> or use this information to find the most likely location for <strong>bottleneck</strong></p>
+</blockquote>
+<h3 id="adt">ADT</h3>
+<p>Graph</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">Objects: a nonempty set of vertices and a set of edges
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Functions: for all graph in Graph, v, v1 and v2 in Vertices
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Graph Create(): return an empty graph
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Graph DeleteEdge(graph, v1, v2): return a graph in which the edge (v1, v2) is removed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">......
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="graph-implementation">Graph Implementation</h3>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info"><div class="post-info-tag"><span><a href="/tags/data-structure/">Data Structure</a>
+                </span></div><div class="post-info-line"><div class="post-info-mod">
+                <span>更新于 2022-11-11</span>
+            </div><div class="post-info-mod"></div>
+        </div><div class="post-info-share">
+            <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph" data-hashtags="Data Structure"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://Jungle430.github.io/posts/graph/" data-hashtag="Data Structure"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph" data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph"><i class="fab fa-line fa-fw"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Myspace" data-sharer="myspace" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph" data-description=""><i data-svg-src="/lib/simple-icons/icons/myspace.min.svg"></i></a><a href="javascript:void(0);" title="分享到 Blogger" data-sharer="blogger" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph" data-description=""><i class="fab fa-blogger fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://Jungle430.github.io/posts/graph/" data-title="Graph"><i class="fab fa-evernote fa-fw"></i></a></span>
+        </div></div><div class="post-nav"><a href="/posts/dynamic-programming/" class="prev" rel="prev" title="Dynamic Programming"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
+</div></article></div>
+            </main>
+            <footer class="footer"><div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.105.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/khusika/FeelIt" target="_blank" rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+        </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://github.com/Jungle430">Jungle</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/sw.min.js?version=0.0.1', { scope: '/' })
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Registered');
+        }, err => console.error('Jungle\u0027s Blog\u00A0Service Worker registration failed: ', err));
+
+    navigator.serviceWorker
+        .ready
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Ready');
+        });
+}
+</script>
+</footer>
+        </div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-chevron-up fa-fw"></i>
+            </a></div><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.fill%2CArray.prototype.find%2CArray.from%2CIntersectionObserver%2CMath.sign%2CObject.assign%2CPromise%2CObject.entries%2Chtml5shiv%2CObject.values%2Cfetch%2CElement.prototype.after"></script><script src="/lib/autocomplete/autocomplete.min.js"></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js"></script><script src="/lib/lazysizes/lazysizes.min.js"></script><script src="/lib/clipboard/clipboard.min.js"></script><script src="/lib/sharer/sharer.min.js"></script><script src="/lib/katex/katex.min.js"></script><script src="/lib/katex/auto-render.min.js"></script><script src="/lib/katex/copy-tex.min.js"></script><script src="/lib/katex/mhchem.min.js"></script><script src="/lib/mermaid/mermaid.min.js"></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":30},"comment":{},"data":{"id-1":"graph LR\nU((U))\nV((V))\nU--\u003eV","id-2":"graph LR\nV((V))\nU((U))\nV--\u003eU","id-3":"graph RL\nU((U))\nV((V))\nU----V","id-4":"graph LR\nA((0))\nB((1))\nC((2))\nD((3))\nA----B\nA----C\nA----D\nB----C\nB----D\nC----D","id-5":"graph TB\nA((0))\nB((1))\nC((2))\nA--\u003eB\nB--\u003eA\nB--\u003eC","id-6":"graph TB\nA((0))\nB((1))\nC((2))\nA--\u003eB\nB--\u003eA\nB--\u003eC","id-7":"graph TB\n0((0))\n1((1))\n2((2))\n3((3))\n4((4))\n5((5))\n6((6))\n0----1\n0----2\n1----3\n1----4\n2----5\n2----6"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body></html>
