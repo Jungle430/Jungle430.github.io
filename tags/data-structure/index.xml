@@ -116,7 +116,8 @@ $$</p>
 $$</p>
 <h4 id="path">Path</h4>
 <h5 id="definition-1">Definition</h5>
-<p>$A\ path\ from\ vertex\ v_p\ to\ v_q\ in\ a\ graph\ G\ is\ a\ sequence\ of\ vertices,v_p , v_{i_1} , v_{i_2} , &hellip;, v_{i_n}, v_{q}\ such\ that (v_p , v_{i_1}), (v_{i_1} ,v_{i_2} ), &hellip;, (v_{i_n}, v_q) are\ edges\ in\ a\ graph$</p>
+<p>$A\ path\ from\ vertex\ v_p\ to\ v_q\ in\ a\ graph\ G\ is\ a\ sequence\ of\ vertices,$</p>
+<p>$\rightarrow v_p , v_{i_1} , v_{i_2} , &hellip;, v_{i_n}, v_{q}\ such\ that (v_p , v_{i_1}), (v_{i_1} ,v_{i_2} ), &hellip;, (v_{i_n}, v_q) are\ edges\ in\ a\ graph$</p>
 <h5 id="length-of-a-path">Length of a path</h5>
 <p>The length of a path is <strong>the number of edges</strong> on it</p>
 <h5 id="simple-path">Simple path</h5>
