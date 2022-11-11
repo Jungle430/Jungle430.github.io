@@ -90,7 +90,9 @@ $$</p>
 <h4 id="subgraph">Subgraph</h4>
 <p>A subgraph of $G$ is a graph $G&rsquo;$ such that $V(G’)$ is a subset of $V(G)$ and $E(G’)$ is a subset of $E(G)$
 $$
-V(G)\supseteq V(G&rsquo;)\
+V(G)\supseteq V(G&rsquo;)
+$$</p>
+<p>$$
 E(G)\supseteq E(G&rsquo;)
 $$</p>
 <h4 id="degree">Degree</h4>
