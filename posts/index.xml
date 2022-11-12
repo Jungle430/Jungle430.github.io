@@ -107,14 +107,24 @@ $$</p>
 <p>directed graph:</p>
 <div class="mermaid" id="id-6"></div>
 <p>$$
-0\rightarrow in=1\ and\ out=1\
-1\rightarrow in=1\ and\ out=2\
+0\rightarrow in=1\ and\ out=1
+$$</p>
+<p>$$
+1\rightarrow in=1\ and\ out=2
+$$</p>
+<p>$$
 2\rightarrow in=1\ and\ out=0
 $$</p>
 <p>Undirected graph:</p>
 <div class="mermaid" id="id-7"></div>
 <p>$$
-0\rightarrow 2,[1,2]\rightarrow 3,[3, 4, 5, 6] \rightarrow 1
+0\rightarrow 2
+$$</p>
+<p>$$
+[1,2]\rightarrow 3
+$$</p>
+<p>$$
+[3, 4, 5, 6] \rightarrow 1
 $$</p>
 <h4 id="path">Path</h4>
 <h5 id="definition-1">Definition</h5>
