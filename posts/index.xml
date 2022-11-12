@@ -170,6 +170,154 @@ $$</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="graph-implementation">Graph Implementation</h3>
+<h4 id="adjacency-matrix-array">Adjacency Matrix (<strong>Array</strong>)</h4>
+<h5 id="definition-2">Definition</h5>
+<p>The adjacency matrix of G is a two-dimensional n by n array, say $A[n] [n]$
+$$
+A[i][j]=\begin{cases}
+1\ if\ &lt;V_i,V_j&gt; \in E\ or\ (V_i,V_j)\in E\newline
+0\ otherwise
+\end{cases}
+$$</p>
+<p>For a <strong>weighted graph</strong></p>
+<p>$$
+A[i][j]=\begin{cases}
+W(i, j)\ when\ i\neq j\ and\ &lt;V_i,V_j&gt; \in E\ or\ (V_i,V_j)\in E\newline
+\infty\ otherwise
+\end{cases}
+$$</p>
+<h5 id="example">Example</h5>
+<p>For a graph</p>
+<div class="mermaid" id="id-8"></div>
+<p>$$
+\begin{pmatrix}
+0&amp; 1&amp; 0\newline
+1&amp; 0&amp; 1\newline
+0&amp; 0&amp; 0
+\end{pmatrix}
+$$</p>
+<p>For a weight graph</p>
+<p>The weight of the edge from vertex i to vertex j is used instead of 1 in the adjacency matrix
+$$
+\begin{pmatrix}
+\infty&amp; 1&amp; \infty&amp; 4\newline
+\infty&amp; \infty&amp; 9&amp; 2\newline
+3&amp; 5&amp; \infty&amp; 8\newline
+\infty&amp; \infty&amp; 6&amp; \infty
+\end{pmatrix}
+$$</p>
+<h5 id="notice">Notice</h5>
+<p>The adjacency matrix for an <strong>undirected graph</strong> is <strong>symmetric</strong></p>
+<p>The adjacency matrix for a <strong>digraph need not be symmetric</strong></p>
+<h5 id="merits-of-adjacency-matrix">Merits of Adjacency Matrix</h5>
+<p>From the adjacency matrix, to determine the connection of vertices is easy</p>
+<p><strong>For a undirected graph, the degree of a vertex i is</strong> $\sum_{j=1}^n A[i][j]$</p>
+<p>For a <strong>directed graph</strong></p>
+<p>The sum of 1 in row i of the adjacency matrix is yields the out-degree of the $i^{th}$ vertex
+$$
+\begin{bmatrix}
+a_1&amp;a_2&amp;a_3&amp;\dots&amp;a_n
+\end{bmatrix}
+$$
+The sum of the entries in the $i^{th}$ column is its in degree
+$$
+\begin{bmatrix}
+a_1\newline
+a_2\newline
+a_3\newline
+\vdots\newline
+a_n
+\end{bmatrix}
+$$</p>
+<h5 id="code">Code</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">MaxVNum</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="n">XXX</span> <span class="n">VertexType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">ArcCell</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/*Type of vertex relationship. For unauthorized graph, use 1 or 0 to indicate adjacent no;
+</span></span></span><span class="line"><span class="cl"><span class="cm">	*For weighted graphs, is the weight value
+</span></span></span><span class="line"><span class="cl"><span class="cm">	*/</span>
+</span></span><span class="line"><span class="cl">    <span class="n">VRType</span> <span class="n">adj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">InfoType</span> <span class="o">*</span><span class="n">Info</span><span class="p">;</span><span class="c1">//Pointer to the arc related information (may not be available)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="n">ArcCell</span><span class="p">,</span> <span class="n">AdjMatrix</span><span class="p">[</span><span class="n">MaxVNum</span><span class="p">][</span><span class="n">MaxVNum</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">VertexType</span> <span class="n">vexs</span><span class="p">[</span><span class="n">MaxVNum</span><span class="p">];</span> <span class="cm">/* Vertex table */</span>
+</span></span><span class="line"><span class="cl">	<span class="n">AdjMatrix</span> <span class="n">arcs</span><span class="p">;</span> <span class="cm">/* The adjacency matrix, i.e. the edge table */</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">vexnum</span><span class="p">,</span> <span class="n">arcnum</span><span class="p">;</span> <span class="cm">/* The number of vertices and edges in the graph */</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">Mgraph</span><span class="p">;</span> <span class="cm">/* Mgraph is a graph stored in an adjacency matrix */</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Create a graph</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">CreateGraph</span> <span class="p">(</span><span class="n">Mgraph</span> <span class="o">&amp;</span><span class="n">ga</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">w</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">vexnum</span> <span class="o">&gt;&gt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">arcnum</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">ga</span><span class="o">-&gt;</span><span class="n">vexs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="err">＝</span> <span class="n">getchar</span><span class="p">();</span> <span class="cm">/*Read into the vertex information and establish the vertex table*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ga</span><span class="o">-&gt;</span><span class="n">arcs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="err">＝</span> <span class="err">∝</span><span class="p">;</span> <span class="cm">/*The Adjacency matrix is initialized*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">ga</span><span class="p">.</span><span class="n">arcnum</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">v1</span> <span class="o">&gt;&gt;</span> <span class="n">v2</span> <span class="o">&gt;&gt;</span> <span class="n">w</span><span class="p">;</span> <span class="cm">/*Read in the vertices and weights of an edge*/</span>
+</span></span><span class="line"><span class="cl">		<span class="n">i</span> <span class="o">=</span> <span class="n">LocateVex</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="n">v1</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">j</span> <span class="o">=</span> <span class="n">LocateVex</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="n">v2</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">		<span class="n">ga</span><span class="p">.</span><span class="n">arcs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">].</span><span class="n">adj</span> <span class="err">＝</span> <span class="n">w</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">ga</span><span class="p">.</span><span class="n">arcs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">].</span><span class="n">adj</span> <span class="err">＝</span> <span class="n">w</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="adjacency-list">Adjacency List</h4>
+<p>If a graph does not have many edges, the adjacency matrix will be sparse</p>
+<blockquote>
+<p>such representation is a waste of space</p>
+<p>use an array of pointers to linked row-lists</p>
+<p>adjacency-list representation for graphs</p>
+</blockquote>
+<h5 id="description-of-adjacency-list">Description of Adjacency List</h5>
+<p>Each row in adjacency matrix is represented as an adjacency list</p>
 ]]></description>
 </item>
 <item>
