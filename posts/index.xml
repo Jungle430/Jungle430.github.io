@@ -318,6 +318,689 @@ $$</p>
 </blockquote>
 <h5 id="description-of-adjacency-list">Description of Adjacency List</h5>
 <p>Each row in adjacency matrix is represented as an adjacency list</p>
+<blockquote>
+<p>The graph is represented by an array or vector <em>v</em>[1],<em>v</em>[2],&hellip;,<em>v</em>[n], one element for each vertex in the graph</p>
+</blockquote>
+<blockquote>
+<p>Each <em>v</em>[i] stores the data stored in vertex i together with a linked list of the numbers of all vertices adjacent from vertex i</p>
+</blockquote>
+<div class="mermaid" id="id-9"></div>
+<div class="mermaid" id="id-10"></div>
+<h5 id="example-1">Example:</h5>
+<div class="mermaid" id="id-11"></div>
+<div class="mermaid" id="id-12"></div>
+<h5 id="merits-and-demerits-of-adjacency-list">Merits and Demerits of Adjacency List</h5>
+<p>degree of a vertex in an undirected graph – # of nodes in adjacency list</p>
+<p>out-degree of a vertex in a directed graph – # of nodes in its adjacency list</p>
+<p>in-degree of a vertex in a directed graph – traverse the whole data structure</p>
+<h5 id="inverse-adjacency-list">Inverse adjacency list</h5>
+<p>Linked table is entry edge</p>
+<div class="mermaid" id="id-13"></div>
+<div class="mermaid" id="id-14"></div>
+<div class="mermaid" id="id-15"></div>
+<h5 id="code-1">code</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">MaxVerNum</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span> <span class="cm">/*Maximum verx 100*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/*Adjacent table edge junction type*/</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">ArcNode</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">adjvex</span><span class="p">;</span> <span class="cm">/*Neighborhood domain*/</span>
+</span></span><span class="line"><span class="cl">	<span class="n">InfoType</span> <span class="o">*</span><span class="n">Info</span><span class="p">;</span> <span class="cm">/*Domain info, for edge information*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">struct</span> <span class="nc">ArcNode</span> <span class="o">*</span> <span class="n">next</span><span class="p">;</span> <span class="cm">/*Pointer domain to the next neighbor*/</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="n">ArcNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/*Table header node type*/</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">Vnode</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">VertexType</span> <span class="n">vertex</span><span class="p">;</span> <span class="cm">/*Vertex Domains*/</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ArcNode</span> <span class="o">*</span><span class="n">firstedge</span><span class="p">;</span> <span class="cm">/*Side table head pointer*/</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="n">Vnode</span><span class="p">,</span> <span class="n">AdjList</span> <span class="p">[</span><span class="n">MaxVertexNum</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/*The type of figure*/</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">AdjList</span> <span class="n">vertices</span><span class="p">;</span> <span class="cm">/*adjacency list*/</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">vexnum</span><span class="p">,</span> <span class="n">arcnum</span><span class="p">;</span> <span class="cm">/*Vertices and edges*/</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ALGraph</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="traversing-graph">Traversing Graph</h3>
+<p>Some applications require visiting every vertex in a graph exactly once.</p>
+<p>The application may require that vertices should be visited <strong>in some special order</strong> based on graph topology</p>
+<blockquote>
+<p>DFS: Depth-First Search</p>
+<p>BFS: Breadth-First Search</p>
+</blockquote>
+<h4 id="depth-first-searchdfs">Depth-First Search(DFS)</h4>
+<h5 id="basic-idea">Basic idea</h5>
+<ol>
+<li>
+<p>Start from a given vertex <em>v</em> and visit it.</p>
+</li>
+<li>
+<p>Visit the first neighbor <em>w</em> of <em>v</em>. Then visit the first neighbor of <em>w</em> that has not already been visited, etc.</p>
+</li>
+<li>
+<p>If a node with no unexamined neighbors, then backup to the last visited node and examine its remaining neighbors.</p>
+</li>
+<li>
+<p>The search continues until all nodes of the graph have been examined.</p>
+</li>
+</ol>
+<h5 id="example-2">Example</h5>
+<div class="mermaid" id="id-16"></div>
+<p>$$
+\begin{bmatrix}
+V1 &amp;V2 &amp;V4 &amp;V8 &amp;V3 &amp;V6 &amp;V7 &amp;V5
+\end{bmatrix}
+$$</p>
+<h5 id="algorithm">Algorithm</h5>
+<p>Difficulties：</p>
+<ol>
+<li>
+<p>How to determine whether <em>v</em> has been visited?</p>
+</li>
+<li>
+<p>How to search the neighbor of <em>v</em>？</p>
+</li>
+</ol>
+<p>Solutions：</p>
+<ol>
+<li>
+<p>Using an array visited[n]. When <em>i</em> <em>th</em> vertex has been visited, visited[i]=TRUE.</p>
+</li>
+<li>
+<p>Varying by different data structure:</p>
+</li>
+</ol>
+<blockquote>
+<p>• <strong>Adjacency Matrix</strong></p>
+<p>• <strong>Adjacency List</strong></p>
+</blockquote>
+<p>DFS uses backtracking. <strong>Recursion</strong> is a natural technique for such problems</p>
+<blockquote>
+<p>a <strong>stack</strong> is automatically maintained to make backtracking possible</p>
+</blockquote>
+<p>DFS</p>
+<ol>
+<li>
+<p>Visit the start vertex <em>v</em>.</p>
+</li>
+<li>
+<p>For each vertex <em>w</em> adjacent to <em>v</em> do:</p>
+</li>
+</ol>
+<blockquote>
+<p>• If <em>w</em> has not been visited, apply the Depth-First Search (DFS) algorithm with <em>w</em> as the start vertex.</p>
+</blockquote>
+<h5 id="code-2">Code</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">MAX</span><span class="p">{</span> <span class="mi">500</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span><span class="n">MAX</span><span class="o">&gt;</span> <span class="n">visited</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">DFSTraverse</span><span class="p">(</span><span class="n">Graph</span> <span class="n">G</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">size_t</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">visited</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">size_t</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="p">[</span> <span class="n">k</span> <span class="p">])</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">DFS</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">DFS</span><span class="p">(</span><span class="n">Graph</span> <span class="n">G</span><span class="p">,</span> <span class="kt">int</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">	<span class="n">VISIT</span><span class="p">(</span><span class="n">v</span><span class="p">);</span> <span class="c1">// access to the v_th vertex in graph G
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">FirstAdjVex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">v</span><span class="p">);</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">w</span> <span class="o">=</span> <span class="n">NextAdjVex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="p">[</span><span class="n">w</span><span class="p">])</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">DFS</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">w</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">FirstAdjVex</span><span class="p">(</span><span class="n">ALGraph</span> <span class="n">G</span><span class="p">,</span> <span class="kt">int</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">    *returns the serial number of the first neighbor of the v th vertex in G. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">    *If v has no neighbors, it returns 0
+</span></span></span><span class="line"><span class="cl"><span class="cm">    */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">G</span><span class="p">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">firstarc</span> <span class="o">?</span> <span class="n">G</span><span class="p">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">firstarc</span><span class="o">-&gt;</span><span class="nl">adjvex</span> <span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">NextAdjVex</span><span class="p">(</span><span class="n">ALGraph</span> <span class="n">G</span><span class="p">,</span> <span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">    *returns the serial number of the next neighbor of the v th vertex in G relative to the vertex w.
+</span></span></span><span class="line"><span class="cl"><span class="cm">    *Returns 0 if v has no next neighbor relative to the vertex w
+</span></span></span><span class="line"><span class="cl"><span class="cm">    */</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ArcNode</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">p</span> <span class="o">=</span> <span class="n">G</span><span class="p">.</span><span class="n">vetrices</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">firstarc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span><span class="n">p</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">adjvex</span> <span class="o">!=</span> <span class="n">w</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">nextarc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">adjvex</span> <span class="o">==</span> <span class="n">w</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">nextarc</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">nextarc</span><span class="o">-&gt;</span><span class="n">adjvex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">else</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="algorithm-analysis">Algorithm Analysis</h5>
+<p>Let G=(V,E) be a graph with <em>n</em> vertices and <em>e</em> edges</p>
+<p>$Adjacency\ list:\ O(n+e)$</p>
+<p>$Adjacency\ matrix:\ O(n^2)$</p>
+<h4 id="bread-first-searchbfs">Bread-First Search(BFS)</h4>
+<h5 id="basic-idea-1">Basic idea</h5>
+<ol>
+<li>
+<p>Start from a given vertex <em>v</em> and visit it.</p>
+</li>
+<li>
+<p>Visit all neighbors of <em>v</em>.</p>
+</li>
+<li>
+<p>Then visit all neighbors of first neighbor <em>w</em> of <em>v</em>.</p>
+</li>
+<li>
+<p>Then visit all neighbors of second neighbor <em>x</em> of <em>v</em>, etc</p>
+</li>
+</ol>
+<h5 id="example-3">Example</h5>
+<div class="mermaid" id="id-17"></div>
+<p>$$
+\begin{bmatrix}
+V1 &amp;V2 &amp;V3 &amp;V4 &amp;V6 &amp;V7 &amp;V8 &amp;V5
+\end{bmatrix}
+$$</p>
+<h5 id="algorithm-1">Algorithm</h5>
+<blockquote>
+<p>BFS visits nodes level by level</p>
+</blockquote>
+<p>While visiting each node on a given level</p>
+<blockquote>
+<p>store it</p>
+<p>so that, we can return to it after completing this level</p>
+<p>so that nodes adjacent from it can be visited</p>
+</blockquote>
+<p>Because the first node visited on a given level should be the first one to which we return, a <strong>queue</strong> is an appropriate data structure for storing the nodes</p>
+<p>BFS</p>
+<ol>
+<li>
+<p>Visit the start vertex <em>v</em>.</p>
+</li>
+<li>
+<p>Initialize a queue to contain only the start vertex.</p>
+</li>
+<li>
+<p>While the queue is not empty do:</p>
+</li>
+</ol>
+<blockquote>
+<p>• Remove a vertex <em>v</em> from the queue.</p>
+</blockquote>
+<blockquote>
+<p>• For all vertices <em>w</em> adjacent to <em>v</em> do:</p>
+</blockquote>
+<blockquote>
+<p>– If w has not been visited then</p>
+<blockquote>
+<p>i. Visit <em>w</em>.
+ii. Add <em>w</em> to the queue.</p>
+</blockquote>
+</blockquote>
+<h5 id="code-3">Code</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">BFSTraverse</span><span class="p">(</span><span class="n">Graph</span> <span class="n">G</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">v</span> <span class="o">&lt;=</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">v</span><span class="o">++</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">InitQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">v</span> <span class="o">&lt;=</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">v</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">VISIT</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">EnQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">EmptyQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">))</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">                <span class="n">DeQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span><span class="n">u</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">				<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">FirstAdjVex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span> <span class="n">w</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span> <span class="n">w</span> <span class="o">=</span> <span class="n">NextAdjVex</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">					<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="p">[</span><span class="n">w</span><span class="p">])</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">                        <span class="n">visited</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">                        <span class="n">VISIT</span><span class="p">(</span><span class="n">w</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                        <span class="n">EnQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">w</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">                    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span> <span class="c1">// end while
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="p">}</span> <span class="c1">// end if
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="algorithm-analysis-1">Algorithm Analysis</h5>
+<p>Let G=(V,E) be a graph with <em>n</em> vertices and <em>e</em> edges</p>
+<p>$Adjacency\ list:\ O(n+e)$</p>
+<p>$Adjacency\ matrix:\ O(n^2)$</p>
+<h3 id="connectivity">Connectivity</h3>
+<h4 id="definition-3">Definition</h4>
+<p>Connected</p>
+<blockquote>
+<p>An <strong>undirected graph</strong> is <strong>connected</strong> if there is a path <strong>from every vertex to every other vertex</strong></p>
+</blockquote>
+<p>Strongly connected</p>
+<blockquote>
+<p>A <strong>directed graph</strong> with this property is called <strong>strongly connected</strong></p>
+</blockquote>
+<p>Weakly connected</p>
+<blockquote>
+<p>If <strong>a directed graph is not strongly connected</strong>, but the <strong>underlying graph</strong>(without direction to the arcs)is <strong>connected</strong>, then the graph is said to be <strong>weakly connected</strong>.</p>
+</blockquote>
+<h4 id="minimal-cost-spanning-trees">Minimal Cost Spanning Trees</h4>
+<h5 id="spanning-trees">Spanning Trees</h5>
+<h6 id="definition-4">Definition</h6>
+<p>A spanning tree is any tree that consists solely of edges in G and that includes all the vertices(Contains all the vertices in the graph, but only enough n-1 edges to form a tree)</p>
+<p>$$
+E(G):T(tree\ edges)+N(nontree\ edges)\newline
+T:set\ of\ edges\ used\ during\ search\newline
+N:set\ of\ remaining\ edges\newline
+$$
+A spanning tree is a <strong>minimal connected subgraph</strong>, G’, of G such that <strong>V(G’)=V(G)</strong> and <strong>G’ is connected</strong></p>
+<h6 id="example-4">Example</h6>
+<div class="mermaid" id="id-18"></div>
+<p>Possible spanning trees</p>
+<div class="mermaid" id="id-19"></div>
+<div class="mermaid" id="id-20"></div>
+<div class="mermaid" id="id-21"></div>
+<h6 id="dfs-and-bfs">DFS and BFS</h6>
+<blockquote>
+<p>Either DFS or BFS can be used to create a spanning tree</p>
+</blockquote>
+<p>When <strong>DFS</strong> is used, the resulting spanning tree is known as a <strong>depth first spanning tree</strong></p>
+<p>When <strong>BFS</strong> is used, the resulting spanning tree is known as a <strong>breadth first spanning tree</strong></p>
+<h6 id="nontree-edge">Nontree edge</h6>
+<p>While adding a nontree edge into any spanning tree, this will create a <strong>cycle</strong></p>
+<h5 id="minimal-cost-spanning-trees-1">Minimal Cost Spanning Trees</h5>
+<h6 id="definition-5">Definition</h6>
+<p>The <strong>cost of a spanning tree</strong> of a <strong>weighted undirected graph</strong> is the sum of the costs of the edges in the spanning tree</p>
+<p>A <strong>Minimal Cost Spanning Tree (MST)</strong> is a spanning tree of <strong>least</strong> cost</p>
+<h4 id="algorithm-for-minimal-cost-spanning-tree">Algorithm for Minimal Cost Spanning Tree</h4>
+<blockquote>
+<p>$Prim$</p>
+<p>$Kruskal$</p>
+</blockquote>
+<h5 id="prim-algorithm">Prim algorithm</h5>
+<p>Let Graph $G = {V, E}$, the minimum cost spanning tree be $T={U, T_E }$ and $U=V, T_E\subseteq E\newline$.</p>
+<p>$Initially\rightarrow U={u_0 }, T_E=\empty$</p>
+<p>Adding edges and vertices to T one at a time</p>
+<ol>
+<li>
+<p><strong>Select the least cost edge</strong> $(u,v)$ that $u\in U\ and\ v\notin U$. Adding $v\ to\ U\ and\ (u,v)\ to\ T_E$</p>
+</li>
+<li>
+<p>It continues, until n-1 edges have been selected and U=V</p>
+</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">The</span> <span class="n">minimum</span> <span class="n">cost</span> <span class="n">spanning</span> <span class="n">tree</span> <span class="n">T</span> <span class="o">=</span> <span class="p">{</span><span class="n">U</span><span class="p">,</span><span class="n">TE</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">U</span> <span class="o">=</span> <span class="p">{</span><span class="n">u0</span><span class="p">};</span> 
+</span></span><span class="line"><span class="cl"><span class="n">TE</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="n">T</span> <span class="n">contains</span> <span class="n">fewer</span> <span class="n">than</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span> <span class="n">edges</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">let</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="n">be</span> <span class="n">a</span> <span class="n">least</span> <span class="n">cost</span> <span class="n">edge</span> <span class="n">such</span> <span class="n">that</span> <span class="n">u</span> <span class="n">in</span> <span class="n">U</span> <span class="n">and</span> <span class="n">v</span> <span class="n">notin</span> <span class="n">U</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">there</span> <span class="n">is</span> <span class="n">no</span> <span class="n">such</span> <span class="n">edge</span> <span class="p">)</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">add</span> <span class="n">v</span> <span class="n">to</span> <span class="n">U</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">add</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="n">to</span> <span class="n">TE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">T</span> <span class="n">contains</span> <span class="n">fewer</span> <span class="n">than</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span> <span class="n">edges</span><span class="p">)</span><span class="c1">//fail
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printf</span><span class="p">(</span><span class="err">“</span><span class="n">No</span> <span class="n">spanning</span> <span class="n">tree</span><span class="err">\</span><span class="n">n</span><span class="err">”</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="kruskal-algorithm">Kruskal algorithm</h5>
+<p>Build a Minimum cost Spanning Tree (MST) T by <strong>adding edges to T one at a time</strong></p>
+<p>Select the edges for inclusion in T <strong>in non-decreasing order of the cost</strong></p>
+<p>An edge is added to T if it <strong>does not form a cycle</strong></p>
+<p>Since G is connected and has $n &gt; 0$ vertices, exactly n-1 edges will be selected</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">TE</span><span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">((</span><span class="n">T</span> <span class="n">contains</span> <span class="n">less</span> <span class="n">than</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span> <span class="n">edges</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">E</span> <span class="n">is</span> <span class="n">not</span> <span class="n">empty</span><span class="p">))</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">choose</span> <span class="n">a</span> <span class="n">least</span> <span class="n">cost</span> <span class="nf">edge</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="p">)</span> <span class="n">from</span> <span class="n">E</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">delete</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="p">)</span> <span class="n">from</span> <span class="n">E</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">((</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="p">)</span> <span class="n">does</span> <span class="n">not</span> <span class="n">create</span> <span class="n">a</span> <span class="n">cycle</span> <span class="n">in</span> <span class="n">T</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="n">add</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="p">)</span> <span class="n">to</span> <span class="n">T</span>
+</span></span><span class="line"><span class="cl">	<span class="k">else</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">discard</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">T</span> <span class="n">contains</span> <span class="n">fewer</span> <span class="n">than</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span> <span class="n">edges</span><span class="p">)</span><span class="c1">//fail
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="n">printf</span> <span class="p">(</span><span class="err">“</span><span class="n">No</span> <span class="n">spanning</span> <span class="n">tree</span><span class="err">\</span><span class="n">n</span><span class="err">”</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="time-complexity-analysis">Time Complexity Analysis</h5>
+<p>$Prim’s\ algorithm:O(n^2)\newline$</p>
+<blockquote>
+<p>Regardless of the <strong>number of edges</strong> in the graph, it is suitable to find the minimum spanning tree of <strong>dense nets</strong></p>
+</blockquote>
+<p>$Kruskal’s\ algorithm:O(e\log e)\ (Merge\ Sort\ for\ edges)\newline$</p>
+<blockquote>
+<p>Regardless of the <strong>number of vertices</strong> in the graph, it is suitable to find the minimum spanning tree of <strong>sparse nets</strong></p>
+</blockquote>
+<h3 id="application-of-graph">Application of Graph</h3>
+<p>Application of <strong>Directed Acyclic (Acycline) Graph</strong></p>
+<ol>
+<li>
+<p>Topological Sort</p>
+</li>
+<li>
+<p>Critical Path</p>
+</li>
+</ol>
+<p>Shortest-Path Algorithms</p>
+<h4 id="topological-sort">Topological Sort</h4>
+<h5 id="definition-6">Definition</h5>
+<p>An ordering of vertices in a Directed Acyclic Graph, such that if there is a path from $v_i$ to $v_j$ , then $v_j$ appears <strong>after</strong> $v_i$ in the ordering</p>
+<h5 id="example-5">Example</h5>
+<p>An advanced placement course in a college training program</p>
+<h5 id="activity-on-vertexaovnetwork">Activity on Vertex(AOV)—Network</h5>
+<p>Vertices represent activity, and arcs represent directed graphs of priority relations between activities</p>
+<h5 id="notice-1">Notice</h5>
+<p>Topological ordering is <strong>not possible</strong> if <strong>there is a cycle in the graph</strong></p>
+<h5 id="a-simple-algorithm">A simple algorithm</h5>
+<h6 id="steps">steps</h6>
+<ol>
+<li>
+<p>Compute the in-degree of all vertices from the adjacency information of the graph</p>
+</li>
+<li>
+<p>Find any vertex <strong>with no incoming edges</strong></p>
+</li>
+<li>
+<p>Print this vertex, and <strong>remove it and its edges</strong></p>
+</li>
+<li>
+<p>Apply this strategy to the rest of the graph</p>
+</li>
+</ol>
+<h6 id="time-complexity-analysis-1">Time Complexity Analysis</h6>
+<p>$O(n^2)$</p>
+<h6 id="code-4">code</h6>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Topsort</span> <span class="p">(</span><span class="n">Graph</span> <span class="n">G</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">Counter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Vertex</span> <span class="n">V</span><span class="p">,</span> <span class="n">W</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="k">for</span><span class="p">(</span><span class="n">Counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">Counter</span> <span class="o">&lt;</span> <span class="n">NumVertex</span><span class="p">;</span> <span class="n">counter</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">V</span> <span class="o">=</span> <span class="n">FindNewVertexOfInDegreeZero</span> <span class="p">();</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">V</span> <span class="o">==</span> <span class="n">NotAVertex</span><span class="p">)</span> <span class="p">{</span><span class="c1">//exit a circle
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Graph has a cycle&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">TopNum</span> <span class="p">[</span><span class="n">V</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">;</span><span class="c1">//The order of print
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="n">each</span> <span class="n">W</span> <span class="n">adjacent</span> <span class="n">from</span> <span class="n">V</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Indegree</span><span class="p">[</span><span class="n">W</span><span class="p">]</span> <span class="o">--</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="an-improved-algorithm">An improved algorithm</h5>
+<h6 id="steps-1">steps</h6>
+<ol>
+<li>
+<p>Keep all the unassigned vertices of indegree 0 in a <strong>queue</strong>.</p>
+</li>
+<li>
+<p>While <strong>queue</strong> is not empty</p>
+<blockquote>
+<p>• Remove a vertex in the <strong>queue</strong>.</p>
+<p>• Decrement the indegree of all adjacent vertices.</p>
+<p>• If the indegree of an adjacent vertex becomes 0, <strong>enqueue</strong> the vertex</p>
+</blockquote>
+</li>
+<li>
+<p>The topological ordering is the order in which the vertices <strong>dequeue</strong></p>
+</li>
+</ol>
+<h6 id="time-complexity-analysis-2">Time Complexity Analysis</h6>
+<p>$O(n+e)\newline$</p>
+<h6 id="code-5">code</h6>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Topsort</span> <span class="p">(</span><span class="n">Graph</span> <span class="n">G</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">Queue</span> <span class="n">Q</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">Counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Vertex</span> <span class="n">V</span><span class="p">,</span> <span class="n">W</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Q</span> <span class="o">=</span> <span class="n">CreateQueue</span> <span class="p">(</span><span class="n">NumVertex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">MakeEmpty</span> <span class="p">(</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="n">each</span> <span class="n">vertex</span> <span class="n">V</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">Indegree</span> <span class="p">[</span><span class="n">V</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Enqueue</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">IsEmpty</span><span class="p">(</span><span class="n">Q</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">V</span> <span class="o">=</span> <span class="n">Dequeue</span><span class="p">(</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">TopNum</span><span class="p">[</span><span class="n">V</span><span class="p">]</span> <span class="o">=</span> <span class="o">++</span><span class="n">Counter</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">//The topological ordering is the order in which the vertices dequeue
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">each</span> <span class="n">W</span> <span class="n">adjacent</span> <span class="n">from</span> <span class="n">V</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="p">(</span><span class="o">--</span><span class="n">Indegree</span><span class="p">[</span><span class="n">W</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">Enqueue</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">Counter</span> <span class="o">!=</span> <span class="n">NumBertex</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Graph has a cycle</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span> <span class="c1">//fail
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">DisposeQueue</span><span class="p">(</span><span class="n">Q</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="critical-path">Critical Path</h4>
+<h6 id="aoe-activity-on-edge-network">AOE (Activity on Edge) Network</h6>
+<blockquote>
+<p>Vertex: Represents an event or a status</p>
+<p>Edge: represents an activity. An edge (v, w) means that event v must be done before w may begin</p>
+<p>Weight: Duration time of an activity</p>
+</blockquote>
+<p>~There is only one vertex whose in-degree is 0, and only one vertex whose out-degree is 0</p>
+<p>~No cycle</p>
+<p>~This type of a graph could be (and frequently) used to model projects</p>
+<h6 id="questions">Questions</h6>
+<blockquote>
+<p>What is the earliest completion time for the project?</p>
+<p>$\rightarrow The\ longest\ path\newline$</p>
+</blockquote>
+<blockquote>
+<p>Which activities can be delayed, and by how long, without affecting the minimum completion time?</p>
+<p>$\rightarrow Not\ critical\ activities\newline$</p>
+</blockquote>
+<h6 id="elements">Elements</h6>
+<p>e(i): earliest start time of $a_i\newline$</p>
+<p>l(i): latest start time of $a_i$ (without affecting the minimum completion time)</p>
+<p>e(i)=l(i): $a_i$ <strong>is a critical activity</strong>, all the activities on the critical path are critical activities</p>
+<p>ve(j): the earliest occurring time of $v_j\newline$</p>
+<p>vl(j): the latest occurring time of $v_j$ (without affecting the minimum completion time)</p>
+<p>$$
+V_j\stackrel{a_i}{\longrightarrow}V_k\newline
+$$</p>
+<p>If $a_i$ is represented by $&lt;j,k&gt;$, its duration time is $dut(&lt;j,k&gt;)\newline$</p>
+<p>then $e(i) = ve(j), l(i) = vl(k) - dut(&lt;j,k&gt;)\newline$</p>
+<h6 id="calculate">Calculate</h6>
+<ol>
+<li>
+<p>$From\ ve(0)=0: ve(j) = max{ve(i) + dut(&lt;i,j&gt;)}\newline$</p>
+</li>
+<li>
+<p>$vl(n-1)=ve(n-1), from\ the\ last\ one:vl(i) = min{vl(j) - dut(&lt;i,j&gt;)}\newline$</p>
+</li>
+</ol>
+<h6 id="time-complexity-analysis-3">Time Complexity Analysis</h6>
+<p>Suppose there are n events and e activities in AOE</p>
+<p>$The\ Time\ Complexity\ of\ whole\ algorithm\ is\ O(n+e)\newline$</p>
+<h4 id="shortest-paths-problems">Shortest Paths Problems</h4>
+<p>Input: A graph with weights or costs associated with each edge</p>
+<p>Output: The list of edges forming the shortest path</p>
+<p>Sample problems:</p>
+<blockquote>
+<p>Find shortest path between two named vertices</p>
+</blockquote>
 ]]></description>
 </item>
 <item>
@@ -3627,7 +4310,7 @@ so in Threaded Binary Tree:</p>
 <p>Path Length: The length of path is the number of edges on the path</p>
 </blockquote>
 <p>Weighted Path Length, WPL</p>
-<p>$WPL=\sum_{i-1}^kW_iL_i$</p>
+<p>$WPL=\sum_{i=1}^kW_iL_i$</p>
 <blockquote>
 <p>$w_i$ is the weight of the i-th leaf</p>
 <p>$L_i$ is the path length from root to the i-th leaf</p>
