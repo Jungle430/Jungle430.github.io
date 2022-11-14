@@ -1002,7 +1002,120 @@ $$</p>
 <p>Sample problems:</p>
 <blockquote>
 <p>Find shortest path between two named vertices</p>
+<p>Find shortest path from S to all other vertices——Single-Source Shortest Paths</p>
+<p>Find shortest path between all pairs of vertices——All-Pairs Shortest Paths</p>
 </blockquote>
+<h5 id="dijkstra-idea">Dijkstra idea</h5>
+<h6 id="step">step</h6>
+<p>All vertexes are divided into 2 groups</p>
+<blockquote>
+<p>S : the vertexes that have found the shortest path from $V_0$ to them</p>
+<p>V-S=T: The vertexes that have not calculated the distances</p>
+</blockquote>
+<p>Adding vertex in T to S in non-decreasing order of distances</p>
+<blockquote>
+<p>The distances from $V_0$ to vertexes in S is not longer than the distances from $V_0$ to any vertexes in T</p>
+</blockquote>
+<h6 id="algorithm-2">algorithm</h6>
+<p>For G(V,E) is expressed in Adjacency Matrix</p>
+<ol>
+<li>
+<p>Initially, $S={v_0}$; An array D[n] to store the distance and D[i] is the shortest distance from $v_0\ to\ v_i$</p>
+<blockquote>
+<p>If exist an edge $(v_0,v_i),D[i] =  w(v_0 ,v_i)\newline$
+If there is no such edge, then D[i]= +$\infty\newline$</p>
+</blockquote>
+</li>
+<li>
+<p>Select the minimal D[j] from V-S, then vertex $v_j$ is the destination of the currently shortest path, and D[j] is the shortest distance</p>
+</li>
+<li>
+<p>Adding $v_j$ to S,and for all vertexes $v_k\in V-S\newline$</p>
+</li>
+</ol>
+<blockquote>
+<p>$if\ D[j]+arcs[j][k]&lt;D[k]\newline then\ D[k]=D[j]+arcs[j][k]\newline$</p>
+</blockquote>
+<ol start="4">
+<li>Repeat processing (2),(3), until all vertexes are added into S</li>
+</ol>
+<h6 id="code-6">code</h6>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="kt">int</span> <span class="n">PathMatrix</span><span class="p">[</span><span class="n">MAX</span><span class="p">][</span><span class="n">MAX</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="kt">int</span> <span class="n">ShortPathTable</span><span class="p">[</span><span class="n">MAX</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">ShortestPath</span><span class="p">(</span><span class="n">MGraph</span> <span class="n">G</span><span class="p">,</span> <span class="kt">int</span> <span class="n">v0</span><span class="p">,</span> <span class="n">PathMatrix</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">,</span> <span class="n">ShortPathTable</span> <span class="o">&amp;</span><span class="n">D</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">v</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">final</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">.</span><span class="n">Edge</span><span class="p">[</span><span class="n">v0</span><span class="p">][</span><span class="n">v</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">w</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="n">P</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&lt;</span> <span class="err">∞</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">P</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">v0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">P</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="n">D</span><span class="p">[</span><span class="n">v0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="k">final</span><span class="p">[</span><span class="n">v0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">min</span> <span class="o">=</span> <span class="err">∞</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">w</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">final</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="p">(</span><span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="n">v</span> <span class="o">=</span> <span class="n">w</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="n">min</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">final</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">w</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">final</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">min</span> <span class="o">+</span> <span class="n">G</span><span class="p">.</span><span class="n">Edge</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span> <span class="o">+</span> <span class="n">G</span><span class="p">.</span><span class="n">Edge</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">				<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">G</span><span class="p">.</span><span class="n">vexnum</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">					<span class="n">P</span><span class="p">[</span><span class="n">w</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">				<span class="n">P</span><span class="p">[</span><span class="n">w</span><span class="p">][</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h6 id="time-complexity-analysis-4">Time Complexity Analysis</h6>
+<p>For Dijkstra’s Algorithm, the Time complexity is $O(n^2)\newline$</p>
+<p>For every vertex $u, v\in V, calculate\ d(u, v)\newline$</p>
+<p>Time complexity is $O(n^3)\newline$</p>
 ]]></description>
 </item>
 <item>
