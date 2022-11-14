@@ -870,7 +870,7 @@ A spanning tree is a <strong>minimal connected subgraph</strong>, G’, of G suc
 </span></span><span class="line"><span class="cl">        
 </span></span><span class="line"><span class="cl">        <span class="n">TopNum</span> <span class="p">[</span><span class="n">V</span><span class="p">]</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">;</span><span class="c1">//The order of print
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="n">each</span> <span class="n">W</span> <span class="n">adjacent</span> <span class="n">from</span> <span class="n">V</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">			<span class="n">Indegree</span><span class="p">[</span><span class="n">W</span><span class="p">]</span> <span class="o">--</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Indegree</span><span class="p">[</span><span class="n">W</span><span class="p">]</span><span class="o">--</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -987,10 +987,10 @@ $$</p>
 <h6 id="calculate">Calculate</h6>
 <ol>
 <li>
-<p>$From\ ve(0)=0: ve(j) = max{ve(i) + dut(&lt;i,j&gt;)}\newline$</p>
+<p>$From\ ve(0)=0: ve(j) = max(ve(i) + dut(&lt;i,j&gt;))\newline$</p>
 </li>
 <li>
-<p>$vl(n-1)=ve(n-1), from\ the\ last\ one:vl(i) = min{vl(j) - dut(&lt;i,j&gt;)}\newline$</p>
+<p>$vl(n-1)=ve(n-1), from\ the\ last\ one:vl(i) = min(vl(j) - dut(&lt;i,j&gt;))\newline$</p>
 </li>
 </ol>
 <h6 id="time-complexity-analysis-3">Time Complexity Analysis</h6>
