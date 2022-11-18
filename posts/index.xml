@@ -4,7 +4,161 @@
         <link>https://Jungle430.github.io/posts/</link>
         <description>所有文章 | Jungle&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>SunYingCe@bupt.edu.cn (Jungle)</managingEditor>
-            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Fri, 11 Nov 2022 19:53:36 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Fri, 18 Nov 2022 14:47:32 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Searching</title>
+    <link>https://Jungle430.github.io/posts/searching/</link>
+    <pubDate>Fri, 18 Nov 2022 14:47:32 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/searching/</guid>
+    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
+<h2 id="searching">Searching</h2>
+<h3 id="read-map">Read Map</h3>
+<h4 id="static-search-table">Static Search Table</h4>
+<blockquote>
+<p>Sequential Search</p>
+<p>Binary Search</p>
+<p>Indexing Search</p>
+</blockquote>
+<h4 id="binary-search-trees-dynamic-search-table">Binary Search Trees (Dynamic Search Table)</h4>
+<blockquote>
+<p>Binary search tree</p>
+<p>AVL tree</p>
+<p>B-Tree</p>
+</blockquote>
+<h4 id="hash-table">Hash Table</h4>
+<blockquote>
+<p>What is hashing</p>
+<p>Hash Function</p>
+<p>Collision Resolution</p>
+<p>Closed Hashing</p>
+<p>Open Hashing</p>
+<p>Analysis of Hashing</p>
+</blockquote>
+<h3 id="search-table">Search Table</h3>
+<h4 id="definition">Definition</h4>
+<p>A set of the same type of data elements</p>
+<h4 id="key">Key</h4>
+<p>The value of <strong>data item</strong> in the data element. It is used to identify the data elements</p>
+<blockquote>
+<p>Primary Key and Second Key</p>
+</blockquote>
+<h4 id="searching-1">Searching</h4>
+<p>Based on the search value of key find out the element whose key value is same as search value</p>
+<p>It <strong>returns the position of the element</strong> located in</p>
+<h4 id="operations-on-searching-table">Operations on searching table</h4>
+<ol>
+<li>
+<p>Search a given element in the search table</p>
+</li>
+<li>
+<p>Get attributes of a given element</p>
+</li>
+<li>
+<p>Insert an element into the search table</p>
+</li>
+<li>
+<p>Delete an element from the search table</p>
+</li>
+</ol>
+<h4 id="static-search-table-1">Static Search Table</h4>
+<p>Only do search on the search table</p>
+<h4 id="dynamic-search-table">Dynamic Search Table</h4>
+<p>Need do search and insertion and deletion on the search table</p>
+<h3 id="basic-concepts">Basic concepts</h3>
+<blockquote>
+<p>Given: Distinct keys $k_1 , k_2 , …, k_n$ and collection T of n records of the form $((k_1 , I_1 ), (k_2 , I_2 ), …, (k_n , I_n ))\newline$</p>
+<p>where $I_j$ is the information associated with key $k_j\ for\ 1 \leq j \leq n\newline$</p>
+</blockquote>
+<h4 id="search-problem">Search Problem</h4>
+<p>For key value K, locate the record $(k_j , I_j)$ in T such that $k_j = K\newline$</p>
+<h4 id="search">Search</h4>
+<p>Searching is a systematic method for locating the $record(s)$ with key value $k_j = K\newline$</p>
+<h4 id="successful-vs-unsuccessful">Successful vs Unsuccessful</h4>
+<p>A <strong>successful</strong> search is one in which a record with key $k_j = K$ is found</p>
+<p>An <strong>unsuccessful</strong> search is one in which no record with $k_j = K$ is found (and presumably no such record exists)</p>
+<blockquote>
+<p>We often ask how many times one key is compared with another during a search.</p>
+<p>This gives us a good measure of the total amount of work that the algorithm will do</p>
+</blockquote>
+<h3 id="approaches-to-search">Approaches to Search</h3>
+<ol>
+<li>
+<p>Sequential and list methods (lists, tables, arrays).</p>
+</li>
+<li>
+<p>Tree indexing methods</p>
+</li>
+<li>
+<p>Direct access by key value (hashing)</p>
+</li>
+</ol>
+<div class="mermaid" id="id-1"></div>
+<h3 id="static-search-table-2">Static Search Table</h3>
+<h4 id="sequential-search">Sequential Search</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">LIST_SIZE</span> <span class="mi">20</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">KeyType</span> <span class="n">key</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OtherType</span> <span class="n">other_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ElemType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ElemType</span> <span class="o">*</span><span class="n">elem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">SSTable</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="general-idea">General Idea</h5>
+<p>Begin at one end of the list and scan down it until the desired key is found or the end is reached</p>
+<blockquote>
+<p>A successful search returns the position of the record</p>
+<p>An unsuccessful search returns 0</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">S_search</span><span class="p">(</span><span class="n">SSTable</span> <span class="n">ST</span><span class="p">[],</span> <span class="n">KeyType</span> <span class="n">K</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ST</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">key</span> <span class="o">=</span> <span class="n">K</span><span class="p">;</span><span class="cm">/*a sentinel,storage the Key Value*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span> <span class="n">ST</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">key</span> <span class="o">!=</span> <span class="n">K</span><span class="p">;</span> <span class="n">i</span> <span class="o">--</span><span class="p">);</span><span class="cm">/*compare backwards*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">i</span><span class="p">;</span><span class="cm">/*return the position, or 0*/</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="analysis">Analysis</h5>
+<blockquote>
+<p>To analyze the behavior of an algorithm that makes comparisons of keys</p>
+<p>we shall use the count of these key comparisons as our measure of the work done</p>
+</blockquote>
+<h5 id="average-search-lengthasl">Average Search Length(ASL)</h5>
+<p>$$
+ASL=P_1C_1+P_2C_2+&hellip;+P_nC_n=\sum_{i=1}^n\newline
+$$
+$Where\ P_i\ is\ probability(frequency)\ of\ search\ i^{th}\ record\newline$
+$and\ C_i\ is\ the\ count\ of\ key\ comparisons\ when\ search\ it\newline$</p>
+]]></description>
+</item>
+<item>
     <title>Graph</title>
     <link>https://Jungle430.github.io/posts/graph/</link>
     <pubDate>Fri, 11 Nov 2022 19:53:36 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/graph/</guid>

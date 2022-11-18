@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Searching - Jungle&#39;s Blog</title><meta name="description" content="Welcome to Jungle&#39;s blog."><meta property="og:title" content="Searching" />
+<meta property="og:description" content="Data Structure Searching Read Map Static Search Table Sequential Search
+Binary Search
+Indexing Search
+Binary Search Trees (Dynamic Search Table) Binary search tree
+AVL tree
+B-Tree
+Hash Table What is hashing
+Hash Function
+Collision Resolution
+Closed Hashing
+Open Hashing
+Analysis of Hashing
+Search Table Definition A set of the same type of data elements
+Key The value of data item in the data element. It is used to identify the data elements" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://Jungle430.github.io/posts/searching/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-11-18T14:47:32+08:00" />
+<meta property="article:modified_time" content="2022-11-18T14:47:32+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Searching"/>
+<meta name="twitter:description" content="Data Structure Searching Read Map Static Search Table Sequential Search
+Binary Search
+Indexing Search
+Binary Search Trees (Dynamic Search Table) Binary search tree
+AVL tree
+B-Tree
+Hash Table What is hashing
+Hash Function
+Collision Resolution
+Closed Hashing
+Open Hashing
+Analysis of Hashing
+Search Table Definition A set of the same type of data elements
+Key The value of data item in the data element. It is used to identify the data elements"/>
+<meta name="application-name" content="Jungle&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://Jungle430.github.io/posts/searching/" /><link rel="prev" href="https://Jungle430.github.io/posts/graph/" /><link rel="stylesheet" href="/css/page.min.css"><link rel="stylesheet" href="/css/home.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Searching",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/Jungle430.github.io\/posts\/searching\/"
+        },"genre": "posts","keywords": "Data Structure","wordcount":  506 ,
+        "url": "https:\/\/Jungle430.github.io\/posts\/searching\/","datePublished": "2022-11-18T14:47:32+08:00","dateModified": "2022-11-18T14:47:32+08:00","publisher": {
+            "@type": "Organization",
+            "name": "Jungle"},"author": {
+                "@type": "Person",
+                "name": "Jungle"
+            },"description": ""
+    }
+    </script></head><body data-header-desktop="auto" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><div class="menu-item"><a href="javascript:void(0);" class="theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div></div>
+    </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">Searching</h2><div class="post-meta">
+                <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/data-structure/"><i class="far fa-folder fa-fw"></i>Data Structure</a></span></div>
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-18">2022-11-18</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 506 字</span>&nbsp;
+                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟</span>&nbsp;</div>
+            </div>
+            
+            <hr><div class="details toc" id="toc-static"  data-kept="">
+                    <div class="details-summary toc-title">
+                        <span>目录</span>
+                        <span><i class="details-icon fas fa-angle-right"></i></span>
+                    </div>
+                    <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#searching">Searching</a>
+      <ul>
+        <li><a href="#read-map">Read Map</a>
+          <ul>
+            <li><a href="#static-search-table">Static Search Table</a></li>
+            <li><a href="#binary-search-trees-dynamic-search-table">Binary Search Trees (Dynamic Search Table)</a></li>
+            <li><a href="#hash-table">Hash Table</a></li>
+          </ul>
+        </li>
+        <li><a href="#search-table">Search Table</a>
+          <ul>
+            <li><a href="#definition">Definition</a></li>
+            <li><a href="#key">Key</a></li>
+            <li><a href="#searching-1">Searching</a></li>
+            <li><a href="#operations-on-searching-table">Operations on searching table</a></li>
+            <li><a href="#static-search-table-1">Static Search Table</a></li>
+            <li><a href="#dynamic-search-table">Dynamic Search Table</a></li>
+          </ul>
+        </li>
+        <li><a href="#basic-concepts">Basic concepts</a>
+          <ul>
+            <li><a href="#search-problem">Search Problem</a></li>
+            <li><a href="#search">Search</a></li>
+            <li><a href="#successful-vs-unsuccessful">Successful vs Unsuccessful</a></li>
+          </ul>
+        </li>
+        <li><a href="#approaches-to-search">Approaches to Search</a></li>
+        <li><a href="#static-search-table-2">Static Search Table</a>
+          <ul>
+            <li><a href="#sequential-search">Sequential Search</a>
+              <ul>
+                <li><a href="#general-idea">General Idea</a></li>
+                <li><a href="#analysis">Analysis</a></li>
+                <li><a href="#average-search-lengthasl">Average Search Length(ASL)</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </div><div class="content" id="content"><h1 id="data-structure">Data Structure</h1>
+<h2 id="searching">Searching</h2>
+<h3 id="read-map">Read Map</h3>
+<h4 id="static-search-table">Static Search Table</h4>
+<blockquote>
+<p>Sequential Search</p>
+<p>Binary Search</p>
+<p>Indexing Search</p>
+</blockquote>
+<h4 id="binary-search-trees-dynamic-search-table">Binary Search Trees (Dynamic Search Table)</h4>
+<blockquote>
+<p>Binary search tree</p>
+<p>AVL tree</p>
+<p>B-Tree</p>
+</blockquote>
+<h4 id="hash-table">Hash Table</h4>
+<blockquote>
+<p>What is hashing</p>
+<p>Hash Function</p>
+<p>Collision Resolution</p>
+<p>Closed Hashing</p>
+<p>Open Hashing</p>
+<p>Analysis of Hashing</p>
+</blockquote>
+<h3 id="search-table">Search Table</h3>
+<h4 id="definition">Definition</h4>
+<p>A set of the same type of data elements</p>
+<h4 id="key">Key</h4>
+<p>The value of <strong>data item</strong> in the data element. It is used to identify the data elements</p>
+<blockquote>
+<p>Primary Key and Second Key</p>
+</blockquote>
+<h4 id="searching-1">Searching</h4>
+<p>Based on the search value of key find out the element whose key value is same as search value</p>
+<p>It <strong>returns the position of the element</strong> located in</p>
+<h4 id="operations-on-searching-table">Operations on searching table</h4>
+<ol>
+<li>
+<p>Search a given element in the search table</p>
+</li>
+<li>
+<p>Get attributes of a given element</p>
+</li>
+<li>
+<p>Insert an element into the search table</p>
+</li>
+<li>
+<p>Delete an element from the search table</p>
+</li>
+</ol>
+<h4 id="static-search-table-1">Static Search Table</h4>
+<p>Only do search on the search table</p>
+<h4 id="dynamic-search-table">Dynamic Search Table</h4>
+<p>Need do search and insertion and deletion on the search table</p>
+<h3 id="basic-concepts">Basic concepts</h3>
+<blockquote>
+<p>Given: Distinct keys $k_1 , k_2 , …, k_n$ and collection T of n records of the form $((k_1 , I_1 ), (k_2 , I_2 ), …, (k_n , I_n ))\newline$</p>
+<p>where $I_j$ is the information associated with key $k_j\ for\ 1 \leq j \leq n\newline$</p>
+</blockquote>
+<h4 id="search-problem">Search Problem</h4>
+<p>For key value K, locate the record $(k_j , I_j)$ in T such that $k_j = K\newline$</p>
+<h4 id="search">Search</h4>
+<p>Searching is a systematic method for locating the $record(s)$ with key value $k_j = K\newline$</p>
+<h4 id="successful-vs-unsuccessful">Successful vs Unsuccessful</h4>
+<p>A <strong>successful</strong> search is one in which a record with key $k_j = K$ is found</p>
+<p>An <strong>unsuccessful</strong> search is one in which no record with $k_j = K$ is found (and presumably no such record exists)</p>
+<blockquote>
+<p>We often ask how many times one key is compared with another during a search.</p>
+<p>This gives us a good measure of the total amount of work that the algorithm will do</p>
+</blockquote>
+<h3 id="approaches-to-search">Approaches to Search</h3>
+<ol>
+<li>
+<p>Sequential and list methods (lists, tables, arrays).</p>
+</li>
+<li>
+<p>Tree indexing methods</p>
+</li>
+<li>
+<p>Direct access by key value (hashing)</p>
+</li>
+</ol>
+<div class="mermaid" id="id-1"></div>
+<h3 id="static-search-table-2">Static Search Table</h3>
+<h4 id="sequential-search">Sequential Search</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">LIST_SIZE</span> <span class="mi">20</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">KeyType</span> <span class="n">key</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">OtherType</span> <span class="n">other_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ElemType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">ElemType</span> <span class="o">*</span><span class="n">elem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">SSTable</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="general-idea">General Idea</h5>
+<p>Begin at one end of the list and scan down it until the desired key is found or the end is reached</p>
+<blockquote>
+<p>A successful search returns the position of the record</p>
+<p>An unsuccessful search returns 0</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">S_search</span><span class="p">(</span><span class="n">SSTable</span> <span class="n">ST</span><span class="p">[],</span> <span class="n">KeyType</span> <span class="n">K</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ST</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">key</span> <span class="o">=</span> <span class="n">K</span><span class="p">;</span><span class="cm">/*a sentinel,storage the Key Value*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span> <span class="n">ST</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">key</span> <span class="o">!=</span> <span class="n">K</span><span class="p">;</span> <span class="n">i</span> <span class="o">--</span><span class="p">);</span><span class="cm">/*compare backwards*/</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">i</span><span class="p">;</span><span class="cm">/*return the position, or 0*/</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="analysis">Analysis</h5>
+<blockquote>
+<p>To analyze the behavior of an algorithm that makes comparisons of keys</p>
+<p>we shall use the count of these key comparisons as our measure of the work done</p>
+</blockquote>
+<h5 id="average-search-lengthasl">Average Search Length(ASL)</h5>
+<p>$$
+ASL=P_1C_1+P_2C_2+&hellip;+P_nC_n=\sum_{i=1}^n\newline
+$$
+$Where\ P_i\ is\ probability(frequency)\ of\ search\ i^{th}\ record\newline$
+$and\ C_i\ is\ the\ count\ of\ key\ comparisons\ when\ search\ it\newline$</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info"><div class="post-info-tag"><span><a href="/tags/data-structure/">Data Structure</a>
+                </span></div><div class="post-info-line"><div class="post-info-mod">
+                <span>更新于 2022-11-18</span>
+            </div><div class="post-info-mod"></div>
+        </div><div class="post-info-share">
+            <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching" data-hashtags="Data Structure"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://Jungle430.github.io/posts/searching/" data-hashtag="Data Structure"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching" data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching"><i class="fab fa-line fa-fw"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Myspace" data-sharer="myspace" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching" data-description=""><i data-svg-src="/lib/simple-icons/icons/myspace.min.svg"></i></a><a href="javascript:void(0);" title="分享到 Blogger" data-sharer="blogger" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching" data-description=""><i class="fab fa-blogger fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://Jungle430.github.io/posts/searching/" data-title="Searching"><i class="fab fa-evernote fa-fw"></i></a></span>
+        </div></div><div class="post-nav"><a href="/posts/graph/" class="prev" rel="prev" title="Graph"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
+</div></article></div>
+            </main>
+            <footer class="footer"><div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.105.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/khusika/FeelIt" target="_blank" rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+        </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://github.com/Jungle430">Jungle</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/sw.min.js?version=0.0.1', { scope: '/' })
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Registered');
+        }, err => console.error('Jungle\u0027s Blog\u00A0Service Worker registration failed: ', err));
+
+    navigator.serviceWorker
+        .ready
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Ready');
+        });
+}
+</script>
+</footer>
+        </div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-chevron-up fa-fw"></i>
+            </a></div><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.fill%2CArray.prototype.find%2CArray.from%2CIntersectionObserver%2CMath.sign%2CObject.assign%2CPromise%2CObject.entries%2Chtml5shiv%2CObject.values%2Cfetch%2CElement.prototype.after"></script><script src="/lib/autocomplete/autocomplete.min.js"></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js"></script><script src="/lib/lazysizes/lazysizes.min.js"></script><script src="/lib/clipboard/clipboard.min.js"></script><script src="/lib/sharer/sharer.min.js"></script><script src="/lib/katex/katex.min.js"></script><script src="/lib/katex/auto-render.min.js"></script><script src="/lib/katex/copy-tex.min.js"></script><script src="/lib/katex/mhchem.min.js"></script><script src="/lib/mermaid/mermaid.min.js"></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":100},"comment":{},"data":{"id-1":"graph LR\nA(Search)\nB(Comparison)\nC(Calculation)\nD(Linear Search)\nE(Tree Search)\nF(Hash Search)\nA--\u003eB\nA--\u003eC\nB--\u003eD\nB--\u003eE\nC--\u003eF"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body></html>
