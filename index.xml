@@ -4,9 +4,206 @@
         <link>https://Jungle430.github.io/</link>
         <description>Welcome to Jungle&#39;s blog.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>SunYingCe@bupt.edu.cn (Jungle)</managingEditor>
-            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Fri, 18 Nov 2022 14:47:32 &#43;0800</lastBuildDate>
+            <webMaster>SunYingCe@bupt.edu.cn (Jungle)</webMaster><lastBuildDate>Fri, 18 Nov 2022 22:05:21 &#43;0800</lastBuildDate>
             <atom:link href="https://Jungle430.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Sorting</title>
+    <link>https://Jungle430.github.io/posts/sorting/</link>
+    <pubDate>Fri, 18 Nov 2022 22:05:21 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/sorting/</guid>
+    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
+<h2 id="sorting">Sorting</h2>
+<h3 id="quicksort">QuickSort</h3>
+<h4 id="idea">Idea</h4>
+<blockquote>
+<p>$Process\ after\ dividing \rightarrow$(like MergeSort in thought)</p>
+</blockquote>
+<p>Divide the sequence into two subsequences
+$$
+S=S_L+S_R
+$$
+Downsizing
+$$
+max{|S_L|,|S_R|} &lt; n
+$$
+Be independent of each other
+$$
+max(S_L) \leq min(S_R)
+$$
+After the subsequences are sorted recursively, the original sequence is ordered naturally
+$$
+Sorted(S)=Sorted(S_L)+Sorted(S_R)
+$$
+A trivial solution: <strong>With a single element, is itself a solution</strong>$\rightarrow Recursive\ base\newline$</p>
+<h4 id="problem">Problem</h4>
+<p>How to delimit subsequence?</p>
+<h4 id="pivot">Pivot</h4>
+<p><strong>None</strong> of the <strong>left/right</strong> elements are <strong>bigger/smaller</strong> than it</p>
+<p>$\rightarrow$ With the <strong>pivot as the boundary</strong>, the partition of the sequence will be realized naturally
+$$
+[l0,hi)=[lo,mi)+[mi]+(mi,hi)
+$$
+Key point: <strong>Construct Pivot!</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">quickSort</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//0 &lt;= lo &lt; hi &lt;= size
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="p">)</span> <span class="k">return</span><span class="p">;</span> <span class="c1">//Recursive base
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">Rank</span> <span class="n">mi</span> <span class="o">=</span> <span class="n">partition</span> <span class="p">(</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="p">);</span> <span class="c1">//Key point
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">quickSort</span> <span class="p">(</span> <span class="n">lo</span><span class="p">,</span> <span class="n">mi</span> <span class="p">);</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">quickSort</span> <span class="p">(</span> <span class="n">mi</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hi</span> <span class="p">);</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="partition">Partition</h4>
+<blockquote>
+<p>Difficulty: pivot <strong>may not exist</strong> in the original sequence</p>
+<p>Good news: The pivot <strong>must be in place</strong></p>
+<p>In an ordered sequence, <strong>all elements</strong> are pivots <strong>and vice versa</strong></p>
+</blockquote>
+<h4 id="construct-pivot">Construct Pivot</h4>
+<div class="mermaid" id="id-1"></div>
+<h4 id="analysis">Analysis</h4>
+<p><strong>Unstable</strong>
+$$
+\begin{align}
+&amp;Example:\newline
+&amp;Before:[&hellip;5_a&hellip;5_b&hellip;]\newline
+&amp;After:[&hellip;5_b&hellip;5_a&hellip;]\newline
+\end{align}
+$$</p>
+<h5 id="in-place">In-place</h5>
+<p>$O(1)$ nice!</p>
+<h5 id="in-time">In-time</h5>
+<h6 id="best-case">Best case</h6>
+<p>The pivot is always (near) in the center</p>
+<p>$$
+T(n)=2T(\frac{n-1}{2})+O(n)\newline
+T(n)=O(n\log n)\newline
+$$</p>
+<h6 id="worst-case">Worst case</h6>
+<p>Each division is extremely uneven
+$$
+T(n)=T(n-1)+T(0)+O(n)\newline
+T(n)=O(n^2)\newline
+$$</p>
+<blockquote>
+<p>Reduce the worst case probability</p>
+<blockquote>
+<p>Random selection</p>
+<p>Middle of three(Randomly select three elements in the sequence and take the middle value)</p>
+</blockquote>
+<p>But it can only reduce the probability, not eliminate</p>
+</blockquote>
+<h6 id="average">Average</h6>
+<p>$O(n\log n)\newline$</p>
+<p>Take a <strong>uniformly independent distributed sequence</strong> as an example
+$$
+\begin{align}
+&amp;order\ the\ rank\ of\ the\ pivot\ is\ k\newline
+&amp;\rightarrow probability:\frac{1}{n}\newline\newline
+&amp;then\ T(n)=(n+1)+(\frac{1}{n})<em>\sum_{k=0}^{n-1}[T(k)+T(n-k-1)]\newline
+&amp;It&rsquo;s\ easy\ to\ see\ that\rightarrow T(k)=T(n-k-1)\newline
+&amp;T(n)=(n+1)+(\frac{2}{n})</em>\sum_{k=0}^{n-1}T(k)\newline
+&amp;n<em>T(n)=n</em>(n+1)+2*\sum_{k=0}^{n-1}T(k)\ (1)\newline\newline
+&amp;make\ n = n - 1\newline
+&amp;(n-1)<em>T(n-1)=(n-1)<em>n+2</em>\sum_{k=0}^{n-2}T(k)\ (2)\newline\newline
+&amp;Then\ (1)-(2)\newline
+&amp;n</em>T(n) - (n - 1) * T(n - 1) = 2 * n + 2 * T(n-1)\newline
+&amp;n * T(n) - (n + 1)<em>T(n - 1)=2</em>n\newline
+&amp;\frac {T(n)}{n + 1} = \frac {T(n - 1)}{n}+\frac {2}{n+1}\newline
+&amp;=\frac {2}{n+1} + \frac {2}{n} + \frac {2}{n-1} + &hellip; + \frac {2}{2} + \frac{T(0)}{1}\newline
+&amp;=(2\ln2)<em>\log n \approx 1.39</em>\log n\newline
+\end{align}
+$$</p>
+<h4 id="algorithm-of-optimizationlgu">Algorithm of optimization(LGU)</h4>
+<p>$$
+S=[l0]+L(lo,mi]+G(mi,k)+U[l,hi]\newline
+L &lt; pivot\leq G\newline
+$$</p>
+<div class="mermaid" id="id-2"></div>
+<h5 id="code">code</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span><span class="c1">//pivot construction algorithm: 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					 <span class="c1">//by adjusting the element position to construct the pivot of the interval [lo, hi]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					 <span class="c1">//and return its rank
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Rank</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">partition</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//LGU
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">swap</span> <span class="p">(</span> <span class="n">_elem</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">_elem</span><span class="p">[</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="p">(</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="p">)</span> <span class="p">]</span> <span class="p">);</span> <span class="c1">//Swap any element with the first element
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">T</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">_elem</span><span class="p">[</span><span class="n">lo</span><span class="p">];</span> <span class="c1">//Take the first element as the candidate pivot 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    					<span class="c1">//-- after the above exchange, equivalent to random selection
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="kt">int</span> <span class="n">mi</span> <span class="o">=</span> <span class="n">lo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">//   ---- L &lt; [lo] ----- ] ----- [lo] &lt;= G --- ] [ ----- Unknown -------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// X x . . . . . . . . . x . . . . . . . . . . . x . . . . . . . . . . x X
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// |                     |                       |                       |
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// lo (pivot candidate)  mi                      k                       hi
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">k</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span> <span class="p">)</span> <span class="c1">//Scan from left to right
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span> <span class="n">_elem</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">pivot</span> <span class="p">)</span> <span class="c1">//If the current element _elem[k] is less than pivot
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>         <span class="n">swap</span> <span class="p">(</span> <span class="n">_elem</span><span class="p">[</span><span class="o">++</span><span class="n">mi</span><span class="p">],</span> <span class="n">_elem</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="p">);</span> <span class="c1">//After swapping _elem[k] to the original mi, 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    									 <span class="c1">//the L subsequence expands to the right
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">   <span class="c1">//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">//   --------- L &lt; [lo] ---------- ] ------------- [lo] &lt;= G ----------]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// X x . . . . . . . . . . . . . . x . . . . . . . . . . . . . . . . . x X
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// |                               |                                     |
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// lo (pivot candidate)            mi                                    hi
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    
+</span></span><span class="line"><span class="cl">   <span class="n">swap</span> <span class="p">(</span> <span class="n">_elem</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">_elem</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="p">);</span> <span class="c1">//Candidate pivot homing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">return</span> <span class="n">mi</span><span class="p">;</span> <span class="c1">//return its rank
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="in-place-1">In-place</h5>
+<p>$O(1)\newline$</p>
+<h5 id="in-time-1">In-time</h5>
+<p>$O(n)\newline$</p>
+]]></description>
+</item>
+<item>
     <title>Searching</title>
     <link>https://Jungle430.github.io/posts/searching/</link>
     <pubDate>Fri, 18 Nov 2022 14:47:32 &#43;0800</pubDate><author>SunYingCe@bupt.edu.cn (Jungle)</author><guid>https://Jungle430.github.io/posts/searching/</guid>
