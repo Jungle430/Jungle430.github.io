@@ -38,7 +38,7 @@ need not have a root node no implicit parent-child relationship may be several (
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/Jungle430.github.io\/posts\/graph\/"
-        },"genre": "posts","keywords": "Data Structure","wordcount":  4326 ,
+        },"genre": "posts","keywords": "Data Structure","wordcount":  4365 ,
         "url": "https:\/\/Jungle430.github.io\/posts\/graph\/","datePublished": "2022-11-11T19:53:36+08:00","dateModified": "2022-11-11T19:53:36+08:00","publisher": {
             "@type": "Organization",
             "name": "Jungle"},"author": {
@@ -113,7 +113,7 @@ need not have a root node no implicit parent-child relationship may be several (
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">Graph</h2><div class="post-meta">
                 <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/data-structure/"><i class="far fa-folder fa-fw"></i>Data Structure</a></span></div>
-                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-11">2022-11-11</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4326 字</span>&nbsp;
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-11">2022-11-11</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4365 字</span>&nbsp;
                     <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 21 分钟</span>&nbsp;</div>
             </div>
             
@@ -951,7 +951,25 @@ ii. Add <em>w</em> to the queue.</p>
 <p>$Adjacency\ list:\ O(n+e)$</p>
 <p>$Adjacency\ matrix:\ O(n^2)$</p>
 <h4 id="for-adjacency-matrix-graph-in-c">For Adjacency Matrix Graph in C++</h4>
-<h5 id="graph-1">Graph</h5>
+<blockquote>
+<p>Since there is no edge with a weight of 0, 0 is used here to represent $\infty$.</p>
+<p>In practice, enumeration can be added to determine whether it is connected</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">enum</span> <span class="nc">statue</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">Connect</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="n">NotConnect</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="graph-1">Graph</h5>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
