@@ -661,26 +661,14 @@ ii. Add <em>w</em> to the queue.</p>
 <p>Let G=(V,E) be a graph with <em>n</em> vertices and <em>e</em> edges</p>
 <p>$Adjacency\ list:\ O(n+e)$</p>
 <p>$Adjacency\ matrix:\ O(n^2)$</p>
-<h4 id="for-adjacency-matrix-graph-in-c">For Adjacency Matrix Graph in C++</h4>
-<blockquote>
-<p>Since there is no edge with a weight of 0, 0 is used here to represent $\infty$.</p>
-<p>In practice, enumeration can be added to determine whether it is connected</p>
-</blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">enum</span> <span class="nc">statue</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">Connect</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">	<span class="n">NotConnect</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="graph-1">Graph</h5>
+<h4 id="for-adjacency-matrix-unweighted-directed-graph-in-c">For adjacency matrix unweighted directed Graph in C++</h4>
+<p>$$
+A[i][j]=\begin{cases}
+1\ if\ &lt;V_i,V_j&gt; \in E\ or\ (V_i,V_j)\in E\newline
+0\ otherwise
+\end{cases}
+$$</p>
+<h5 id="graph-1">Graph</h5>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
