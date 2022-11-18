@@ -103,23 +103,23 @@ $$</p>
 </blockquote>
 <h6 id="average">Average</h6>
 <p>$O(n\log n)\newline$</p>
-<p>Take a <strong>uniformly independent distributed sequence</strong> as an example
-$$
+<p>Take a <strong>uniformly independent distributed sequence</strong> as an example</p>
+<p>$$
 \begin{align}
 &amp;order\ the\ rank\ of\ the\ pivot\ is\ k\newline
 &amp;\rightarrow probability:\frac{1}{n}\newline\newline
-&amp;then\ T(n)=(n+1)+(\frac{1}{n})<em>\sum_{k=0}^{n-1}[T(k)+T(n-k-1)]\newline
+&amp;then\ T(n)=(n+1)+(\frac{1}{n}) * \sum_{k=0}^{n-1}[T(k)+T(n-k-1)]\newline
 &amp;It&rsquo;s\ easy\ to\ see\ that\rightarrow T(k)=T(n-k-1)\newline
-&amp;T(n)=(n+1)+(\frac{2}{n})</em>\sum_{k=0}^{n-1}T(k)\newline
-&amp;n<em>T(n)=n</em>(n+1)+2*\sum_{k=0}^{n-1}T(k)\ (1)\newline\newline
+&amp;T(n)=(n+1)+(\frac{2}{n}) * \sum_{k=0}^{n-1}T(k)\newline
+&amp;n * T(n)=n * (n+1)+2 * \sum_{k=0}^{n-1}T(k)\ (1)\newline\newline
 &amp;make\ n = n - 1\newline
-&amp;(n-1)<em>T(n-1)=(n-1)<em>n+2</em>\sum_{k=0}^{n-2}T(k)\ (2)\newline\newline
+&amp;(n-1) * T(n-1)=(n-1) * n+2 * \sum_{k=0}^{n-2}T(k)\ (2)\newline\newline
 &amp;Then\ (1)-(2)\newline
-&amp;n</em>T(n) - (n - 1) * T(n - 1) = 2 * n + 2 * T(n-1)\newline
-&amp;n * T(n) - (n + 1)<em>T(n - 1)=2</em>n\newline
+&amp;n * T(n) - (n - 1) * T(n - 1) = 2 * n + 2 * T(n-1)\newline
+&amp;n * T(n) - (n + 1) * T(n - 1)=2 * n\newline
 &amp;\frac {T(n)}{n + 1} = \frac {T(n - 1)}{n}+\frac {2}{n+1}\newline
 &amp;=\frac {2}{n+1} + \frac {2}{n} + \frac {2}{n-1} + &hellip; + \frac {2}{2} + \frac{T(0)}{1}\newline
-&amp;=(2\ln2)<em>\log n \approx 1.39</em>\log n\newline
+&amp;=(2\ln2) * \log n \approx 1.39 * \log n\newline
 \end{align}
 $$</p>
 <h4 id="algorithm-of-optimizationlgu">Algorithm of optimization(LGU)</h4>
