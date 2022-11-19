@@ -6,7 +6,7 @@
         <meta name="robots" content="noodp" />
         <title>Sorting - Jungle&#39;s Blog</title><meta name="description" content="Welcome to Jungle&#39;s blog."><meta property="og:title" content="Sorting" />
 <meta property="og:description" content="Data Structure Sorting QuickSort Idea $Process\ after\ dividing \rightarrow$(like MergeSort in thought)
-Divide the sequence into two subsequences $$ S=S_L&#43;S_R $$ Downsizing $$ max{|S_L|,|S_R|} &lt; n $$ Be independent of each other $$ max(S_L) \leq min(S_R) $$ After the subsequences are sorted recursively, the original sequence is ordered naturally $$ Sorted(S)=Sorted(S_L)&#43;Sorted(S_R) $$ A trivial solution: With a single element, is itself a solution$\rightarrow Recursive\ base\newline$
+Divide the sequence into two subsequences $$ S=S_L&#43;S_R $$ Downsizing $$ max(|S_L|,|S_R|) &lt; n $$ Be independent of each other $$ max(S_L) \leq min(S_R) $$ After the subsequences are sorted recursively, the original sequence is ordered naturally $$ Sorted(S)=Sorted(S_L)&#43;Sorted(S_R) $$ A trivial solution: With a single element, is itself a solution$\rightarrow Recursive\ base\newline$
 Problem How to delimit subsequence?" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://Jungle430.github.io/posts/sorting/" /><meta property="article:section" content="posts" />
@@ -16,7 +16,7 @@ Problem How to delimit subsequence?" />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Sorting"/>
 <meta name="twitter:description" content="Data Structure Sorting QuickSort Idea $Process\ after\ dividing \rightarrow$(like MergeSort in thought)
-Divide the sequence into two subsequences $$ S=S_L&#43;S_R $$ Downsizing $$ max{|S_L|,|S_R|} &lt; n $$ Be independent of each other $$ max(S_L) \leq min(S_R) $$ After the subsequences are sorted recursively, the original sequence is ordered naturally $$ Sorted(S)=Sorted(S_L)&#43;Sorted(S_R) $$ A trivial solution: With a single element, is itself a solution$\rightarrow Recursive\ base\newline$
+Divide the sequence into two subsequences $$ S=S_L&#43;S_R $$ Downsizing $$ max(|S_L|,|S_R|) &lt; n $$ Be independent of each other $$ max(S_L) \leq min(S_R) $$ After the subsequences are sorted recursively, the original sequence is ordered naturally $$ Sorted(S)=Sorted(S_L)&#43;Sorted(S_R) $$ A trivial solution: With a single element, is itself a solution$\rightarrow Recursive\ base\newline$
 Problem How to delimit subsequence?"/>
 <meta name="application-name" content="Jungle&#39;s blog">
 <meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
@@ -205,7 +205,7 @@ S=S_L+S_R
 $$
 Downsizing
 $$
-max{|S_L|,|S_R|} &lt; n
+max(|S_L|,|S_R|) &lt; n
 $$
 Be independent of each other
 $$

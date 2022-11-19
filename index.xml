@@ -23,7 +23,7 @@ S=S_L+S_R
 $$
 Downsizing
 $$
-max{|S_L|,|S_R|} &lt; n
+max(|S_L|,|S_R|) &lt; n
 $$
 Be independent of each other
 $$
