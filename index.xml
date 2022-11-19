@@ -105,15 +105,15 @@ $$</p>
 </blockquote>
 <h6 id="average">Average</h6>
 <p>$O(n\log n)\newline$</p>
-<p>Take a <strong>uniformly independent distributed sequence</strong> as an example</p>
-<p>$$
+<p>Take a <strong>uniformly independent distributed sequence</strong> as an example
+$$
 \begin{align}
 &amp;order\ the\ rank\ of\ the\ pivot\ is\ k\newline
 &amp;\rightarrow probability:\frac{1}{n}\newline\newline
 &amp;then\ T(n)=(n+1)+(\frac{1}{n}) * \sum_{k=0}^{n-1}[T(k)+T(n-k-1)]\newline
 &amp;It&rsquo;s\ easy\ to\ see\ that\rightarrow T(k)=T(n-k-1)\newline
 &amp;T(n)=(n+1)+(\frac{2}{n}) * \sum_{k=0}^{n-1}T(k)\newline
-&amp;n * T(n)=n * (n+1)+2 * \sum_{k=0}^{n-1}T(k)\ (1)\newline\newline
+&amp;n*T(n)=n * (n+1)+2 * \sum_{k=0}^{n-1}T(k)\ (1)\newline\newline
 &amp;make\ n = n - 1\newline
 &amp;(n-1) * T(n-1)=(n-1) * n+2 * \sum_{k=0}^{n-2}T(k)\ (2)\newline\newline
 &amp;Then\ (1)-(2)\newline
@@ -165,10 +165,10 @@ $$</p>
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span><span class="c1">//pivot construction algorithm: 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					 <span class="c1">//by adjusting the element position to construct the pivot of the interval [lo, hi]
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					 <span class="c1">//and return its rank
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Rank</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">partition</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//LGU
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="c1">//pivot construction algorithm;
+</span></span></span><span class="line"><span class="cl"><span class="c1">//by adjusting the element position to construct the pivot of the interval [lo, hi] and return its rank
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="n">Rank</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">partition</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//LGU
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">swap</span> <span class="p">(</span> <span class="n">_elem</span><span class="p">[</span><span class="n">lo</span><span class="p">],</span> <span class="n">_elem</span><span class="p">[</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">rand</span><span class="p">()</span> <span class="o">%</span> <span class="p">(</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="p">)</span> <span class="p">]</span> <span class="p">);</span> <span class="c1">//Swap any element with the first element
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">T</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">_elem</span><span class="p">[</span><span class="n">lo</span><span class="p">];</span> <span class="c1">//Take the first element as the candidate pivot 
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>    					<span class="c1">//-- after the above exchange, equivalent to random selection
@@ -201,7 +201,202 @@ $$</p>
 <p>$O(1)\newline$</p>
 <h5 id="in-time-1">In-time</h5>
 <p>$O(n)\newline$</p>
-]]></description>
+<h3 id="selection">Selection</h3>
+<blockquote>
+<p>The time cost of sorting is too high and you need to find other methods</p>
+</blockquote>
+<p><strong>K-selection</strong></p>
+<p>In any set of comparably sized elements, how do you go from small to large to find the elements of order k?</p>
+<p><strong>Example</strong></p>
+<blockquote>
+<p>Excel: large(range, rank)</p>
+</blockquote>
+<h4 id="median">Median</h4>
+<p>The length of the <strong>sorted sequence</strong> S is n$(range\ from\ 0\ to\ n - 1)$, the element whose order is $\lfloor \frac {n}{2} \rfloor$ is called median</p>
+<p><strong>Example</strong></p>
+<blockquote>
+<p>Excel: median(range)</p>
+</blockquote>
+<h4 id="mode">Mode</h4>
+<p>In an <strong>unordered sequence</strong>, if <strong>more than half</strong> of the elements are m, m is called the mode</p>
+<p><strong>Example</strong>
+$$
+\begin{align}
+&amp;[3,5,2,3,3]\rightarrow mode\ is\ 3\newline
+&amp;but\ in\ [3,5,2,3,3,0]\rightarrow no\ mode\newline
+\end{align}
+$$</p>
+<h5 id="mode-algorithm">mode algorithm</h5>
+<blockquote>
+<p>Trivial algorithm: sort + traversal</p>
+</blockquote>
+<p>but if we want that $\rightarrow T(n) \leq O(n)\ and\ S(n)\leq O(1)?\newline$</p>
+<blockquote>
+<p>Necessary condition: If mode exists, then <strong>the mode must also be the median</strong></p>
+<p>The mode, if it exists, <strong>must be frequent</strong></p>
+</blockquote>
+<p>$Process\ after\ reducing\newline$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> 
+</span></span><span class="line"><span class="cl"><span class="n">T</span> <span class="n">majEleCandidate</span> <span class="p">(</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">A</span> <span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">   <span class="n">T</span> <span class="n">maj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">A</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">c</span> <span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">         <span class="n">maj</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> 
+</span></span><span class="line"><span class="cl">          <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> 
+</span></span><span class="line"><span class="cl">         <span class="n">maj</span> <span class="o">==</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">?</span> <span class="n">c</span><span class="o">++</span> <span class="o">:</span> <span class="n">c</span><span class="o">--</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">maj</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="general-purpose-algorithm">General purpose algorithm</h4>
+<h5 id="quickselect">quickSelect</h5>
+<p>$Process\ after\ reducing\newline$</p>
+<p>Partition</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">quickSelect</span> <span class="p">(</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">A</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">k</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">A</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="p">;</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="n">lo</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">hi</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">      <span class="n">T</span> <span class="n">pivot</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">lo</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="k">while</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//O(hi - lo + 1) = O(n)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>         <span class="k">while</span> <span class="p">(</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span> <span class="n">pivot</span> <span class="o">&lt;=</span> <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="n">j</span><span class="o">--</span><span class="p">;</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">         <span class="k">while</span> <span class="p">(</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pivot</span> <span class="p">)</span> <span class="p">)</span> <span class="n">i</span><span class="o">++</span><span class="p">;</span> <span class="n">A</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="c1">//assert: quit with i == j
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pivot</span><span class="p">;</span> <span class="c1">// A[0,i) &lt;= A[i] &lt;= A(i, n)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="p">)</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="p">)</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span> <span class="c1">//A[k] is now a pivot
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h6 id="worst-case-1">Worst case</h6>
+<p>$T(n)=O(n)+T(\frac {n}{Q})+T(\frac{3n}{4})\newline$</p>
+<p>$if\ we\ want\ that\ T(n)=O(n)\newline$</p>
+<p>$we\ should\ make\ \frac{n}{Q}+\frac{3n}{4}&lt;n \newline$</p>
+<p>$so\ \frac{1}{Q}+\frac{3}{4}&lt;1\newline$</p>
+<p>$make\ Q=5\newline$</p>
+<p>$T(n)=cn+T(\frac{n}{5})+T(\frac{3n}{4})\newline$</p>
+<p>$then\ T(n)=O(20cn)=O(n)\newline$</p>
+<h5 id="linearselect">linearSelect</h5>
+<p>Let Q be a small constant</p>
+<ol start="0">
+<li>
+<p>if ( n = |A| &lt; Q ) return trivialSelect( A, k )</p>
+</li>
+<li>
+<p>else divide A evenly into n/Q subsequences (each of size Q)</p>
+</li>
+<li>
+<p>Sort each subsequence and determine n/Q medians //e.g. by insertionsort</p>
+</li>
+<li>
+<p>Call linearSelect() to find M, median of the medians //by recursion</p>
+</li>
+<li>
+<p>Let L/E/G = { x &lt;/=/&gt; M | x $\in$ A }</p>
+</li>
+<li></li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="o">|</span><span class="n">L</span><span class="o">|</span> <span class="p">)</span> <span class="k">return</span> <span class="n">linearSelect</span><span class="p">(</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span> <span class="p">)</span> 
+</span></span><span class="line"><span class="cl">  	<span class="k">if</span> <span class="p">(</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="o">|</span><span class="n">L</span><span class="o">|</span> <span class="o">+</span> <span class="o">|</span><span class="n">E</span><span class="o">|</span> <span class="p">)</span> <span class="k">return</span> <span class="n">M</span> 
+</span></span><span class="line"><span class="cl">  	<span class="k">return</span> <span class="n">linearSelect</span><span class="p">(</span> <span class="n">G</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="o">|</span><span class="n">L</span><span class="o">|</span> <span class="o">-</span> <span class="o">|</span><span class="n">E</span><span class="o">|</span> <span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h6 id="in-time-2">In-time</h6>
+<p>$T(n)=O(n)\newline$</p>
+<h3 id="shellsort">ShellSort</h3>
+<blockquote>
+<p>Donald L.Shell,1959</p>
+</blockquote>
+<h4 id="idea-1">Idea</h4>
+<p><strong>Think of the whole sequence as a matrix, with each column sorted individually</strong>$\rightarrow(w-sorting)\newline$</p>
+<h4 id="step-sequence">step sequence</h4>
+<p>An <strong>inverted</strong> sequence of <strong>the width of each matrix</strong></p>
+<p>$set(step)={w_1=1,w_2,w_3,&hellip;w_k,&hellip;}\newline$</p>
+<blockquote>
+<p>diminishing increment</p>
+</blockquote>
+<h4 id="algorithm">Algorithm</h4>
+<p>$Call-by-rank\newline$</p>
+<p>$The\ width\ of\ the\ matrix\ is\ w,then\ the\ elements\ in\ the\ i^{th}\ column\ is\ a[i+kw],0\leq k &lt;\frac {n}{w}\newline$</p>
+<h6 id="internal-sort-rightarrowinput-sensitive-algorithm">Internal sort $\rightarrow$Input sensitive algorithm</h6>
+<p>$\rightarrow insertionsort(The\ running\ time\ depends\ on\ the\ total\ number\ of\ inversions)\newline$</p>
+<h6 id="the-biggest-factor"><strong>The biggest factor</strong></h6>
+<p>$\rightarrow set(step)={w_1=1,w_2,w_3,&hellip;w_k,&hellip;}\newline$</p>
+<h6 id="example">Example</h6>
+<p>$set(step)_{shell}={1,2,4,8,&hellip;,2^k,&hellip;}\newline$</p>
+<p>worst-case: $O(n\log n)\newline$</p>
+<p>best-case: $O(n)\newline$</p>
+<h6 id="code-1">code</h6>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">shellSort</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//0 &lt;= lo &lt; hi &lt;= size &lt;= 2^30
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="cm">/*DSA*/</span> <span class="n">printf</span> <span class="p">(</span> <span class="s">&#34;</span><span class="se">\t</span><span class="s">SHELLsort [%3d, %3d)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">for</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">d</span> <span class="o">=</span> <span class="mh">0x3FFFFFFF</span><span class="p">;</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">d</span><span class="p">;</span> <span class="n">d</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span> <span class="p">)</span> <span class="c1">//PS Sequence: { 1, 3, 7, 15, ..., 1073741823 }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">for</span> <span class="p">(</span> <span class="n">Rank</span> <span class="n">j</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">d</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">hi</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//for each j in [lo+d, hi)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>         <span class="n">T</span> <span class="n">x</span> <span class="o">=</span> <span class="n">_elem</span><span class="p">[</span><span class="n">j</span><span class="p">];</span> <span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="n">j</span> <span class="o">-</span> <span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="k">while</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&amp;&amp;</span> <span class="n">_elem</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span> <span class="n">_elem</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">_elem</span><span class="p">[</span><span class="n">i</span><span class="p">];</span> <span class="n">i</span> <span class="o">-=</span> <span class="n">d</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">         <span class="n">_elem</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">//insert [j] into its subsequence
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
 </item>
 <item>
     <title>Searching</title>
