@@ -281,12 +281,12 @@ Example:</p>
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span>
-</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span>
-</span></span><span class="line"><span class="cl">                    <span class="n">sum</span><span class="o">++;</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sum</span><span class="o">++;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>analysis code block</p>
@@ -298,13 +298,13 @@ Example:</p>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="c1">//-&gt;step = 1
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span> <span class="c1">//-&gt;step j when j = ki
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">sum</span><span class="o">++;</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="c1">//-&gt;step = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">j</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span> <span class="c1">//-&gt;step j when j = ki
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">sum</span><span class="o">++;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>$so the step = 1 + 1 + 1 + i + 1 + 1 + &hellip; + 2i + 1 + 1 + &hellip; + i * i$
+</div><p>$so\ the\ step = 1 + 1 + 1 + i + 1 + 1 + &hellip; + 2i + 1 + 1 + &hellip; + i * i$
 $= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)$</p>
 <p>so the code became</p>
 <div class="highlight"><div class="chroma">
@@ -313,13 +313,13 @@ $= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)$</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">O</span><span class="o">(</span><span class="n">i</span><span class="o">^</span><span class="n">3</span><span class="o">)</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">O</span><span class="o">(</span><span class="n">i</span><span class="o">^</span><span class="n">3</span><span class="o">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>$so\ T(n) = O(n^4)$</p>
 <blockquote>
-<p>Give an efficient algorithm to determine if there exists an &gt;integer i such that ai = i in an array of integers a1&lt; a2 &lt; &gt;a3&lt; . . . &lt; an. What is the running time of your algorithm?</p>
+<p>Give an efficient algorithm to determine if there exists an &gt;integer i such that $a_i = i$ in an array of integers $a_1&lt; a_2 &lt; a_3&lt; . . . &lt; a_n$. What is the running time of your algorithm?</p>
 </blockquote>
 <p>Traverse:</p>
 <div class="highlight"><div class="chroma">
