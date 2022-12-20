@@ -8,7 +8,7 @@
 <meta property="og:description" content="Data Structure Tree Definition One natural way to define a tree is recursively.
 A tree is a collection of nodes. The collection can be empty;
 otherwise, a tree consists of a distinguished node r,called root, and zero or more nonempty (sub)trees $T_1, T_2, … T_k$, each of whose roots are connected by a direct edge from r.
-Terminology Parent:Node A is the parent of node B, if B is the &gt;root of one subtree of A." />
+Terminology Parent: Node A is the parent of node B, if B is the root of one subtree of A." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://Jungle430.github.io/posts/tree/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-11-06T18:28:12+08:00" />
@@ -19,7 +19,7 @@ Terminology Parent:Node A is the parent of node B, if B is the &gt;root of one s
 <meta name="twitter:description" content="Data Structure Tree Definition One natural way to define a tree is recursively.
 A tree is a collection of nodes. The collection can be empty;
 otherwise, a tree consists of a distinguished node r,called root, and zero or more nonempty (sub)trees $T_1, T_2, … T_k$, each of whose roots are connected by a direct edge from r.
-Terminology Parent:Node A is the parent of node B, if B is the &gt;root of one subtree of A."/>
+Terminology Parent: Node A is the parent of node B, if B is the root of one subtree of A."/>
 <meta name="application-name" content="Jungle&#39;s blog">
 <meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -32,7 +32,7 @@ Terminology Parent:Node A is the parent of node B, if B is the &gt;root of one s
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https:\/\/Jungle430.github.io\/posts\/tree\/"
-        },"genre": "posts","keywords": "Data Structure","wordcount":  1916 ,
+        },"genre": "posts","keywords": "Data Structure","wordcount":  1947 ,
         "url": "https:\/\/Jungle430.github.io\/posts\/tree\/","datePublished": "2022-11-06T18:28:12+08:00","dateModified": "2022-11-06T18:28:12+08:00","publisher": {
             "@type": "Organization",
             "name": "Jungle"},"author": {
@@ -107,8 +107,8 @@ Terminology Parent:Node A is the parent of node B, if B is the &gt;root of one s
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">Tree</h2><div class="post-meta">
                 <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/data-structure/"><i class="far fa-folder fa-fw"></i>Data Structure</a></span></div>
-                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-06">2022-11-06</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1916 字</span>&nbsp;
-                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 9 分钟</span>&nbsp;</div>
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-11-06">2022-11-06</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1947 字</span>&nbsp;
+                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 10 分钟</span>&nbsp;</div>
             </div>
             
             <hr><div class="details toc" id="toc-static"  data-kept="">
@@ -187,13 +187,13 @@ by a direct edge from r.</p>
 <div class="mermaid" id="id-2"></div>
 <h3 id="terminology">Terminology</h3>
 <blockquote>
-<p>Parent:Node A is the parent of node B, if B is the &gt;root of one subtree of A.</p>
-<p>Child:Node B is the child of node A, if A is the parent of B.</p>
+<p>Parent: Node A is the parent of node B, if B is the root of one subtree of A.</p>
+<p>Child: Node B is the child of node A, if A is the parent of B.</p>
 <p>Sibling:Nodes with the same parent are siblings</p>
 <p>Leaf:A node is called a leaf if it has no children.</p>
 <p>Branch Node(OR internal node):Any node of a tree that has child nodes(the number of child nodes is more than 0)</p>
-<p>Ancestor:Node A is an ancestor of node B,if A is either the parent of B or is the parent of some ancestor of B.</p>
-<p>Descendant:Node B is the descendant of node A, if A is an ancestor of node B.</p>
+<p>Ancestor: Node A is an ancestor of node B,if A is either the parent of B or is the parent of some ancestor of B.</p>
+<p>Descendant: Node B is the descendant of node A, if A is an ancestor of node B.</p>
 <p>Level of a Node:Level of the root of a tree is 1, and the level of any other nodes in the tree is one more than the level of its
 parent</p>
 <p>Depth of a Tree:The depth of a tree is the maximum level of any leaf in the tree (also called the height of a tree).</p>
@@ -202,39 +202,76 @@ parent</p>
 </blockquote>
 <h3 id="adt">ADT</h3>
 <p>{</p>
-<pre><code>ADT Tree{Data objects :{D = {ai| ai∈ElementSet, (i=1,2,…,n, n≥0)}
-
-Relationships of Data Elements:{ Recursive Definition of a tree }
-
-Basic Operations:
-INITTREE（＆T）；
-DESTROYTREE（＆T）；
-……
-</code></pre>
-<p>} ADT Tree</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">ADT Tree{Data objects :{D = {ai| ai∈ElementSet, (i=1,2,…,n, n≥0)}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Relationships of Data Elements:{ Recursive Definition of a tree }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Basic Operations:
+</span></span><span class="line"><span class="cl">INITTREE（＆T）；
+</span></span><span class="line"><span class="cl">DESTROYTREE（＆T）；
+</span></span><span class="line"><span class="cl">……
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>} ADT Tree</p>
 <h3 id="operations">Operations</h3>
 <p>{</p>
-<pre><code>INITTREE(＆T);
-DESTROYTREE(＆T);
-CREATETREE(＆T，DEFINITION);
-CLEARTREE(＆T);
-
-TREEEMPTY(T);
-TREEDEPTH(T);
-ROOT(T);
-
-ASSIGN(T，CUR_E，VALUE);
-PARENT(T，CUR_E);
-LEFTCHILD(T，CUR_E);
-RIGHTSIBLING(T，CUR_E);
-
-INSERTCHILD(＆T，＆P，i，C)；
-DELETECHILD(＆T，＆P，i)；
-TRAVERSETREE(T，VISIT())；
-
-......
-</code></pre>
-<p>}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">INITTREE(＆T);
+</span></span><span class="line"><span class="cl">DESTROYTREE(＆T);
+</span></span><span class="line"><span class="cl">CREATETREE(＆T，DEFINITION);
+</span></span><span class="line"><span class="cl">CLEARTREE(＆T);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">TREEEMPTY(T);
+</span></span><span class="line"><span class="cl">TREEDEPTH(T);
+</span></span><span class="line"><span class="cl">ROOT(T);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ASSIGN(T，CUR_E，VALUE);
+</span></span><span class="line"><span class="cl">PARENT(T，CUR_E);
+</span></span><span class="line"><span class="cl">LEFTCHILD(T，CUR_E);
+</span></span><span class="line"><span class="cl">RIGHTSIBLING(T，CUR_E);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">INSERTCHILD(＆T，＆P，i，C)；
+</span></span><span class="line"><span class="cl">DELETECHILD(＆T，＆P，i)；
+</span></span><span class="line"><span class="cl">TRAVERSETREE(T，VISIT())；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">......
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>}</p>
 <p>Emphasis</p>
 <p>!!!A binary tree is a tree in which no node can have more
 than two children.</p>
