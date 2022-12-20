@@ -2069,7 +2069,10 @@ $$</p>
 <p>Loading factor ($\alpha$): The load factor of the table is $\alpha = \frac {n}{m}$ , where n positions are occupied out of a total of m positions in the table</p>
 </li>
 </ol>
-<p></p>
+<figure><a class="lightgallery" href="/img/Hash_ASL.png" title="/img/Hash_ASL.png" data-thumbnail="/img/Hash_ASL.png" data-sub-html="<h2>case1(image1)</h2>">
+        
+    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
+    </figure>
 <h5 id="summary-1">Summary</h5>
 <p>Comparison between Binary Search Trees and Hash Tables</p>
 <ol>
