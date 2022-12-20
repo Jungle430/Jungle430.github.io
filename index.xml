@@ -1068,37 +1068,8 @@ $$</p>
 <p>Direct access by key value (hashing)</p>
 </li>
 </ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">graph LR
-</span></span><span class="line"><span class="cl">A(Search)
-</span></span><span class="line"><span class="cl">B(Comparison)
-</span></span><span class="line"><span class="cl">C(Calculation)
-</span></span><span class="line"><span class="cl">D(Linear Search)
-</span></span><span class="line"><span class="cl">E(Tree Search)
-</span></span><span class="line"><span class="cl">F(Hash Search)
-</span></span><span class="line"><span class="cl">A--&gt;B
-</span></span><span class="line"><span class="cl">A--&gt;C
-</span></span><span class="line"><span class="cl">B--&gt;D
-</span></span><span class="line"><span class="cl">B--&gt;E
-</span></span><span class="line"><span class="cl">C--&gt;F
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="static-search-table-2">Static Search Table</h3>
+<div class="mermaid" id="id-1"></div>
+<h3 id="static-search-table-2">Static Search Table</h3>
 <h4 id="sequential-search">Sequential Search</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1342,7 +1313,7 @@ $$</p>
 <p>$$
 array:[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]\newline
 $$</p>
-<div class="mermaid" id="id-1"></div>
+<div class="mermaid" id="id-2"></div>
 <h6 id="analysis-by-decision-tree">Analysis by decision tree</h6>
 <p>$$
 \begin{align}
@@ -1436,7 +1407,7 @@ $$</p>
 </li>
 </ol>
 <h5 id="example-1">Example</h5>
-<div class="mermaid" id="id-2"></div>
+<div class="mermaid" id="id-3"></div>
 <h5 id="search-path">Search path</h5>
 <p>$Search\ path\ is\ a\ path\ from\ root\ to\ a\ node.\ The\ number\ of\ comparisons\ is\ the\ level\ of\ the\ node.\newline$</p>
 <div class="highlight"><div class="chroma">
@@ -1905,7 +1876,7 @@ $$</p>
 <p>$a_i\ is\ an\ element\newline$</p>
 <p>$Address(a_i)\ stores\ the\ address\ of\ a_i\newline$</p>
 <p>$a_i.key\ is\ the\ key\ of\ a_i\ element\newline$</p>
-<div class="mermaid" id="id-3"></div>
+<div class="mermaid" id="id-4"></div>
 <h4 id="general-idea-1">General Idea</h4>
 <p>One problem with hash tables is collisions:</p>
 <p>$\rightarrow $when more than one item map to the same location in the hash table</p>
