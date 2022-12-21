@@ -1921,7 +1921,7 @@ $$</p>
 <p>Criterion: Delete the digits having the most skewed distributions</p>
 </blockquote>
 <ol start="3">
-<li>$Hash(key)=key % p\ p \leq m\newline$</li>
+<li>$Hash(key)=key$ % $p\ p \leq m\newline$</li>
 </ol>
 <blockquote>
 <p><strong>Modular arithmetic:</strong> We may convert the key to an integer, divide by the size of the index range, and take the remainder as the result</p>
@@ -1932,7 +1932,7 @@ $$</p>
 <p>Mid-square method: Square the key value, take the middle r bits from the result for a hash table of $2^r$ slots</p>
 </li>
 <li>
-<p>$Hash(key)=\lfloor n * (A * key % 1)\rfloor \rightarrow A * key % 1 = A * key - \lfloor A * key\rfloor\newline$</p>
+<p>$Hash(key)=\lfloor n * (A * key $ % $1)\rfloor \rightarrow A * key $%$ 1 = A * key - \lfloor A * key\rfloor\newline$</p>
 </li>
 <li>
 <p>Folding</p>
