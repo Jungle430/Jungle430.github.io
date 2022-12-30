@@ -4,7 +4,696 @@
         <link>https://Jungle430.github.io/posts/</link>
         <description>所有文章 | Jungle&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Fri, 30 Dec 2022 16:27:09 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Fri, 30 Dec 2022 21:52:20 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>OpenCV Chapter1</title>
+    <link>https://Jungle430.github.io/posts/opencv/opencv-chapter1/</link>
+    <pubDate>Fri, 30 Dec 2022 21:52:20 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter1/</guid>
+    <description><![CDATA[<h1 id="opencv">OpenCV</h1>
+<h2 id="图像基本操作">图像基本操作</h2>
+<h3 id="计算机眼中的图像">计算机眼中的图像</h3>
+<figure><a class="lightgallery" href="/img/Opencv/chapter1-1.png" title="/img/Opencv/chapter1-1.png" data-thumbnail="/img/Opencv/chapter1-1.png" data-sub-html="<h2>image(计算机眼中的图像)</h2>">
+        
+    </a><figcaption class="image-caption">image(<code>计算机眼中的图像</code>)</figcaption>
+    </figure>
+<p>由一个个像素点构成了一张图像</p>
+<p>像素点:一个值，范围$[0,255]$,表示了该点的一个亮度，$0\rightarrow black\ and\ 255\rightarrow white\newline$</p>
+<p>一个点对应着3个值$R,G,B\rightarrow 图像的颜色通道\newline$</p>
+<p>$RGB颜色通道$:(光学三原色)， 通过表示其像素点的值可以表示彩色图像（黑白图像/灰度图就没有）</p>
+<p>矩阵大小$\rightarrow$ 图像大小</p>
+<h3 id="数据读取图像">数据读取——图像</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>  <span class="c1"># OpenCV读取格式是BGR(与其他库使用时注意格式是否一致)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># The type of img -&gt; &#39;numpy.ndarray&#39;, dtype=uint8 -&gt; [0, 255]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># show the image</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># The waiting time(ms), if the para is zero, waiting the key entering</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Destroy the window</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyWindow</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>  <span class="c1"># can also use cv2.destroyAllWindows()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可调用属性</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># Example:(414, 500, 3) 3 -&gt; BGR</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>  <span class="c1"># 像素点的个数</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># 通常为uint8</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>读取图像方式设置</p>
+<ul>
+<li>cv2.IMREAD_COLOR：彩色图像</li>
+<li>cv2.IMREAD_GRAYSCALE：灰度图像</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;D:\picture\ege.jpg&#34;</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># In cv2.IMREAD_GRAYSCALE</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">[[ 48  48  48 ...  48  48  48]
+</span></span></span><span class="line"><span class="cl"><span class="s2">[ 48  48  48 ...  48  48  48]
+</span></span></span><span class="line"><span class="cl"><span class="s2">[ 48  48  48 ...  49  49  49]
+</span></span></span><span class="line"><span class="cl"><span class="s2">...
+</span></span></span><span class="line"><span class="cl"><span class="s2">[ 72  69  65 ... 210 210 210]
+</span></span></span><span class="line"><span class="cl"><span class="s2">[ 65  63  60 ... 208 207 207]
+</span></span></span><span class="line"><span class="cl"><span class="s2">[ 61  59  56 ... 203 201 200]]
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (940, 940)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>保存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&#34;../LearnOpenCV/temp.jpg&#34;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="c1">#First para is path and name, Second para is the image(ndarray)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="数据读取视频">数据读取——视频</h3>
+<ul>
+<li>cv2.VideoCapture可以捕获摄像头，用数字控制不同的设备，例如0， 1</li>
+<li>如果是视频文件，直接指定好路径即可</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">video</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="s2">&#34;video path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">video</span><span class="p">))</span>  <span class="c1"># cv2.VideoCapture</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">opened</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Check that it is opened correctly</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">video</span><span class="o">.</span><span class="n">isOpened</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">video</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ret -&gt; it is read correctly(Every frame), frame -&gt; image (Every frame)</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">opened</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># traversal video</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="n">opened</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">video</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># After reading the frame is None, exit</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>  <span class="c1"># Convert to grayscale(灰度图）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">gray</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span> <span class="o">==</span> <span class="mi">27</span><span class="p">:</span>  <span class="c1"># waiting time, and enter esc to exit</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">video</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">The method is automatically called by subsequent VideoCapture::open and by VideoCapture
+</span></span></span><span class="line"><span class="cl"><span class="s2">        .       destructor.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">        .       The C function also deallocates memory and clears \*capture pointer.
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="roiregion-of-interest">ROI(region of interest)</h3>
+<p>本质（通过数组切片来分割图像）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">roi</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">300</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">]</span>  <span class="c1"># numpy 切片</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">roi</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="颜色通道提取">颜色通道提取</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># notice : B -&gt; G -&gt; R!!!</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">[[243 241 243 ... 239 240 241]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [239 241 239 ... 239 238 239]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [241 242 238 ... 241 238 237]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> ...
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [238 234 236 ... 240 239 239]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [237 236 237 ... 240 241 237]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [239 237 237 ... 240 240 237]]
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (512, 512)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">temp</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">merge</span><span class="p">((</span><span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span>  <span class="c1"># restore</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>只保留单个通道</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># R</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">cur_img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># G</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">cur_img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># B</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">cur_img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">cur_img</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="边界填充">边界填充</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span>  <span class="c1"># 上下左右填充的大小</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">replicate</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="n">borderType</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">BORDER_REPLICATE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">reflect</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BORDER_REFLECT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">reflect101</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BORDER_REFLECT_101</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">wrap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BORDER_WRAP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">constant</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_size</span><span class="p">,</span> <span class="n">bottom_size</span><span class="p">,</span> <span class="n">left_size</span><span class="p">,</span> <span class="n">right_size</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BORDER_CONSTANT</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">replicate</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">reflect</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">reflect101</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">wrap</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">constant</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>BORDER_REPLICATE：复制法，也就是复制最边缘像素</li>
+<li>BORDER_REFLECT：反射法，对感兴趣的图像中的像素进行两边复制，例如:（左边）fedcba|abcdefgh（图像）|hgfedcb（右边）</li>
+<li>BORDER_REFLECT_101：反射法，也就是<strong>以最边缘像素为轴</strong>，对称，gfedcb|abcdefgh|gfedcba（a和h为对称轴）</li>
+<li>BORDER_WRAP：外包装法， cdefgh|abcdefgh|abcdefg （按照原顺序）</li>
+<li>BORDER_CONSTANT：常数法，常数值填充(需要指定$value$)</li>
+</ul>
+<h3 id="数值计算">数值计算</h3>
+<p>图像数值加减</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">[[[243 249 254]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [241 249 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [243 249 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [239 247 254]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [240 248 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [241 247 254]]
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [[239 247 254]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [241 247 254]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [239 247 254]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">img</span> <span class="o">+</span> <span class="mi">10</span>  <span class="c1"># 每一个像素点都+10, 然后mod256(dytpe=unit8, 自我取余防止越界)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">[[[253   3   8]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [251   3   9]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [253   3   9]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [249   1   8]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [250   2   9]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [251   1   8]]
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [[249   1   8]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [251   1   8]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  [249   1   8]
+</span></span></span><span class="line"><span class="cl"><span class="s2">  ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img1</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>  <span class="c1"># cv2.add(), 一旦越界，直接取255</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">[[255 255 255 ... 255 255 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [255 255 255 ... 255 255 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [255 255 255 ... 255 255 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [255 255 255 ... 255 255 255]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> [255 255 255 ... 255 255 255]]
+</span></span></span><span class="line"><span class="cl"><span class="s2"> &#34;&#34;&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>图像融合</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img1 path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img2 path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="n">img1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># 大小一致</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (512, 512, 3)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (512, 512, 3)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">fx</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fy</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 按比例调整</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (512, 1536, 3)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># R = y1x1 + y2x2 + b (权重和附加值)</span>
+</span></span><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="图像阈值">图像阈值</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">threshold</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">thresh</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> <span class="c1"># real signature unknown; restored from __doc__</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    threshold(src, thresh, maxval, type[, dst]) -&gt; retval, dst
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @brief Applies a fixed-level threshold to each array element.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   The function applies fixed-level thresholding to a multiple-channel array. The function is typically
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   used to get a bi-level (binary) image out of a grayscale image ( #compare could be also used for
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   this purpose) or for removing a noise, that is, filtering out pixels with too small or too large
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   values. There are several types of thresholding supported by the function. They are determined by
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   type parameter.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   Also, the special values #THRESH_OTSU or #THRESH_TRIANGLE may be combined with one of the
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   above values. In these cases, the function determines the optimal threshold value using the Otsu&#39;s
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   or Triangle algorithm and uses it instead of the specified thresh.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @note Currently, the Otsu&#39;s and Triangle methods are implemented only for 8-bit single-channel images.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @param src input array (multiple-channel, 8-bit or 32-bit floating point).
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @param dst output array of the same size  and type and the same number of channels as src.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @param thresh threshold value.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @param maxval maximum value to use with the #THRESH_BINARY and #THRESH_BINARY_INV thresholding
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   types.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @param type thresholding type (see #ThresholdTypes).
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @return the computed threshold value if Otsu&#39;s or Triangle methods used.
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   
+</span></span></span><span class="line"><span class="cl"><span class="s2">    .   @sa  adaptiveThreshold, findContours, compare, min, max
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参数说明：</p>
+<ul>
+<li>src:输入图</li>
+<li>thresh：阈值</li>
+<li>maxval：当像素值超过了阈值（或者小于阈值，由type来决定），所赋予的值</li>
+<li>type：二值化操作的类型，如下
+<ul>
+<li>cv2.THRESH_BINARY：超过阈值部分取maxval， 否则取0</li>
+<li>cv2.THRESH_BINARY_INV：cv2.THRESH_BINARY的反转</li>
+<li>cv2.THRESH_TRUNC：大于阈值的部分设为阈值，否则不变</li>
+<li>cv2.THRESH_TOZERO：大于阈值部分不改变，否则设为零</li>
+<li>cv2.THRESH_TOZERO_INV：cv2.THRESH_TOZERO的反转</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">ret</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">thresh</span><span class="p">,</span> <span class="n">maxval</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>返回值：</p>
+<ul>
+<li>ret：用于阈值化的值，等同于thresh</li>
+<li>dst：阈值化后生成的图像</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">arr</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ret1</span><span class="p">,</span> <span class="n">thresh1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thresh1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ret2</span><span class="p">,</span> <span class="n">thresh2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY_INV</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thresh2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ret3</span><span class="p">,</span> <span class="n">thresh3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_TRUNC</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thresh3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ret4</span><span class="p">,</span> <span class="n">thresh4</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_TOZERO</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thresh4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ret5</span><span class="p">,</span> <span class="n">thresh5</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_TOZERO_INV</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thresh5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">show</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
     <title>Operating System Chapter1</title>
     <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</link>
     <pubDate>Fri, 30 Dec 2022 16:27:09 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</guid>
@@ -17,7 +706,7 @@
 <li>到底什么是操作系统? $(what)\newline$</li>
 <li>怎么学操作系统? $(how)\newline$</li>
 </ul>
-<h3 id="为什么要学操作系统whynewline">为什么要学操作系统?$(why)\newline$</h3>
+<h3 id="为什么学操作系统whynewline">为什么学操作系统?$(why)\newline$</h3>
 <ul>
 <li>
 <p>每天都在用的东西你没搞明白 $\rightarrow$ 窗口是怎么创建的？ 为什么$Ctrl-C$有时不能退出程序？</p>
@@ -6265,144 +6954,6 @@ $= i^2 + i(1 + 2 + 3 + &hellip; + i) = i^2 + i^3 = O(i^3)$</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>$T(n) = O(\log n)$</p>
-]]></description>
-</item>
-<item>
-    <title>Introduction</title>
-    <link>https://Jungle430.github.io/posts/data-structures-and-algorithms/introduction/</link>
-    <pubDate>Sun, 06 Nov 2022 22:31:52 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/data-structures-and-algorithms/introduction/</guid>
-    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
-<h2 id="introduction">Introduction</h2>
-<h2 id="data">Data</h2>
-<blockquote>
-<p>Define: The set of all the symbols can be processed or stored by a computer
-Example: A data set in a classroom = { desk 1, desk 2,…chair 1, chair2…,stud 1, stud 2,…}</p>
-</blockquote>
-<h2 id="data-element">Data Element</h2>
-<blockquote>
-<p>Define: The term data element is an atomic unit
-of data that has:</p>
-<ol>
-<li>An identification such as a data element name</li>
-<li>A clear data element definition</li>
-</ol>
-<p>Example: desk i; chair j; project n…</p>
-</blockquote>
-<h2 id="data-item">Data item</h2>
-<blockquote>
-<p>Define: One smallest indivisible data units</p>
-<p>!!! One data element consists of one or many data items.</p>
-</blockquote>
-<h2 id="data-object">Data Object</h2>
-<blockquote>
-<p>Define: The collection of data elements with same features.</p>
-<p>Example:
-Data Object 1: ={ desk 1, desk 2,…};</p>
-<p>Data Object 2: ={ chair 1, chair 2,…};</p>
-<p>Data Object 3: ={ stud 1, stud 2,…};</p>
-</blockquote>
-<p>On Data Object3, The data of a student is a set of {ID, FirstName, LastName, age}, in a list of student, the list of age = {12, 13, 12, &hellip;}, then -&gt;</p>
-<blockquote>
-<p>Data Element:age</p>
-<p>Data item: 12</p>
-</blockquote>
-<h2 id="structure">Structure</h2>
-<blockquote>
-<p>Relationships between data elements</p>
-</blockquote>
-<h2 id="data-structure-1">Data Structure</h2>
-<blockquote>
-<p>A set of data elements with structure</p>
-</blockquote>
-<p>Data Structure can be defined is math</p>
-<blockquote>
-<p>Data Structure = (D, R)</p>
-<p>D: the set of Data elements</p>
-<p>R: the Relationships of the data elements</p>
-</blockquote>
-<p>DS is formed by two sets:</p>
-<ol>
-<li>Data element set</li>
-<li>Relationship set</li>
-</ol>
-<h2 id="class-of-structure">Class of Structure</h2>
-<ol>
-<li>logic structure -&gt; {Set, Linear, Tree, Graph}</li>
-<li>Physical structure -&gt; Such as a Linear structure use sequence structure or Linked structure ?</li>
-</ol>
-<h2 id="about-algorithm">About algorithm</h2>
-<ol>
-<li>Algorithm design depends on logical structure(Like in math)</li>
-<li>Algorithm implementation depends on how to store
-the DS physical structure</li>
-</ol>
-<h2 id="data-type">Data Type</h2>
-<blockquote>
-<p>Define: A data type is a collection of objects and a set of
-operations that act on those objects.</p>
-</blockquote>
-<p>Example:int, double &hellip; and std::vector&lt;&gt;, std::map&lt;&gt; &hellip;</p>
-<h2 id="abstract-data-type-adt">Abstract Data Type (ADT)</h2>
-<blockquote>
-<p>Define:An abstract data type(ADT) is a data type that is
-organized in such a way that the specification of the
-objects and the operations on the objects is separated
-from the representation of the objects and the
-implementation of the operations.</p>
-</blockquote>
-<p>Conclusion: Consider only the mathematical level, not the actual computer structure</p>
-<blockquote>
-<p>Mathematical definition of ADT：</p>
-</blockquote>
-<ol>
-<li>D：Data object , the set of the data elements</li>
-<li>S：the structure on the object D</li>
-<li>P：Operations performed on the object</li>
-</ol>
-<p>Example:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cm">/*
-</span></span></span><span class="line"><span class="cl"><span class="cm">Data Object, Data relation, Operations
-</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Complex</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span> <span class="c1">//Data Object
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">real</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">image</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">//Data relation:real part and image part in a complex
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">public</span><span class="o">:</span><span class="c1">//Operations
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Add</span><span class="p">(</span><span class="n">Complex</span> <span class="n">Other</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">GetRead</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">//.....
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="kind-of-parameters">Kind of parameters</h2>
-<ol>
-<li>Value parameter</li>
-<li>Reference parameter (in c++ is &amp;)</li>
-</ol>
-<h2 id="summary">Summary</h2>
-<ol>
-<li>DS = Data elements + Relationships of data elements</li>
-<li>Data structures + Algorithms = Program</li>
-<li>ADT = DS + Operations</li>
-</ol>
 ]]></description>
 </item>
 </channel>

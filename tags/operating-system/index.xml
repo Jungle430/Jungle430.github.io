@@ -17,7 +17,7 @@
 <li>到底什么是操作系统? $(what)\newline$</li>
 <li>怎么学操作系统? $(how)\newline$</li>
 </ul>
-<h3 id="为什么要学操作系统whynewline">为什么要学操作系统?$(why)\newline$</h3>
+<h3 id="为什么学操作系统whynewline">为什么学操作系统?$(why)\newline$</h3>
 <ul>
 <li>
 <p>每天都在用的东西你没搞明白 $\rightarrow$ 窗口是怎么创建的？ 为什么$Ctrl-C$有时不能退出程序？</p>
