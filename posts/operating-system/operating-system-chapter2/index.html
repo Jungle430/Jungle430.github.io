@@ -1,14 +1,176 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Operating System - 标签 - Jungle&#39;s Blog</title>
-        <link>https://Jungle430.github.io/tags/operating-system/</link>
-        <description>Operating System - 标签 - Jungle&#39;s Blog</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Sat, 31 Dec 2022 19:30:30 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/tags/operating-system/" rel="self" type="application/rss+xml" /><item>
-    <title>Operating System Chapter2</title>
-    <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/</link>
-    <pubDate>Sat, 31 Dec 2022 19:30:30 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/</guid>
-    <description><![CDATA[<h1 id="operating-system">Operating System</h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Operating System Chapter2 - Jungle&#39;s Blog</title><meta name="description" content="Welcome to Jungle&#39;s blog."><meta property="og:title" content="Operating System Chapter2" />
+<meta property="og:description" content="Operating System $Nanjing\ University\rightarrow Yanyan\ Jiang\newline$ 操作系统上的程序 Overview 复习 什么是操作系统？ 应用视角 (设计): 一组对象 (进程/文件/&hellip;) &#43; API 硬件视角 (实现): 一个 C 程序" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-31T19:30:30+08:00" />
+<meta property="article:modified_time" content="2022-12-31T19:30:30+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Operating System Chapter2"/>
+<meta name="twitter:description" content="Operating System $Nanjing\ University\rightarrow Yanyan\ Jiang\newline$ 操作系统上的程序 Overview 复习 什么是操作系统？ 应用视角 (设计): 一组对象 (进程/文件/&hellip;) &#43; API 硬件视角 (实现): 一个 C 程序"/>
+<meta name="application-name" content="Jungle&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" /><link rel="prev" href="https://Jungle430.github.io/posts/opencv/opencv-chapter1/" /><link rel="stylesheet" href="/css/page.min.css"><link rel="stylesheet" href="/css/home.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Operating System Chapter2",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/Jungle430.github.io\/posts\/operating-system\/operating-system-chapter2\/"
+        },"genre": "posts","keywords": "Operating System","wordcount":  5487 ,
+        "url": "https:\/\/Jungle430.github.io\/posts\/operating-system\/operating-system-chapter2\/","datePublished": "2022-12-31T19:30:30+08:00","dateModified": "2022-12-31T19:30:30+08:00","publisher": {
+            "@type": "Organization",
+            "name": "Jungle"},"author": {
+                "@type": "Person",
+                "name": "Jungle"
+            },"description": ""
+    }
+    </script></head><body data-header-desktop="auto" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><div class="menu-item"><a href="javascript:void(0);" class="theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div></div>
+    </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">Operating System Chapter2</h2><div class="post-meta">
+                <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/operating-system/"><i class="far fa-folder fa-fw"></i>Operating System</a></span></div>
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2022-12-31">2022-12-31</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5487 字</span>&nbsp;
+                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 11 分钟</span>&nbsp;</div>
+            </div>
+            
+            <hr><div class="details toc" id="toc-static"  data-kept="">
+                    <div class="details-summary toc-title">
+                        <span>目录</span>
+                        <span><i class="details-icon fas fa-angle-right"></i></span>
+                    </div>
+                    <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#操作系统上的程序">操作系统上的程序</a>
+      <ul>
+        <li><a href="#overview">Overview</a>
+          <ul>
+            <li><a href="#复习">复习</a></li>
+            <li><a href="#本次课程主要问题">本次课程主要问题</a></li>
+            <li><a href="#本次课主要内容">本次课主要内容</a></li>
+          </ul>
+        </li>
+        <li><a href="#状态机与数字电路">状态机与数字电路</a></li>
+        <li><a href="#什么是程序源代码视角">什么是程序（源代码视角）</a>
+          <ul>
+            <li><a href="#c-程序的状态机模型角度一">C 程序的状态机模型（角度一）</a></li>
+            <li><a href="#c-程序的状态机模型角度二">C 程序的状态机模型（角度二）</a></li>
+          </ul>
+        </li>
+        <li><a href="#什么是程序-二进制代码视角">什么是程序 (二进制代码视角)</a>
+          <ul>
+            <li><a href="#一条特殊的指令">一条特殊的指令</a></li>
+            <li><a href="#问题怎么构造一个最小的-hello-world">问题：怎么构造一个最小的 Hello, World？</a>
+              <ul>
+                <li><a href="#解决异常退出">解决异常退出</a></li>
+                <li><a href="#hello-world的汇编实现">Hello, World的汇编实现</a>
+                  <ul>
+                    <li><a href="#彩蛋ansi-escape-code">彩蛋：ANSI Escape Code</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#编译器与编译优化">编译器与编译优化</a>
+          <ul>
+            <li><a href="#现代-与未来的-编译优化">现代 (与未来的) 编译优化</a></li>
+            <li><a href="#进入-plprogramming-language-的领域">进入 PL(Programming language) 的领域</a></li>
+          </ul>
+        </li>
+        <li><a href="#操作系统中的程序">操作系统中的程序</a>
+          <ul>
+            <li><a href="#操作系统中的一般程序">操作系统中的一般程序</a></li>
+            <li><a href="#二进制-程序也是操作系统中的对象">(二进制) 程序也是操作系统中的对象</a></li>
+            <li><a href="#系统中常见的应用程序">系统中常见的应用程序</a></li>
+            <li><a href="#操作系统中的程序dark-side">操作系统中的程序：Dark Side</a>
+              <ul>
+                <li><a href="#main-之前发生了什么"><code>main()</code> 之前发生了什么？</a></li>
+              </ul>
+            </li>
+            <li><a href="#打开程序的执行trace-踪迹">打开程序的执行：Trace (踪迹)</a></li>
+            <li><a href="#本质上所有的程序和-hello-world-类似">本质上，所有的程序和 Hello World 类似</a></li>
+            <li><a href="#yes---这些-api-就是操作系统的全部">Yes! - 这些 API 就是操作系统的全部</a></li>
+            <li><a href="#各式各样的应用程序">各式各样的应用程序</a></li>
+          </ul>
+        </li>
+        <li><a href="#总结">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </div><div class="content" id="content"><h1 id="operating-system">Operating System</h1>
 <p>$Nanjing\ University\rightarrow Yanyan\ Jiang\newline$</p>
 <h2 id="操作系统上的程序">操作系统上的程序</h2>
 <h3 id="overview">Overview</h3>
@@ -311,15 +473,33 @@ $$</p>
 </div>
 </div><p>效果：循环出现如下画面</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-1.png" title="/img/Operating System/chapter2-1.png" data-thumbnail="/img/Operating System/chapter2-1.png" data-sub-html="<h2>python后端(image 1)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-1.png"
+            data-srcset="/img/Operating%20System/chapter2-1.png, /img/Operating%20System/chapter2-1.png 1.5x, /img/Operating%20System/chapter2-1.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-1.png" />
     </a><figcaption class="image-caption">python后端(<code>image 1</code>)</figcaption>
     </figure>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-2.png" title="/img/Operating System/chapter2-2.png" data-thumbnail="/img/Operating System/chapter2-2.png" data-sub-html="<h2>python后端(image 2)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-2.png"
+            data-srcset="/img/Operating%20System/chapter2-2.png, /img/Operating%20System/chapter2-2.png 1.5x, /img/Operating%20System/chapter2-2.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-2.png" />
     </a><figcaption class="image-caption">python后端(<code>image 2</code>)</figcaption>
     </figure>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-3.png" title="/img/Operating System/chapter2-3.png" data-thumbnail="/img/Operating System/chapter2-3.png" data-sub-html="<h2>python后端(image 3)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-3.png"
+            data-srcset="/img/Operating%20System/chapter2-3.png, /img/Operating%20System/chapter2-3.png 1.5x, /img/Operating%20System/chapter2-3.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-3.png" />
     </a><figcaption class="image-caption">python后端(<code>image 3</code>)</figcaption>
     </figure>
 <ul>
@@ -531,7 +711,13 @@ $$</p>
 </div>
 </div><p>效果</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-4.png" title="/img/Operating System/chapter2-4.png" data-thumbnail="/img/Operating System/chapter2-4.png" data-sub-html="<h2>效果(on windows)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-4.png"
+            data-srcset="/img/Operating%20System/chapter2-4.png, /img/Operating%20System/chapter2-4.png 1.5x, /img/Operating%20System/chapter2-4.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-4.png" />
     </a><figcaption class="image-caption">效果(<code>on windows</code>)</figcaption>
     </figure>
 <p>实际使用<code>–static</code>(不依赖动态链接库)</p>
@@ -581,25 +767,49 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </li>
 </ul>
 <p>定位出错位置</p>
-<p><figure><a class="lightgallery" href="/img/Operating%20System/chapter2-5.png" title="/img/Operating System/chapter2-5.png" data-thumbnail="/img/Operating System/chapter2-5.png" data-sub-html="<h2>出错位置(on linux)</h2>">
-        
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter2-5.png" title="/img/Operating System/chapter2-5.png" data-thumbnail="/img/Operating System/chapter2-5.png" data-sub-html="<h2>出错位置(on linux)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-5.png"
+            data-srcset="/img/Operating%20System/chapter2-5.png, /img/Operating%20System/chapter2-5.png 1.5x, /img/Operating%20System/chapter2-5.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-5.png" />
     </a><figcaption class="image-caption">出错位置(<code>on linux</code>)</figcaption>
     </figure>
 ![](D:\JungleBlog\static\img\Operating System\chapter2-5.png)</p>
 <p><code>retq</code>:栈由<code>rsp</code>（寄存器）控制,<code>retq</code>就是从<code>rsp</code>寄存器当中取出8个字节，赋值给<code>rip</code>(pc)，然后<code>rsp &lt;- rsp + 8</code>（往上挪一格）（栈向下增长）</p>
 <p>初始<code>rsp</code>顶部为1</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-6.png" title="/img/Operating System/chapter2-6.png" data-thumbnail="/img/Operating System/chapter2-6.png" data-sub-html="<h2>查看错误(on gdb)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-6.png"
+            data-srcset="/img/Operating%20System/chapter2-6.png, /img/Operating%20System/chapter2-6.png 1.5x, /img/Operating%20System/chapter2-6.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-6.png" />
     </a><figcaption class="image-caption">查看错误(<code>on gdb</code>)</figcaption>
     </figure>
 <p>栈</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-7.png" title="/img/Operating System/chapter2-7.png" data-thumbnail="/img/Operating System/chapter2-7.png" data-sub-html="<h2>查看错误(on gdb)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-7.png"
+            data-srcset="/img/Operating%20System/chapter2-7.png, /img/Operating%20System/chapter2-7.png 1.5x, /img/Operating%20System/chapter2-7.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-7.png" />
     </a><figcaption class="image-caption">查看错误(<code>on gdb</code>)</figcaption>
     </figure>
 <p>但是当执行完有问题的语句之后<code>retq</code>，<code>rip</code>就变成了8</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-8.png" title="/img/Operating System/chapter2-8.png" data-thumbnail="/img/Operating System/chapter2-8.png" data-sub-html="<h2>出现错误(on gdb)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-8.png"
+            data-srcset="/img/Operating%20System/chapter2-8.png, /img/Operating%20System/chapter2-8.png 1.5x, /img/Operating%20System/chapter2-8.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-8.png" />
     </a><figcaption class="image-caption">出现错误(<code>on gdb</code>)</figcaption>
     </figure>
 <p>非法访问，触发了<code>Segmentation Fault</code></p>
@@ -630,18 +840,36 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </div><p><code>linux</code>环境下使用<code>gdb</code>进行调试</p>
 <p>发现调用了<code>syscall</code></p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-9.png" title="/img/Operating System/chapter2-9.png" data-thumbnail="/img/Operating System/chapter2-9.png" data-sub-html="<h2>gdb(on linux)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-9.png"
+            data-srcset="/img/Operating%20System/chapter2-9.png, /img/Operating%20System/chapter2-9.png 1.5x, /img/Operating%20System/chapter2-9.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-9.png" />
     </a><figcaption class="image-caption">gdb(<code>on linux</code>)</figcaption>
     </figure>
 <p>进入<code>syscall</code>继续查看</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-10.png" title="/img/Operating System/chapter2-10.png" data-thumbnail="/img/Operating System/chapter2-10.png" data-sub-html="<h2>gdb(继续查看)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-10.png"
+            data-srcset="/img/Operating%20System/chapter2-10.png, /img/Operating%20System/chapter2-10.png 1.5x, /img/Operating%20System/chapter2-10.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-10.png" />
     </a><figcaption class="image-caption">gdb(<code>继续查看</code>)</figcaption>
     </figure>
 <p>发现该函数给一大堆寄存器赋了值，赋完值之后会执行一个<code>syscall</code>指令</p>
 <p>实质：准备好一个系统调用的参数，然后把自己完全交给操作系统</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-11.png" title="/img/Operating System/chapter2-11.png" data-thumbnail="/img/Operating System/chapter2-11.png" data-sub-html="<h2>gdb(可以看到退出码)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-11.png"
+            data-srcset="/img/Operating%20System/chapter2-11.png, /img/Operating%20System/chapter2-11.png 1.5x, /img/Operating%20System/chapter2-11.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-11.png" />
     </a><figcaption class="image-caption">gdb(<code>可以看到退出码</code>)</figcaption>
     </figure>
 <p>（终止）</p>
@@ -698,7 +926,13 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </div><p>Note: gcc 支持对汇编代码的预编译 (还会定义 <code>__ASSEMBLER__</code> 宏)</p>
 <p>运行成功，红色的hello,world（<code>linux</code>开始💩🐴犯病，用gdb才调出来）</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-12.png" title="/img/Operating System/chapter2-12.png" data-thumbnail="/img/Operating System/chapter2-12.png" data-sub-html="<h2>运行程序(on gdb)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-12.png"
+            data-srcset="/img/Operating%20System/chapter2-12.png, /img/Operating%20System/chapter2-12.png 1.5x, /img/Operating%20System/chapter2-12.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-12.png" />
     </a><figcaption class="image-caption">运行程序(<code>on gdb</code>)</figcaption>
     </figure>
 <p>宏展开结果</p>
@@ -1007,7 +1241,13 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </ul>
 <p>使用<code>gdb</code></p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-13.png" title="/img/Operating System/chapter2-13.png" data-thumbnail="/img/Operating System/chapter2-13.png" data-sub-html="<h2>gdb(查看入口)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-13.png"
+            data-srcset="/img/Operating%20System/chapter2-13.png, /img/Operating%20System/chapter2-13.png 1.5x, /img/Operating%20System/chapter2-13.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-13.png" />
     </a><figcaption class="image-caption">gdb(<code>查看入口</code>)</figcaption>
     </figure>
 <div class="highlight"><div class="chroma">
@@ -1116,7 +1356,13 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </span></span></code></pre></td></tr></table>
 </div>
 </div><figure><a class="lightgallery" href="/img/Operating%20System/chapter2-14.png" title="/img/Operating System/chapter2-14.png" data-thumbnail="/img/Operating System/chapter2-14.png" data-sub-html="<h2>vim(汇编代码)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-14.png"
+            data-srcset="/img/Operating%20System/chapter2-14.png, /img/Operating%20System/chapter2-14.png 1.5x, /img/Operating%20System/chapter2-14.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-14.png" />
     </a><figcaption class="image-caption">vim(<code>汇编代码</code>)</figcaption>
     </figure>
 <p>后面老师hacker改二进制代码的时候✌️的👀已经跟不上了，脑子更是直接💩🐴</p>
@@ -1145,7 +1391,13 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </ul>
 <p>使用<code>strace</code></p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-15.png" title="/img/Operating System/chapter2-15.png" data-thumbnail="/img/Operating System/chapter2-15.png" data-sub-html="<h2>linux(使用strace)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-15.png"
+            data-srcset="/img/Operating%20System/chapter2-15.png, /img/Operating%20System/chapter2-15.png 1.5x, /img/Operating%20System/chapter2-15.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-15.png" />
     </a><figcaption class="image-caption">linux(<code>使用strace</code>)</figcaption>
     </figure>
 <h4 id="本质上所有的程序和-hello-world-类似">本质上，所有的程序和 Hello World 类似</h4>
@@ -1217,7 +1469,13 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </li>
 </ul>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-16.png" title="/img/Operating System/chapter2-16.png" data-thumbnail="/img/Operating System/chapter2-16.png" data-sub-html="<h2>strace(xedit)</h2>">
-        
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Operating%20System/chapter2-16.png"
+            data-srcset="/img/Operating%20System/chapter2-16.png, /img/Operating%20System/chapter2-16.png 1.5x, /img/Operating%20System/chapter2-16.png 2x"
+            data-sizes="auto"
+            alt="/img/Operating System/chapter2-16.png" />
     </a><figcaption class="image-caption">strace(<code>xedit</code>)</figcaption>
     </figure>
 <h4 id="各式各样的应用程序">各式各样的应用程序</h4>
@@ -1276,208 +1534,37 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </li>
 </ul>
 <p><strong>声明：本文章引用资料与图像均已做标注，如有侵权本人会马上删除</strong></p>
-]]></description>
-</item>
-<item>
-    <title>Operating System Chapter1</title>
-    <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</link>
-    <pubDate>Fri, 30 Dec 2022 16:27:09 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</guid>
-    <description><![CDATA[<h1 id="operating-system">Operating System</h1>
-<p>$Nanjing\ University\rightarrow Yanyan\ Jiang\newline$</p>
-<h2 id="操作系统概述">操作系统概述</h2>
-<p>$Overvier\newline$</p>
-<ul>
-<li>为什么要学操作系统? $(why)\newline$</li>
-<li>到底什么是操作系统? $(what)\newline$</li>
-<li>怎么学操作系统? $(how)\newline$</li>
-</ul>
-<h3 id="为什么学操作系统whynewline">为什么学操作系统?$(why)\newline$</h3>
-<ul>
-<li>
-<p>每天都在用的东西你没搞明白 $\rightarrow$ 窗口是怎么创建的？ 为什么$Ctrl-C$有时不能退出程序？</p>
-</li>
-<li>
-<p>组里的服务器有128个处理器，而你的程序却只能用一个 😂</p>
-</li>
-<li>
-<p>你每天都在用的东西，却实现不出来🤡 $\rightarrow$ 浏览器，编译器，$IDE$，游戏/外挂，任务管理器，杀毒软件，病毒…</p>
-</li>
-</ul>
-<p>学完：</p>
-<p>悟性好 $\rightarrow$ 系统方向“毕业”，具有编写一切“能写出来”程序的能力（具备阅读论文的能力）</p>
-<p>悟性差 $\rightarrow$ 内力大增， 可能在工作中的某一天想起上课的内容</p>
-<h3 id="什么是操作系统whatnewline">什么是操作系统?$(what)\newline$</h3>
-<blockquote>
-<p>Operating System: A body of software, in fact, that is responsible for <em>making it easy to run programs</em> (even allowing you to seemingly run many at the same time), allowing programs to share memory, enabling programs to interact with devices, and other fun stuff like that. (OSTEP)</p>
-</blockquote>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-1.png" title="/img/Operating System/chapter1-1.png" data-thumbnail="/img/Operating System/chapter1-1.png" data-sub-html="<h2>From PPT(什么是操作系统？)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>什么是操作系统？</code>)</figcaption>
-    </figure>
-<p>Question:操作系统如何从一开始变成现在这样的？</p>
-<p>$\rightarrow$ 三个重要的线索</p>
-<blockquote>
-<p>计算机（硬件）</p>
-<p>程序（软件）</p>
-<p>操作系统（管理软件的软件）</p>
-</blockquote>
-<h4 id="操作系统历史">操作系统历史</h4>
-<h5 id="1940s">1940s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-2.png" title="/img/Operating System/chapter1-2.png" data-thumbnail="/img/Operating System/chapter1-2.png" data-sub-html="<h2>From PPT(1940s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-3.jpg" title="/img/Operating System/chapter1-3.jpg" data-thumbnail="/img/Operating System/chapter1-3.jpg" data-sub-html="<h2>From PPT(1940s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-4.jpg" title="/img/Operating System/chapter1-4.jpg" data-thumbnail="/img/Operating System/chapter1-4.jpg" data-sub-html="<h2>From PPT(1940s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-5.png" title="/img/Operating System/chapter1-5.png" data-thumbnail="/img/Operating System/chapter1-5.png" data-sub-html="<h2>From PPT(1940s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 4</code>)</figcaption>
-    </figure>
-<h5 id="1950s">1950s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-6.png" title="/img/Operating System/chapter1-6.png" data-thumbnail="/img/Operating System/chapter1-6.png" data-sub-html="<h2>From PPT(1950s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-7.png" title="/img/Operating System/chapter1-7.png" data-thumbnail="/img/Operating System/chapter1-7.png" data-sub-html="<h2>From PPT(1950s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 2</code>)</figcaption>
-    </figure>
-<p>Example code on ppt</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fortran" data-lang="fortran"><span class="line"><span class="cl"><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="k">PROGRAM </span><span class="n">READS</span><span class="w"> </span><span class="n">INPUT</span><span class="w"> </span><span class="n">FROM</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="n">CARD</span><span class="w"> </span><span class="n">READER</span><span class="p">,</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">INTEGERS</span><span class="w"> </span><span class="n">IN</span><span class="w"> </span><span class="n">EACH</span><span class="w"> </span><span class="n">CARD</span><span class="p">,</span><span class="w"> </span><span class="n">CALCULATE</span><span class="w"> </span><span class="nb">AND </span><span class="n">OUTPUT</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="nb">SUM </span><span class="n">OF</span><span class="w"> </span><span class="n">THEM</span><span class="p">.</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="mi">100</span><span class="w"> </span><span class="k">READ</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="n">I1</span><span class="p">,</span><span class="w"> </span><span class="n">I2</span><span class="p">,</span><span class="w"> </span><span class="n">I3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="mi">10</span><span class="w"> </span><span class="k">FORMAT</span><span class="p">(</span><span class="mi">3</span><span class="n">I5</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="p">(</span><span class="n">I1</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">AND</span><span class="p">.</span><span class="w"> </span><span class="n">I2</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">AND</span><span class="p">.</span><span class="w"> </span><span class="n">I3</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">GOTO</span><span class="w"> </span><span class="mi">200</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="n">ISUM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">I1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">I3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">WRITE</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="n">I1</span><span class="p">,</span><span class="w"> </span><span class="n">I2</span><span class="p">,</span><span class="w"> </span><span class="n">I3</span><span class="p">,</span><span class="w"> </span><span class="n">ISUM</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="mi">20</span><span class="w"> </span><span class="k">FORMAT</span><span class="p">(</span><span class="mi">7</span><span class="n">HSUM</span><span class="w"> </span><span class="n">OF</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="n">H</span><span class="p">,</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">H</span><span class="w"> </span><span class="nb">AND</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="o">*</span><span class="w">   </span><span class="mi">4</span><span class="n">H</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I6</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">GOTO</span><span class="w"> </span><span class="mi">100</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="mi">200</span><span class="w"> </span><span class="k">STOP
-</span></span></span><span class="line"><span class="cl"><span class="k">      END</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info"><div class="post-info-tag"><span><a href="/tags/operating-system/">Operating System</a>
+                </span></div><div class="post-info-line"><div class="post-info-mod">
+                <span>更新于 2022-12-31</span>
+            </div><div class="post-info-mod"></div>
+        </div><div class="post-info-share">
+            <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2" data-hashtags="Operating System"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-hashtag="Operating System"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2" data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2"><i class="fab fa-line fa-fw"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Myspace" data-sharer="myspace" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2" data-description=""><i data-svg-src="/lib/simple-icons/icons/myspace.min.svg"></i></a><a href="javascript:void(0);" title="分享到 Blogger" data-sharer="blogger" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2" data-description=""><i class="fab fa-blogger fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/" data-title="Operating System Chapter2"><i class="fab fa-evernote fa-fw"></i></a></span>
+        </div></div><div class="post-nav"><a href="/posts/opencv/opencv-chapter1/" class="prev" rel="prev" title="OpenCV Chapter1"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
+</div></article></div>
+            </main>
+            <footer class="footer"><div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.105.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/khusika/FeelIt" target="_blank" rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+        </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://github.com/Jungle430">Jungle</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
 </div>
-</div><figure><a class="lightgallery" href="/img/Operating%20System/chapter1-8.png" title="/img/Operating System/chapter1-8.png" data-thumbnail="/img/Operating System/chapter1-8.png" data-sub-html="<h2>From PPT(1950s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-9.png" title="/img/Operating System/chapter1-9.png" data-thumbnail="/img/Operating System/chapter1-9.png" data-sub-html="<h2>From PPT(1950s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 4</code>)</figcaption>
-    </figure>
-<h5 id="1960s">1960s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-10.png" title="/img/Operating System/chapter1-10.png" data-thumbnail="/img/Operating System/chapter1-10.png" data-sub-html="<h2>From PPT(1960s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-11.png" title="/img/Operating System/chapter1-11.png" data-thumbnail="/img/Operating System/chapter1-11.png" data-sub-html="<h2>From PPT(1960s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-12.png" title="/img/Operating System/chapter1-12.png" data-thumbnail="/img/Operating System/chapter1-12.png" data-sub-html="<h2>From PPT(1960s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-13.png" title="/img/Operating System/chapter1-13.png" data-thumbnail="/img/Operating System/chapter1-13.png" data-sub-html="<h2>From PPT(1960s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 4</code>)</figcaption>
-    </figure>
-<h5 id="1970s">1970s+</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-14.png" title="/img/Operating System/chapter1-14.png" data-thumbnail="/img/Operating System/chapter1-14.png" data-sub-html="<h2>From PPT(1970s&#43; 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-15.png" title="/img/Operating System/chapter1-15.png" data-thumbnail="/img/Operating System/chapter1-15.png" data-sub-html="<h2>From PPT(1970s&#43; 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-16.png" title="/img/Operating System/chapter1-16.png" data-thumbnail="/img/Operating System/chapter1-16.png" data-sub-html="<h2>From PPT(1970s&#43; 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 3</code>)</figcaption>
-    </figure>
-<h5 id="today">today</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-17.png" title="/img/Operating System/chapter1-17.png" data-thumbnail="/img/Operating System/chapter1-17.png" data-sub-html="<h2>From PPT(today)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>today</code>)</figcaption>
-    </figure>
-<h4 id="理解操作系统三个根本问题">理解操作系统：三个根本问题</h4>
-<p>操作系统服务谁？</p>
-<ul>
-<li><strong>程序 = 状态机</strong></li>
-<li>课程涉及：多线程 $Linux$ 应用程序</li>
-</ul>
-<hr>
-<p>(设计/应用视角) 操作系统为程序提供什么服务？</p>
-<ul>
-<li><strong>操作系统 = 对象 + $API\newline$</strong></li>
-<li>课程涉及：$POSIX$ + 部分$ Linux$ 特性</li>
-</ul>
-<hr>
-<p>(实现/硬件视角) 如何实现操作系统提供的服务？</p>
-<ul>
-<li><strong>操作系统 = C 程序</strong>
-<ul>
-<li>完成初始化后就成为 $interrupt/trap/fault handler\newline$</li>
-</ul>
-</li>
-<li>课程涉及：$xv6$, 自制迷你操作系统</li>
-</ul>
-<h3 id="怎么学操作系统hownewline">怎么学操作系统?$(how)\newline$</h3>
-<ol>
-<li>是一个合格的操作系统用户
-<ul>
-<li>会 $STFW/RTFM$ 自己动手解决问题</li>
-<li>不怕使用任何命令行工具
-<ul>
-<li>$vim, tmux, grep, gcc, binutils, &hellip;\newline$</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>不惧怕写代码
-<ul>
-<li>能管理一定规模 (数千行) 的代码</li>
-<li>能在出 bug 时默念 “机器永远是对的、我肯定能调出来的”
-<ul>
-<li>然后开始用正确的工具/方法调试</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<p>写代码 = 创造有趣的东西</p>
-<ul>
-<li>命令行 + 浏览器就是世界</li>
-</ul>
-<p>教科书:</p>
-<p>Remzi&rsquo;s <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/" target="_blank" rel="noopener noreffer">Operating Systems: Three Easy Pieces</a></p>
-<p>顺序：并发 → 虚拟化 → 持久化</p>
-<p><strong>声明：本文章引用资料与图像均已做标注，如有侵权本人会马上删除</strong></p>
-]]></description>
-</item>
-</channel>
-</rss>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/sw.min.js?version=0.0.1', { scope: '/' })
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Registered');
+        }, err => console.error('Jungle\u0027s Blog\u00A0Service Worker registration failed: ', err));
+
+    navigator.serviceWorker
+        .ready
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Ready');
+        });
+}
+</script>
+</footer>
+        </div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-chevron-up fa-fw"></i>
+            </a></div><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.fill%2CArray.prototype.find%2CArray.from%2CIntersectionObserver%2CMath.sign%2CObject.assign%2CPromise%2CObject.entries%2Chtml5shiv%2CObject.values%2Cfetch%2CElement.prototype.after"></script><script src="/lib/autocomplete/autocomplete.min.js"></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js"></script><script src="/lib/lazysizes/lazysizes.min.js"></script><script src="/lib/clipboard/clipboard.min.js"></script><script src="/lib/sharer/sharer.min.js"></script><script src="/lib/katex/katex.min.js"></script><script src="/lib/katex/auto-render.min.js"></script><script src="/lib/katex/copy-tex.min.js"></script><script src="/lib/katex/mhchem.min.js"></script><script src="/lib/mermaid/mermaid.min.js"></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":100},"comment":{},"data":{"id-1":"graph TB\nA((00))\nB((01))\nC((10))\nA--\u003eB--clk--\u003eC--\u003eA","id-2":"graph LR\n1(初始状态)\n2(1 state)\n3(2 state)\n4(3 state)\n5(......)\n1--计算指令--\u003e2--计算指令--\u003e3--syscall--\u003e4--计算指令/syscall--\u003e5"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body></html>
