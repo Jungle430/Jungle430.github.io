@@ -4,9 +4,1530 @@
         <link>https://Jungle430.github.io/</link>
         <description>Welcome to Jungle&#39;s blog.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Sat, 31 Dec 2022 19:30:30 &#43;0800</lastBuildDate>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Sun, 01 Jan 2023 19:59:41 &#43;0800</lastBuildDate>
             <atom:link href="https://Jungle430.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>Operating System Chapter3</title>
+    <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter3/</link>
+    <pubDate>Sun, 01 Jan 2023 19:59:41 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter3/</guid>
+    <description><![CDATA[<h1 id="operating-system">Operating System</h1>
+<p>$Nanjing\ University\rightarrow Yanyan\ Jiang\newline$</p>
+<h2 id="多处理器编程从入门到放弃">多处理器编程：从入门到放弃</h2>
+<h3 id="overview">Overview</h3>
+<p>复习</p>
+<ul>
+<li>程序 (源代码<code>S</code>、二进制代码<code>C</code>) = 状态机
+<ul>
+<li>编译器 $C = \textrm{compile}(S)\newline$</li>
+</ul>
+</li>
+<li>应用视角的操作系统 = syscall 指令</li>
+</ul>
+<hr>
+<p>本次课回答的问题</p>
+<ul>
+<li><strong>Q</strong>: 在多处理器时代，上面的理解应该作出怎样的变化？</li>
+</ul>
+<hr>
+<p>本次课主要内容</p>
+<ul>
+<li>并发程序的状态机模型</li>
+<li>线程库 <code>thread.h</code></li>
+<li>多线程带来的麻烦</li>
+</ul>
+<h3 id="入门">入门</h3>
+<h4 id="three-easy-pieces-并发">Three Easy Pieces: 并发</h4>
+<blockquote>
+<p>Concurrent: existing, happening, or done <em>at the same time</em>.</p>
+<p>In computer science, concurrency refers to the ability of different parts or units of a program, algorithm, or problem to be executed out-of-order or in partial order, without affecting the final outcome. (Wikipedia)</p>
+</blockquote>
+<p>为什么在这门课 (先) 讲并发？</p>
+<ul>
+<li>讲并发
+<ul>
+<li><strong>操作系统是最早的并发程序之一</strong></li>
+<li>今天遍地都是多处理器系统 (为什么？)</li>
+</ul>
+</li>
+<li>先讲并发
+<ul>
+<li>实验是 bottom-up 的 (L1: 多处理器上的 <code>malloc</code>/<code>free</code>)</li>
+</ul>
+</li>
+</ul>
+<h4 id="并发的基本单位线程">并发的基本单位：线程</h4>
+<p>共享内存的多个执行流</p>
+<ul>
+<li>执行流拥有独立的堆栈/寄存器</li>
+<li>共享全部的内存 (指针可以互相引用)</li>
+</ul>
+<hr>
+<p>用状态机的视角就很容易理解了！</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-1.jpg" title="/img/Operating System/chapter3-1.jpg" data-thumbnail="/img/Operating System/chapter3-1.jpg" data-sub-html="<h2>手写(状态机,stack frame与共享内存)</h2>">
+        
+    </a><figcaption class="image-caption">手写(<code>状态机,stack frame与共享内存</code>)</figcaption>
+    </figure>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-2.jpg" title="/img/Operating System/chapter3-2.jpg" data-thumbnail="/img/Operating System/chapter3-2.jpg" data-sub-html="<h2>手写(线程)</h2>">
+        
+    </a><figcaption class="image-caption">手写(<code>线程</code>)</figcaption>
+    </figure>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-3.jpg" title="/img/Operating System/chapter3-3.jpg" data-thumbnail="/img/Operating System/chapter3-3.jpg" data-sub-html="<h2>手写(并发编程的不确定性)</h2>">
+        
+    </a><figcaption class="image-caption">手写(<code>并发编程的不确定性</code>)</figcaption>
+    </figure>
+<h4 id="入门threadh-简化的线程-api">入门：<code>thread.h</code> 简化的线程 API</h4>
+<p>我们为大家封装了超级好用的线程 API (<a href="https://jyywiki.cn/pages/OS/2022/demos/thread.h" target="_blank" rel="noopener noreffer"><code>thread.h</code></a>)</p>
+<ul>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">create</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建一个入口函数是<code>fn</code>的线程，并立即开始执行（状态机理解创建 $\rightarrow$ 在状态机里加入一个新的栈帧的列表，并且每次可以选到每一个链表来执行）</p>
+<ul>
+<li>
+<p>void fn(int tid) { &hellip; }</p>
+</li>
+<li>
+<p>参数 <code>tid</code> 从 1 开始编号</p>
+</li>
+</ul>
+</li>
+<li>
+<p>语义：在状态中新增 stack frame 列表并初始化为 <code>fn(tid)</code></p>
+</li>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">join</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>等待所有运行线程的 <code>fn</code> 返回</li>
+<li>在 <code>main</code> 返回时会自动等待所有线程结束</li>
+<li><strong>语义：在有其他线程未执行完时死循环，否则返回</strong>（用状态机空转的角度来理解）</li>
+</ul>
+</li>
+<li>
+<p>编译时需要增加 <code>-lpthread</code></p>
+</li>
+</ul>
+<p><code>thread.h</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdatomic.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;assert.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define NTHREAD 64
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">enum</span> <span class="p">{</span> <span class="n">T_FREE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T_LIVE</span><span class="p">,</span> <span class="n">T_DEAD</span><span class="p">,</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="kr">thread</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">pthread_t</span> <span class="kr">thread</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">entry</span><span class="p">)(</span><span class="kt">int</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="kr">thread</span> <span class="n">tpool</span><span class="p">[</span><span class="n">NTHREAD</span><span class="p">],</span> <span class="o">*</span><span class="n">tptr</span> <span class="o">=</span> <span class="n">tpool</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="nf">wrapper</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="kr">thread</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">thread</span><span class="o">-&gt;</span><span class="n">entry</span><span class="p">(</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">create</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">assert</span><span class="p">(</span><span class="n">tptr</span> <span class="o">-</span> <span class="n">tpool</span> <span class="o">&lt;</span> <span class="n">NTHREAD</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">*</span><span class="n">tptr</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="kr">thread</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">tptr</span> <span class="o">-</span> <span class="n">tpool</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">T_LIVE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">entry</span> <span class="o">=</span> <span class="n">fn</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">tptr</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">),</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">,</span> <span class="n">tptr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">++</span><span class="n">tptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">join</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NTHREAD</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="n">t</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">tpool</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">==</span> <span class="n">T_LIVE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">pthread_join</span><span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">t</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">=</span> <span class="n">T_DEAD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">__attribute__</span><span class="p">((</span><span class="n">destructor</span><span class="p">))</span> <span class="kt">void</span> <span class="n">cleanup</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">join</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="入门-contd">入门 (cont&rsquo;d)</h4>
+<p>Hello, Multi-threaded World!</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Ta</span><span class="p">()</span> <span class="p">{</span> <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Tb</span><span class="p">()</span> <span class="p">{</span> <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;b&#34;</span><span class="p">);</span> <span class="p">}</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Ta</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译（注意使用<code>-lpthread</code>）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc the.c -lpthread 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行 $\rightarrow$ 交替输出</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-4.png" title="/img/Operating System/chapter3-4.png" data-thumbnail="/img/Operating System/chapter3-4.png" data-sub-html="<h2>Linux(输出结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>输出结果</code>)</figcaption>
+    </figure>
+<p>利用 <code>thread.h</code> 就可以写出利用多处理器的程序！</p>
+<ul>
+<li>操作系统会自动把线程放置在不同的处理器上</li>
+<li>在后台运行，可以看到 CPU 使用率超过了 100%（2个接近200， 4个接近400）$\rightarrow$ 使用了多个CPU</li>
+</ul>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-5.png" title="/img/Operating System/chapter3-5.png" data-thumbnail="/img/Operating System/chapter3-5.png" data-sub-html="<h2>top(查看CPU使用率)</h2>">
+        
+    </a><figcaption class="image-caption">top(<code>查看CPU使用率</code>)</figcaption>
+    </figure>
+<blockquote>
+<p>会编程，你就拥有全世界！</p>
+</blockquote>
+<p>如何证明线程确实共享内存？</p>
+<ul>
+<li><a href="https://jyywiki.cn/pages/OS/2022/demos/shm-test.c" target="_blank" rel="noopener noreffer">shm-test.c</a></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Thello</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">usleep</span><span class="p">(</span><span class="n">id</span> <span class="o">*</span> <span class="mi">100000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Hello from thread #%c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="s">&#34;123456789ABCDEF&#34;</span><span class="p">[</span><span class="n">x</span><span class="o">++</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">create</span><span class="p">(</span><span class="n">Thello</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行结果</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-6.png" title="/img/Operating System/chapter3-6.png" data-thumbnail="/img/Operating System/chapter3-6.png" data-sub-html="<h2>Linux(shm-test.c运行结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>shm-test.c运行结果</code>)</figcaption>
+    </figure>
+<hr>
+<p>如何证明线程具有独立堆栈 (以及确定它们的范围)？</p>
+<ul>
+<li><a href="https://jyywiki.cn/pages/OS/2022/demos/stack-probe.c" target="_blank" rel="noopener noreffer">stack-probe.c</a> (输出有点乱？我们还有 <code>sort</code>!)</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="n">__thread</span> <span class="kt">char</span> <span class="o">*</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">cur</span><span class="p">;</span> <span class="c1">// thread-local variables
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">__thread</span> <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// objdump to see how thread-local variables are implemented
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span> <span class="kt">void</span> <span class="n">set_cur</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span> <span class="kt">char</span> <span class="o">*</span><span class="n">get_cur</span><span class="p">()</span>         <span class="p">{</span> <span class="k">return</span> <span class="n">cur</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">stackoverflow</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">set_cur</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">1024</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">base</span> <span class="o">-</span> <span class="n">get_cur</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Stack size of T%d &gt;= %d KB</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">sz</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stackoverflow</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Tprobe</span><span class="p">(</span><span class="kt">int</span> <span class="n">tid</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">id</span> <span class="o">=</span> <span class="n">tid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">base</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stackoverflow</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">create</span><span class="p">(</span><span class="n">Tprobe</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行结果</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-7.png" title="/img/Operating System/chapter3-7.png" data-thumbnail="/img/Operating System/chapter3-7.png" data-sub-html="<h2>Linux(stack-probe.c运行结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>stack-probe.c运行结果</code>)</figcaption>
+    </figure>
+<p>进行排序</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc stack-probe.c -lpthread <span class="o">&amp;&amp;</span> ./a.out <span class="p">|</span> sort -nk <span class="m">6</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>效果：</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-8.png" title="/img/Operating System/chapter3-8.png" data-thumbnail="/img/Operating System/chapter3-8.png" data-sub-html="<h2>stack-probe.c(排序后)</h2>">
+        
+    </a><figcaption class="image-caption">stack-probe.c(<code>排序后</code>)</figcaption>
+    </figure>
+<p>$size\ of\ stack=8192KB\newline$</p>
+<hr>
+<p>更多的习题</p>
+<ul>
+<li>创建线程使用的是哪个系统调用？</li>
+<li>能不能用 gdb 调试？</li>
+<li>基本原则：有需求，就能做到 (<a href="https://sourceware.org/gdb/onlinedocs/gdb/Threads.html" target="_blank" rel="noopener noreffer">RTFM</a>)</li>
+</ul>
+<h4 id="threadh-背后posix-threads"><code>thread.h</code> 背后：POSIX Threads</h4>
+<p>想进一步配置线程？</p>
+<ul>
+<li>设置更大的线程栈</li>
+<li>设置 detach 运行 (不在进程结束后被杀死，也不能 join)</li>
+<li>……</li>
+</ul>
+<hr>
+<p>POSIX 为我们提供了线程库 (pthreads)</p>
+<ul>
+<li>
+<p><code>man 7 pthreads</code></p>
+</li>
+<li>
+<p>练习：改写 thread.h，使得线程拥有更大的栈</p>
+<ul>
+<li>可以用 <a href="https://jyywiki.cn/pages/OS/2022/demos/stack-probe.c" target="_blank" rel="noopener noreffer">stack-probe.c</a> 验证</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="n">__thread</span> <span class="kt">char</span> <span class="o">*</span><span class="n">base</span><span class="p">,</span> <span class="o">*</span><span class="n">cur</span><span class="p">;</span> <span class="c1">// thread-local variables
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">__thread</span> <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// objdump to see how thread-local variables are implemented
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span> <span class="kt">void</span> <span class="n">set_cur</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span> <span class="kt">char</span> <span class="o">*</span><span class="n">get_cur</span><span class="p">()</span>         <span class="p">{</span> <span class="k">return</span> <span class="n">cur</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">stackoverflow</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">set_cur</span><span class="p">(</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">1024</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">base</span> <span class="o">-</span> <span class="n">get_cur</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Stack size of T%d &gt;= %d KB</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">sz</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stackoverflow</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Tprobe</span><span class="p">(</span><span class="kt">int</span> <span class="n">tid</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">id</span> <span class="o">=</span> <span class="n">tid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">base</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stackoverflow</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">create</span><span class="p">(</span><span class="n">Tprobe</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然而，可怕的事情正在悄悄逼近……</p>
+<ul>
+<li>
+<p>多处理器系统中线程的代码可能同时执行</p>
+<ul>
+<li>两个线程同时执行 <code>x++</code>，结果会是什么呢？</li>
+</ul>
+</li>
+</ul>
+<h3 id="放弃1原子性">放弃（1）：原子性</h3>
+<h4 id="例子山寨多线程支付宝">例子：山寨多线程支付宝</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">Alipay_withdraw</span><span class="p">(</span><span class="kt">int</span> <span class="n">amt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">balance</span> <span class="o">&gt;=</span> <span class="n">amt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">balance</span> <span class="o">-=</span> <span class="n">amt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FAIL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>两个线程并发支付 ¥100 会发生什么？<a href="https://jyywiki.cn/pages/OS/2022/demos/alipay.c" target="_blank" rel="noopener noreffer">alipay.c</a></p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-10.jpg" title="/img/Operating System/chapter3-10.jpg" data-thumbnail="/img/Operating System/chapter3-10.jpg" data-sub-html="<h2>手写(山寨支付宝状态机)</h2>">
+        
+    </a><figcaption class="image-caption">手写(<code>山寨支付宝状态机</code>)</figcaption>
+    </figure>
+<ul>
+<li>账户里会多出用不完的钱！</li>
+<li>Bug/漏洞不跟你开玩笑：Mt. Gox Hack 损失650,000
+<ul>
+<li>今天价值 $28,000,000,000</li>
+</ul>
+</li>
+</ul>
+<p><code>alipay.c</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Alipay_withdraw</span><span class="p">(</span><span class="kt">int</span> <span class="n">amt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="n">balance</span> <span class="o">&gt;=</span> <span class="n">amt</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">usleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// unexpected delays
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">balance</span> <span class="o">-=</span> <span class="n">amt</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Talipay</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Alipay_withdraw</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Talipay</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Talipay</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">join</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;balance = %lu</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">balance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Operating%20System/chapter3-9.png" title="/img/Operating System/chapter3-9.png" data-thumbnail="/img/Operating System/chapter3-9.png" data-sub-html="<h2>Linux(alipay.c运行结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>alipay.c运行结果</code>)</figcaption>
+    </figure>
+<h4 id="例子求和">例子：求和</h4>
+<p>分两个线程，计算 $1+1+1+\ldots+1+1+1+1+…+1$ (共计 2n 个 1)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define N 100000000
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Tsum</span><span class="p">()</span> <span class="p">{</span> <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">sum</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">join</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;sum = %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><a href="https://jyywiki.cn/pages/OS/2022/demos/sum.c" target="_blank" rel="noopener noreffer">sum.c</a> 运行结果</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-11.png" title="/img/Operating System/chapter3-11.png" data-thumbnail="/img/Operating System/chapter3-11.png" data-sub-html="<h2>Linux(sum.c运行结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>sum.c运行结果</code>)</figcaption>
+    </figure>
+<ul>
+<li>
+<p>119790390, 99872322 (结果可以比 <code>N</code> 还要小), &hellip;</p>
+</li>
+<li>
+<p>Inline assembly 也不行</p>
+</li>
+</ul>
+<p>修改</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define N 100000000
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Tsum</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&#34;lock add $1, %0&#34;</span><span class="o">:</span> <span class="s">&#34;+m&#34;</span><span class="p">(</span><span class="n">sum</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">join</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;sum = %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-12.png" title="/img/Operating System/chapter3-12.png" data-thumbnail="/img/Operating System/chapter3-12.png" data-sub-html="<h2>Linux(sum.c修改后运行结果)</h2>">
+        
+    </a><figcaption class="image-caption">Linux(<code>sum.c修改后运行结果</code>)</figcaption>
+    </figure>
+<p>结果正确，但是运行性能显著下降</p>
+<h4 id="原子性的丧失">原子性的丧失</h4>
+<blockquote>
+<p>“程序 (甚至是一条指令) 独占处理器执行” 的基本假设在现代多处理器系统上不再成立。</p>
+</blockquote>
+<p>原子性：一段代码执行 (例如 <code>pay()</code>) 独占整个计算机系统</p>
+<ul>
+<li>单处理器多线程
+<ul>
+<li>线程在运行时可能被中断，切换到另一个线程执行</li>
+</ul>
+</li>
+<li>多处理器多线程
+<ul>
+<li>线程根本就是并行执行的</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>(历史) 1960s，大家争先在共享内存上实现原子性 (互斥)</p>
+<ul>
+<li>但几乎所有的实现都是错的，直到 <a href="https://en.wikipedia.org/wiki/Dekker%27s_algorithm" target="_blank" rel="noopener noreffer">Dekker&rsquo;s Algorithm</a>，还只能保证两个线程的互斥</li>
+</ul>
+<h4 id="原子性的丧失有没有感到后怕">原子性的丧失：有没有感到后怕？</h4>
+<p><code>printf</code> 还能在多线程程序里调用吗？</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void thread1() { while (1) { printf(&#34;a&#34;); } }
+</span></span><span class="line"><span class="cl">void thread2() { while (1) { printf(&#34;b&#34;); } }
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们都知道 printf 是有缓冲区的 (为什么？)</p>
+<ul>
+<li>如果执行 <code>buf[pos++] = ch</code> (<code>pos</code> 共享) 不就💥了吗？</li>
+</ul>
+<hr>
+<p>RTFM!</p>
+<p>命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ man <span class="m">3</span> <span class="nb">printf</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">ATTRIBUTES
+</span></span><span class="line"><span class="cl">       For an explanation of the terms used in this section, see attributes<span class="o">(</span>7<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       ┌────────────────────────┬───────────────┬────────────────┐
+</span></span><span class="line"><span class="cl">       │Interface               │ Attribute     │ Value          │
+</span></span><span class="line"><span class="cl">       ├────────────────────────┼───────────────┼────────────────┤
+</span></span><span class="line"><span class="cl">       │printf<span class="o">()</span>, fprintf<span class="o">()</span>,    │ Thread safety │ MT-Safe locale │
+</span></span><span class="line"><span class="cl">       │sprintf<span class="o">()</span>, snprintf<span class="o">()</span>,  │               │                │
+</span></span><span class="line"><span class="cl">       │vprintf<span class="o">()</span>, vfprintf<span class="o">()</span>,  │               │                │
+</span></span><span class="line"><span class="cl">       │vsprintf<span class="o">()</span>, vsnprintf<span class="o">()</span> │               │                │
+</span></span><span class="line"><span class="cl">       └────────────────────────┴───────────────┴────────────────┘
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>进程安全！</strong></p>
+<h4 id="实现原子性">实现原子性</h4>
+<p>互斥和原子性是本学期的重要主题</p>
+<ul>
+<li>
+<p><code>lock(&amp;lk)</code></p>
+</li>
+<li>
+<p><code>unlock(&amp;lk)</code></p>
+<ul>
+<li>实现临界区 (critical section) 之间的绝对串行化</li>
+<li>程序的其他部分依然可以并行执行</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>99% 的并发问题都可以用一个队列解决</p>
+<ul>
+<li>
+<p>把大任务切分成可以并行的小任务</p>
+</li>
+<li>
+<p>worker thread 去锁保护的队列里取任务</p>
+</li>
+<li>
+<p>除去不可并行的部分，剩下的部分可以获得线性的加速</p>
+<ul>
+<li>$Thm.\ T_n&lt;T_{\infty}+\frac {T_1}{n}$(<a href="https://web.mit.edu/dimitrib/www/pdc.html" target="_blank" rel="noopener noreffer">PDC</a>, Chap. 1)</li>
+</ul>
+</li>
+</ul>
+<h3 id="放弃2顺序">放弃（2）：顺序</h3>
+<h4 id="例子求和-再次出现">例子：求和 (再次出现)</h4>
+<p>分两个线程，计算 $1+1+1+\ldots+1+1+1+1+…+1$ (共计 2n 个 1)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define N 100000000
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">Tsum</span><span class="p">()</span> <span class="p">{</span> <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">sum</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">join</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;sum = %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们好像忘记给 <a href="https://jyywiki.cn/pages/OS/2022/demos/sum.c" target="_blank" rel="noopener noreffer">sum.c</a> 添加编译优化了？</p>
+<ul>
+<li><code>-O1</code>: 100000000 😱😱</li>
+<li><code>-O2</code>: 200000000 😱😱😱</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc -O1 sum.c -lpthread <span class="o">&amp;&amp;</span> ./a.out 
+</span></span><span class="line"><span class="cl"><span class="nv">sum</span> <span class="o">=</span> <span class="m">100000000</span>
+</span></span><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc -O2 sum.c -lpthread <span class="o">&amp;&amp;</span> ./a.out 
+</span></span><span class="line"><span class="cl"><span class="nv">sum</span> <span class="o">=</span> <span class="m">200000000</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="顺序的丧失">顺序的丧失</h4>
+<blockquote>
+<p>编译器对内存访问 “eventually consistent” 的处理导致共享内存作为线程同步工具的失效。</p>
+</blockquote>
+<p>刚才的例子</p>
+<ul>
+<li><code>-O1</code>: <code>R[eax] = sum; R[eax] += N; sum = R[eax]</code></li>
+<li><code>-O2</code>: <code>sum += N;</code></li>
+<li>(你的编译器也许是不同的结果)</li>
+</ul>
+<p>另一个例子</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// would be optimized to
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="p">)</span> <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc -c -O1 sum.c <span class="o">&amp;&amp;</span> objdump -d sum.o
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sum.o：     文件格式 elf64-x86-64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Disassembly of section .text:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">0000000000000000</span> &lt;wrapper&gt;:
+</span></span><span class="line"><span class="cl">   0:	f3 0f 1e fa          	endbr64 
+</span></span><span class="line"><span class="cl">   4:	<span class="m">48</span> <span class="m">83</span> ec <span class="m">08</span>          	sub    <span class="nv">$0</span>x8,%rsp
+</span></span><span class="line"><span class="cl">   8:	<span class="m">48</span> <span class="m">89</span> f8             	mov    %rdi,%rax
+</span></span><span class="line"><span class="cl">   b:	8b 3f                	mov    <span class="o">(</span>%rdi<span class="o">)</span>,%edi
+</span></span><span class="line"><span class="cl">   d:	ff <span class="m">50</span> <span class="m">10</span>             	call   *0x10<span class="o">(</span>%rax<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  10:	b8 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>       	mov    <span class="nv">$0</span>x0,%eax
+</span></span><span class="line"><span class="cl">  15:	<span class="m">48</span> <span class="m">83</span> c4 <span class="m">08</span>          	add    <span class="nv">$0</span>x8,%rsp
+</span></span><span class="line"><span class="cl">  19:	c3                   	ret    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">000000000000001a &lt;Tsum&gt;:
+</span></span><span class="line"><span class="cl">  1a:	f3 0f 1e fa          	endbr64 
+</span></span><span class="line"><span class="cl">  1e:	<span class="m">48</span> 8b <span class="m">15</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 	mov    0x0<span class="o">(</span>%rip<span class="o">)</span>,%rdx        <span class="c1"># 25 &lt;Tsum+0xb&gt; -&gt; R[eax] = sum</span>
+</span></span><span class="line"><span class="cl">  25:	<span class="m">48</span> 8d <span class="m">42</span> <span class="m">01</span>          	lea    0x1<span class="o">(</span>%rdx<span class="o">)</span>,%rax		 <span class="c1"># -&gt; R[eax] += N, sum = R[eax]</span>
+</span></span><span class="line"><span class="cl">  29:	<span class="m">48</span> <span class="m">81</span> c2 <span class="m">01</span> e1 f5 <span class="m">05</span> 	add    <span class="nv">$0</span>x5f5e101,%rdx
+</span></span><span class="line"><span class="cl">  30:	<span class="m">48</span> <span class="m">89</span> c1             	mov    %rax,%rcx
+</span></span><span class="line"><span class="cl">  33:	<span class="m">48</span> <span class="m">83</span> c0 <span class="m">01</span>          	add    <span class="nv">$0</span>x1,%rax
+</span></span><span class="line"><span class="cl">  37:	<span class="m">48</span> <span class="m">39</span> d0             	cmp    %rdx,%rax
+</span></span><span class="line"><span class="cl">  3a:	<span class="m">75</span> f4                	jne    <span class="m">30</span> &lt;Tsum+0x16&gt;
+</span></span><span class="line"><span class="cl">  3c:	<span class="m">48</span> <span class="m">89</span> 0d <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 	mov    %rcx,0x0<span class="o">(</span>%rip<span class="o">)</span>        <span class="c1"># 43 &lt;Tsum+0x29&gt;</span>
+</span></span><span class="line"><span class="cl">  43:	c3                   	ret    
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Operating%20System/chapter3-13.jpg" title="/img/Operating System/chapter3-13.jpg" data-thumbnail="/img/Operating System/chapter3-13.jpg" data-sub-html="<h2>手写(O1模式下优化)</h2>">
+        
+    </a><figcaption class="image-caption">手写(<code>O1模式下优化</code>)</figcaption>
+    </figure>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">jungle@jungle-virtual-machine:~$ gcc -c -O2 sum.c <span class="o">&amp;&amp;</span> objdump -d sum.o
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sum.o：     文件格式 elf64-x86-64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Disassembly of section .text:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">0000000000000000</span> &lt;wrapper&gt;:
+</span></span><span class="line"><span class="cl">   0:	f3 0f 1e fa          	endbr64 
+</span></span><span class="line"><span class="cl">   4:	<span class="m">48</span> <span class="m">83</span> ec <span class="m">08</span>          	sub    <span class="nv">$0</span>x8,%rsp
+</span></span><span class="line"><span class="cl">   8:	<span class="m">48</span> <span class="m">89</span> f8             	mov    %rdi,%rax
+</span></span><span class="line"><span class="cl">   b:	8b 3f                	mov    <span class="o">(</span>%rdi<span class="o">)</span>,%edi
+</span></span><span class="line"><span class="cl">   d:	ff <span class="m">50</span> <span class="m">10</span>             	call   *0x10<span class="o">(</span>%rax<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  10:	<span class="m">31</span> c0                	xor    %eax,%eax
+</span></span><span class="line"><span class="cl">  12:	<span class="m">48</span> <span class="m">83</span> c4 <span class="m">08</span>          	add    <span class="nv">$0</span>x8,%rsp
+</span></span><span class="line"><span class="cl">  16:	c3                   	ret    
+</span></span><span class="line"><span class="cl">  17:	<span class="m">66</span> 0f 1f <span class="m">84</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 	nopw   0x0<span class="o">(</span>%rax,%rax,1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  1e:	<span class="m">00</span> <span class="m">00</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">0000000000000020</span> &lt;Tsum&gt;:
+</span></span><span class="line"><span class="cl">  20:	f3 0f 1e fa          	endbr64 
+</span></span><span class="line"><span class="cl">  24:	<span class="m">48</span> <span class="m">81</span> <span class="m">05</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> 	addq   <span class="nv">$0</span>x5f5e100,0x0<span class="o">(</span>%rip<span class="o">)</span>        <span class="c1"># 2f &lt;Tsum+0xf&gt;</span>
+</span></span><span class="line"><span class="cl">  2b:	<span class="m">00</span> e1 f5 <span class="m">05</span> 
+</span></span><span class="line"><span class="cl">  2f:	c3                   	ret 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>O2优化的比较彻底，只add了一次（出问题的概率比较低）</p>
+<h4 id="实现源代码的按顺序翻译">实现源代码的按顺序翻译</h4>
+<p>在代码中插入 “优化不能穿越” 的 barrier</p>
+<ul>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">asm</span> <span class="nf">volatile</span> <span class="p">(</span><span class="s">&#34;&#34;</span> <span class="o">:::</span> <span class="s">&#34;memory&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Barrier 的含义是 “可以读写任何内存”</li>
+</ul>
+</li>
+<li>
+<p>使用<code>volatile</code>变量</p>
+<ul>
+<li>保持 C 语义和汇编语义一致</li>
+</ul>
+</li>
+</ul>
+<hr>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">int</span> <span class="k">volatile</span> <span class="n">done</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="p">)</span> <span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="放弃-3可见性">放弃 (3)：可见性</h3>
+<h4 id="例子">例子</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">T1</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&#34;&#34;</span> <span class="o">:</span> <span class="o">:</span> <span class="s">&#34;memory&#34;</span><span class="p">);</span> <span class="c1">// compiler barrier
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;y = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">T2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">y</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span><span class="s">&#34;&#34;</span> <span class="o">:</span> <span class="o">:</span> <span class="s">&#34;memory&#34;</span><span class="p">);</span> <span class="c1">// compiler barrier
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;x = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>问题：我们最终能看到哪些结果？</p>
+<p>状态机</p>
+<div class="mermaid" id="id-1"></div>
+<ul>
+<li>mem-ordering.c
+<ul>
+<li>输出不好读？<code>pipe to head -n 1000000 | sort | uniq -c</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">atomic_int</span> <span class="n">flag</span><span class="p">;</span> <span class="c1">//开关初始为0（关着），原子变量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define FLAG atomic_load(&amp;flag) </span><span class="c1">//原子读
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define FLAG_XOR(val) atomic_fetch_xor(&amp;flag, val) </span><span class="c1">//原子异或
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define WAIT_FOR(cond) while (!(cond)) ;
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"> <span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">write_x_read_y</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">y_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl $1, %0;&#34;</span> <span class="c1">// x = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s">&#34;movl %2, %1;&#34;</span> <span class="c1">// y_val = y
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">:</span> <span class="s">&#34;=m&#34;</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s">&#34;=r&#34;</span><span class="p">(</span><span class="n">y_val</span><span class="p">)</span> <span class="o">:</span> <span class="s">&#34;m&#34;</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d &#34;</span><span class="p">,</span> <span class="n">y_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">write_y_read_x</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">x_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl $1, %0;&#34;</span> <span class="c1">// y = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s">&#34;movl %2, %1;&#34;</span> <span class="c1">// x_val = x
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">:</span> <span class="s">&#34;=m&#34;</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s">&#34;=r&#34;</span><span class="p">(</span><span class="n">x_val</span><span class="p">)</span> <span class="o">:</span> <span class="s">&#34;m&#34;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d &#34;</span><span class="p">,</span> <span class="n">x_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">T1</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">WAIT_FOR</span><span class="p">((</span><span class="n">FLAG</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">));</span> <span class="c1">//等开关1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">write_x_read_y</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">//关掉开关1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">T2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">WAIT_FOR</span><span class="p">((</span><span class="n">FLAG</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">));</span> <span class="c1">//等开关2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">write_y_read_x</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">//关掉开关2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Tsync</span><span class="p">()</span> <span class="p">{</span> <span class="c1">//控制线程
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">//布置好初值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">__sync_synchronize</span><span class="p">();</span> <span class="c1">// full barrier
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">usleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>            <span class="c1">// + delay
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">assert</span><span class="p">(</span><span class="n">FLAG</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">//确定开关是关着的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span> <span class="c1">//开关的两个bit从0变为1（开启开关1，2）（原子操作）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// T1 and T2 clear 0/1-bit, respectively
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">WAIT_FOR</span><span class="p">(</span><span class="n">FLAG</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span> <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">T1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">T2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsync</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>-O2模式下编译</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">00000000000001a0 &lt;write_x_read_y&gt;:
+</span></span><span class="line"><span class="cl"> 1a0:	f3 0f 1e fa          	endbr64 
+</span></span><span class="line"><span class="cl"> 1a4:	c7 05 00 00 00 00 01 	movl   $0x1,0x0(%rip)        # 1ae &lt;write_x_read_y+0xe&gt;
+</span></span><span class="line"><span class="cl"> 1ab:	00 00 00 
+</span></span><span class="line"><span class="cl"> 1ae:	8b 15 00 00 00 00    	mov    0x0(%rip),%edx        # 1b4 &lt;write_x_read_y+0x14&gt;
+</span></span><span class="line"><span class="cl"> 1b4:	48 8d 35 00 00 00 00 	lea    0x0(%rip),%rsi        # 1bb &lt;write_x_read_y+0x1b&gt;
+</span></span><span class="line"><span class="cl"> 1bb:	bf 01 00 00 00       	mov    $0x1,%edi
+</span></span><span class="line"><span class="cl"> 1c0:	31 c0                	xor    %eax,%eax
+</span></span><span class="line"><span class="cl"> 1c2:	e9 00 00 00 00       	jmp    1c7 &lt;write_x_read_y+0x27&gt;
+</span></span><span class="line"><span class="cl"> 1c7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+</span></span><span class="line"><span class="cl"> 1ce:	00 00 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>利用脚本来统计，不知道为啥自己的乌班图💩🐴跑出来都是01，00，01，10，11都跑出来了，和我们的状态机模型不符🤡</p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-14.png" title="/img/Operating System/chapter3-14.png" data-thumbnail="/img/Operating System/chapter3-14.png" data-sub-html="<h2>From class(输出结果)</h2>">
+        
+    </a><figcaption class="image-caption">From class(<code>输出结果</code>)</figcaption>
+    </figure>
+<h4 id="现代处理器处理器也是-动态-编译器">现代处理器：处理器也是 (动态) 编译器！</h4>
+<p>单个处理器把汇编代码 (用电路) “编译” 成更小的 $\mu ops\newline$</p>
+<ul>
+<li>RF[9] = load(RF[7] + 400)</li>
+<li>store(RF[12], RF[13])</li>
+<li>RF[3] = RF[4] + RF[5]
+<ul>
+<li>每个 $\mu op$ 都有 Fetch, Issue, Execute, Commit 四个阶段</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>在任何时刻，处理器都维护一个 $\mu op$ 的 “池子”</p>
+<ul>
+<li>
+<p>每一周期向池子补充尽可能多的$\mu op\newline$</p>
+<ul>
+<li>“多发射”</li>
+</ul>
+</li>
+<li>
+<p>每一周期 (在不违反编译正确性的前提下) 执行尽可能多的$\mu op\newline$</p>
+<ul>
+<li>“乱序执行”、“按序提交”</li>
+</ul>
+</li>
+<li>
+<p>这就是《计算机体系结构》 (剩下就是木桶效应，哪里短板补哪里)</p>
+</li>
+</ul>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-15.jpg" title="/img/Operating System/chapter3-15.jpg" data-thumbnail="/img/Operating System/chapter3-15.jpg" data-sub-html="<h2>神书(《计算机体系结构——量化研究方法》)</h2>">
+        
+    </a><figcaption class="image-caption">神书(<code>《计算机体系结构——量化研究方法》</code>)</figcaption>
+    </figure>
+<h4 id="多处理器间即时可见性的丧失">多处理器间即时可见性的丧失</h4>
+<blockquote>
+<p>满足单处理器 eventual memory consistency 的执行，在多处理器上可能无法序列化！</p>
+</blockquote>
+<p>当 $x \ne y$ 时，对 $x ,y$ 的内存读写可以交换顺序</p>
+<ul>
+<li>它们甚至可以在同一个周期里完成 (只要 load/store unit 支持)</li>
+<li>如果写x发生 cache miss，可以让读y先执行
+<ul>
+<li>满足 “尽可能执行 “$\mu op$” 的原则，最大化处理器性能</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     # &lt;-----------+
+</span></span><span class="line"><span class="cl">movl $1, (x)   #   |
+</span></span><span class="line"><span class="cl">movl (y), %eax # --+
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在多处理器上的表现
+<ul>
+<li>两个处理器分别看到 $y=0 和 x=0\newline$</li>
+</ul>
+</li>
+</ul>
+<h4 id="宽松内存模型-relaxedweak-memory-model">宽松内存模型 (Relaxed/Weak Memory Model)</h4>
+<blockquote>
+<p>宽松内存模型的目的是使单处理器的执行更高效。</p>
+</blockquote>
+<p>x86 已经是市面上能买到的 “最强” 的内存模型了 😂</p>
+<ul>
+<li>这也是 Intel 自己给自己加的包袱</li>
+<li>看看 <a href="https://research.swtch.com/mem-weak@2x.png" target="_blank" rel="noopener noreffer">ARM/RISC-V</a> 吧，根本就是个分布式系统</li>
+</ul>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-16.png" title="/img/Operating System/chapter3-16.png" data-thumbnail="/img/Operating System/chapter3-16.png" data-sub-html="<h2>x86(内存模型)</h2>">
+        
+    </a><figcaption class="image-caption">x86(<code>内存模型</code>)</figcaption>
+    </figure>
+<p><strong>(x86-TSO in <a href="https://research.swtch.com/hwmm" target="_blank" rel="noopener noreffer">Hardware memory models</a> by Russ Cox)</strong></p>
+<hr>
+<p><strong>ARM/RISC-V</strong></p>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-17.png" title="/img/Operating System/chapter3-17.png" data-thumbnail="/img/Operating System/chapter3-17.png" data-sub-html="<h2>ARM/RISC-V(内存模型)</h2>">
+        
+    </a><figcaption class="image-caption">ARM/RISC-V(<code>内存模型</code>)</figcaption>
+    </figure>
+<h4 id="实现顺序一致性">实现顺序一致性</h4>
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter3-18.png" title="/img/Operating System/chapter3-18.png" data-thumbnail="/img/Operating System/chapter3-18.png" data-sub-html="<h2>改良(内存模型)</h2>">
+        
+    </a><figcaption class="image-caption">改良(<code>内存模型</code>)</figcaption>
+    </figure>
+<hr>
+<p>软件做不到，硬件来帮忙</p>
+<ul>
+<li>
+<p>Memory barrier: __sync_synchronize() (RTFM)</p>
+<ul>
+<li>Compiler barrier + fence 指令</li>
+<li>插入 fence 指令后，将阻止 x=y=0</li>
+</ul>
+</li>
+<li>
+<p>原子指令 (lock,prefix, lr/sc, &hellip;)</p>
+<ul>
+<li><code>stdatomic.h</code></li>
+</ul>
+</li>
+</ul>
+<p>修改</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;thread.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">atomic_int</span> <span class="n">flag</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define FLAG atomic_load(&amp;flag)
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define FLAG_XOR(val) atomic_fetch_xor(&amp;flag, val)
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define WAIT_FOR(cond) while (!(cond)) ;
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"> <span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">write_x_read_y</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">y_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl $1, %0;&#34;</span> <span class="c1">// x = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s">&#34;mfence;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl %2, %1;&#34;</span> <span class="c1">// y_val = y
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">:</span> <span class="s">&#34;=m&#34;</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s">&#34;=r&#34;</span><span class="p">(</span><span class="n">y_val</span><span class="p">)</span> <span class="o">:</span> <span class="s">&#34;m&#34;</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d &#34;</span><span class="p">,</span> <span class="n">y_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="n">__attribute__</span><span class="p">((</span><span class="n">noinline</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">write_y_read_x</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kt">int</span> <span class="n">x_val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">asm</span> <span class="k">volatile</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl $1, %0;&#34;</span> <span class="c1">// y = 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s">&#34;mfence;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;movl %2, %1;&#34;</span> <span class="c1">// x_val = x
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">:</span> <span class="s">&#34;=m&#34;</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s">&#34;=r&#34;</span><span class="p">(</span><span class="n">x_val</span><span class="p">)</span> <span class="o">:</span> <span class="s">&#34;m&#34;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d &#34;</span><span class="p">,</span> <span class="n">x_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">T1</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">WAIT_FOR</span><span class="p">((</span><span class="n">FLAG</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">write_x_read_y</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">T2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">WAIT_FOR</span><span class="p">((</span><span class="n">FLAG</span> <span class="o">&amp;</span> <span class="mi">2</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">write_y_read_x</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Tsync</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">__sync_synchronize</span><span class="p">();</span> <span class="c1">// full barrier
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">usleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>            <span class="c1">// + delay
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">assert</span><span class="p">(</span><span class="n">FLAG</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FLAG_XOR</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// T1 and T2 clear 0/1-bit, respectively
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">WAIT_FOR</span><span class="p">(</span><span class="n">FLAG</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span> <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">T1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">T2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">create</span><span class="p">(</span><span class="n">Tsync</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不会再看见00的组合了</p>
+<h3 id="总结">总结</h3>
+<p>本次课回答的问题</p>
+<ul>
+<li><strong>Q</strong>: 如何理解多处理器系统？</li>
+</ul>
+<hr>
+<p>Take-away message</p>
+<ul>
+<li>多处理器编程：入门
+<ul>
+<li>多处理器程序 = 状态机 (共享内存；非确定选择线程执行)</li>
+<li>thread.h = create + join</li>
+</ul>
+</li>
+<li>多处理器编程：放弃你对 “程序” 的旧理解
+<ul>
+<li>不原子、能乱序、不立即可见（现代处理器就是一个动态的数据流分析器）
+<ul>
+<li>来自于编译优化 (处理器也是编译器)</li>
+<li><a href="https://www.usenix.org/events/osdi10/tech/full_papers/Xiong.pdf" target="_blank" rel="noopener noreffer">Ad hoc synchronization considered harmful</a> (OSDI'10)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>声明：本文章引用资料与图像均已做标注，如有侵权本人会马上删除</strong></p>
+]]></description>
+</item>
+<item>
     <title>Operating System Chapter2</title>
     <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/</link>
     <pubDate>Sat, 31 Dec 2022 19:30:30 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter2/</guid>
@@ -583,11 +2104,10 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </li>
 </ul>
 <p>定位出错位置</p>
-<p><figure><a class="lightgallery" href="/img/Operating%20System/chapter2-5.png" title="/img/Operating System/chapter2-5.png" data-thumbnail="/img/Operating System/chapter2-5.png" data-sub-html="<h2>出错位置(on linux)</h2>">
+<figure><a class="lightgallery" href="/img/Operating%20System/chapter2-5.png" title="/img/Operating System/chapter2-5.png" data-thumbnail="/img/Operating System/chapter2-5.png" data-sub-html="<h2>出错位置(on linux)</h2>">
         
     </a><figcaption class="image-caption">出错位置(<code>on linux</code>)</figcaption>
     </figure>
-![](D:\JungleBlog\static\img\Operating System\chapter2-5.png)</p>
 <p><code>retq</code>:栈由<code>rsp</code>（寄存器）控制,<code>retq</code>就是从<code>rsp</code>寄存器当中取出8个字节，赋值给<code>rip</code>(pc)，然后<code>rsp &lt;- rsp + 8</code>（往上挪一格）（栈向下增长）</p>
 <p>初始<code>rsp</code>顶部为1</p>
 <figure><a class="lightgallery" href="/img/Operating%20System/chapter2-6.png" title="/img/Operating System/chapter2-6.png" data-thumbnail="/img/Operating System/chapter2-6.png" data-sub-html="<h2>查看错误(on gdb)</h2>">
@@ -7120,883 +8640,6 @@ IsEmpty:check whether the queue has an element or not
 <p>OS</p>
 <p>Real-life waiting lines</p>
 </blockquote>
-]]></description>
-</item>
-<item>
-    <title>List</title>
-    <link>https://Jungle430.github.io/posts/data-structures-and-algorithms/list/</link>
-    <pubDate>Sun, 06 Nov 2022 22:35:11 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/data-structures-and-algorithms/list/</guid>
-    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
-<h2 id="list">List</h2>
-<h3 id="definition">Definition</h3>
-<p>A list is a finite sequence of N elements</p>
-<p>$write\ as\newline$
-$L = (a_1, a_2, a_3，…a_n)\newline$</p>
-<p>$The\ size\ of\ this\ list\ is\ n\newline$</p>
-<p>$n=0 \rightarrow empty\ list\newline$</p>
-<p>element</p>
-<ol>
-<li>The first element(No predecessor),called &ldquo;head&rdquo;</li>
-<li>The ith element(has only one predecessor and only one successor)</li>
-<li>The last element(No successor),called &ldquo;tail&rdquo;</li>
-</ol>
-<h3 id="adt">ADT</h3>
-<p>ADT List {</p>
-<pre><code>Data object：D = {ai | ai∈Elements, (i=1,2,…,n, n≥0)}
-
-Data relationship ： R1 = { ＜ ai-1,ai ＞ |ai-1,ai ∈ D,
-(i=2,3,…,n) }
-
-Operations：
-• InitList(&amp;L);
-• DestroyList(&amp;L);
-• ListInsert(&amp;L,i,e); 
-• ListDelete(&amp;L,i,&amp;e);
-……and so on
-</code></pre>
-<p>} ADT List</p>
-<h3 id="operation">Operation</h3>
-<p>{</p>
-<pre><code>InitList(&amp;L):Create a empty list
-DestroyList(&amp;L):Delete a list(L has been initialized)
-ClearList(&amp;L):make L be an empty list(L has been initialized)
-
-ListLength(L):return the size of elements in the list(L has been initialized)
-ListEmpty(L):return if the list is an empty list(L has been initialized)
-
-GetElem(L, i, &amp;e): 
-make e equaled to the ith element in the list(L has been initialized and 1 &lt;= i &lt;= ListLength(L))
-LocateElem(L, e, compare()): 
-return the rank that the rank of the element is the first element which compare(element[rank], e) is true(L has been initialized),
-if no element satisfy it, return 0
-
-PriorElem(L, cur_e, &amp;pre_e): 
-make the pre_e equal the predecessor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
-NextElem(L, cur_e, &amp;next_e):
-make the next_e equal the successor of the element which is the first which equal to cur_e, or return FAIL(L has been initialized)
-
-ListInsert(&amp;L, i, e): 
-insert the element in the ith rank of the list(L has been initialized)
-ListDelete(&amp;L, i, &amp;e):
-delete the ith element in the list(L has been initialized and not be empty)
-
-ListTraverse(&amp;L, visit()):
-    for (begin, end)
-        visit(list[rank]_data)
-(L has been initialized)
-</code></pre>
-<p>}</p>
-<p>Example: make $ListA \bigcup ListB$</p>
-<h3 id="the-code">The code</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">union</span><span class="p">(</span><span class="n">List</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">List</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">La_len</span> <span class="o">=</span> <span class="n">ListLength</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Lb_len</span> <span class="o">=</span> <span class="n">ListLength</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">Lb_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">GetElem</span><span class="p">(</span><span class="n">Lb_len</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">LocateElem</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">equal</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ListInsert</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">++</span><span class="n">La_len</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Merge List</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">MergeList</span><span class="p">(</span><span class="n">List</span> <span class="n">La</span><span class="p">,</span> <span class="n">List</span> <span class="n">Lb</span><span class="p">,</span> <span class="n">List</span> <span class="o">&amp;</span><span class="n">Lc</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">        <span class="n">InitList</span><span class="p">(</span><span class="n">Lc</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">La_len</span> <span class="o">=</span> <span class="n">ListLength</span><span class="p">(</span><span class="n">La</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">Lb_len</span> <span class="o">=</span> <span class="n">ListLength</span><span class="p">(</span><span class="n">Lb</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="n">While</span> <span class="p">((</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">La_len</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;=</span> <span class="n">Lb_len</span><span class="p">)){</span> <span class="c1">//La和Lb均非空
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">GetElem</span><span class="p">(</span><span class="n">La</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">ai</span><span class="p">);</span> <span class="n">GetElem</span><span class="p">(</span><span class="n">Lb</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">bj</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">ai</span> <span class="o">&lt;=</span> <span class="n">bj</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="n">ListInsert</span><span class="p">(</span><span class="n">Lc</span><span class="p">,</span> <span class="o">++</span><span class="n">k</span><span class="p">,</span> <span class="n">ai</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">                <span class="o">++</span><span class="n">i</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">                <span class="n">ListInsert</span><span class="p">(</span><span class="n">Lc</span><span class="p">,</span> <span class="o">++</span><span class="n">k</span><span class="p">,</span> <span class="n">bj</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">                <span class="o">++</span><span class="n">j</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">La_len</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">GetElem</span><span class="p">(</span><span class="n">La</span><span class="p">,</span><span class="n">i</span><span class="o">++</span><span class="p">,</span><span class="n">ai</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">ListInsert</span><span class="p">(</span><span class="n">Lc</span><span class="p">,</span> <span class="o">++</span><span class="n">k</span><span class="p">,</span> <span class="n">ai</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;=</span> <span class="n">Lb_len</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">GetElem</span><span class="p">(</span><span class="n">Lb</span><span class="p">,</span><span class="n">j</span><span class="o">++</span><span class="p">,</span><span class="n">bj</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">ListInsert</span><span class="p">(</span><span class="n">Lc</span><span class="p">,</span><span class="o">++</span><span class="n">k</span><span class="p">,</span> <span class="n">bj</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>   
-</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="c1">// MergeList
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="implementation-of-lists">Implementation of Lists</h3>
-<h4 id="array-implementation-of-lists">Array implementation of lists</h4>
-<p>Using consecutive storage units to store elements of a list,the elements are stored in the logic order</p>
-<blockquote>
-<p>k&mdash;- the memory space size for one element</p>
-<blockquote>
-<p>The address of the (i+1)th element-&gt;Loc(ai+1) = Loc(ai) + k</p>
-<p>Loc(a1)&mdash;-base address of the list</p>
-<p>The address of the ith element:-&gt;Loc(ai) = Loc(a1) + (i-1)*k</p>
-</blockquote>
-</blockquote>
-<p>$logic\ Element: [a_0, a_1, &hellip;, a_n]\newline$
-$Physical\ Element:{[locate(a_0)]\ [locate(a_1)]\ &hellip;\ [locate(a_n)]}\newline$</p>
-<p>$!!!\ Storage\ structure: random\ storage$</p>
-<p>about data</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Vector</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">T</span> <span class="o">*</span><span class="n">_data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">_size</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">_capacity</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>supplement expend and shrink</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">expand</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_capacity</span> <span class="o">&gt;=</span> <span class="n">AUTO_INITIALIZER</span> <span class="o">&amp;&amp;</span> <span class="n">_size</span> <span class="o">&lt;</span> <span class="n">_capacity</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_capacity</span> <span class="o">&lt;</span> <span class="n">AUTO_INITIALIZER</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_capacity</span> <span class="o">=</span> <span class="n">AUTO_INITIALIZER</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_size</span> <span class="o">&gt;=</span> <span class="n">_capacity</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_capacity</span> <span class="o">&lt;&lt;=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">T</span> <span class="o">*</span><span class="n">OldData</span> <span class="o">=</span> <span class="n">_data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">_data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">T</span><span class="p">[</span><span class="n">_capacity</span><span class="p">]{};</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OldData</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span><span class="p">[]</span><span class="n">OldData</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">shrink</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_capacity</span> <span class="o">&lt;</span> <span class="n">AUTO_INITIALIZER</span> <span class="o">||</span> <span class="n">_size</span> <span class="o">&gt;=</span> <span class="n">_capacity</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_capacity</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">T</span> <span class="o">*</span><span class="n">OldData</span> <span class="o">=</span> <span class="n">_data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">T</span><span class="p">[</span><span class="n">_capacity</span><span class="p">]{};</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OldData</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">        <span class="k">delete</span><span class="p">[]</span><span class="n">OldData</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>T(n) = O(n)</p>
-<p>insert</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">insert</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span><span class="n">Val</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">_size</span><span class="p">)</span> <span class="k">throw</span> <span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">{</span><span class="s">&#34;The array is out of range!&#34;</span><span class="p">};</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">expand</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="c1">//Prevents data from being overwritten
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">_data</span><span class="p">[</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">Val</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_size</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p>!!!The number of elements moved depends on the length of the order table and the location of the inserted element.</p>
-</blockquote>
-<p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i=0}^n i}{n + 1} = \frac{\frac{n(n + 1)}{2}}{n + 1} = \frac {n}{2} = O(n)$</p>
-<p>delete</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">remove</span><span class="p">(</span><span class="n">Rank</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">_size</span><span class="p">)</span> <span class="k">throw</span> <span class="n">std</span><span class="o">::</span><span class="n">out_of_range</span><span class="p">{</span><span class="s">&#34;out of range&#34;</span><span class="p">};</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="n">size</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_data</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_size</span><span class="o">--</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">shrink</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p>!!!The number of elements moved depends on the length of the order table and the location of the deleted element</p>
-</blockquote>
-<p>!!!Average:</p>
-<p>$T(n) = \frac{\sum_{i = 0}^{n - 1} i}{n} = \frac{\frac{n(n - 1)}{2}}{n} = \frac{n - 1}{2} = O(n)$</p>
-<h4 id="advantage">Advantage</h4>
-<ol>
-<li>Logic is Contiguous, and physical is Contiguous</li>
-<li>Random access any element</li>
-<li>The address can be calculated by base address</li>
-</ol>
-<h4 id="disadvantage">Disadvantage</h4>
-<ol>
-<li>Insertion and deletion must move lot of elements</li>
-<li>Must assign memory with maximum-size</li>
-<li>It is not easy to extend array size</li>
-</ol>
-<h4 id="linked-list-implement-of-lists">Linked list implement of lists</h4>
-<ol>
-<li>Connected by pointer links</li>
-<li>Accessed via a pointer to the first node of the list</li>
-<li>Subsequent nodes are accessed via the link-pointer
-member of the current node</li>
-<li>Link pointer in the last node is set to null to mark the
-list’s end</li>
-</ol>
-<p>Use a linked list instead of an array when</p>
-<ol>
-<li>You have an unpredictable number of data elements</li>
-<li>Your list needs to be sorted quickly</li>
-</ol>
-<h4 id="types-of-linked-list">Types of linked list</h4>
-<ol>
-<li>
-<p>Singly linked list</p>
-<blockquote>
-<p>Only traversed in one direction</p>
-</blockquote>
-</li>
-<li>
-<p>Circular, singly linked list</p>
-<blockquote>
-<p>Pointer in the last node points back to the first node</p>
-</blockquote>
-</li>
-<li>
-<p>Doubly linked list</p>
-<blockquote>
-<p>Allows traversals both forwards and backwards</p>
-</blockquote>
-</li>
-<li>
-<p>Circular, doubly linked list</p>
-<blockquote>
-<p>Forward pointer of the last node points to the first node and backward pointer of the first node points to the last
-node</p>
-</blockquote>
-</li>
-</ol>
-<h4 id="singly-linked-list">Singly Linked list</h4>
-<blockquote>
-<p>without head node</p>
-</blockquote>
-<p>$head(pointer) \rightarrow [a_1] [pointer]\rightarrow [a_2] [pointer]\rightarrow &hellip;&hellip;\rightarrow [a_n] [pointer]\rightarrow null$</p>
-<blockquote>
-<p>empty list</p>
-</blockquote>
-<p>$head\rightarrow null$</p>
-<blockquote>
-<p>with head node</p>
-</blockquote>
-<p>$head(pointer)\rightarrow [head] [pointer]\rightarrow [a_1] [pointer]\rightarrow [a_2] [pointer]\rightarrow &hellip;&hellip;\rightarrow[a_n] [pointer]\rightarrow null$</p>
-<blockquote>
-<p>empty list</p>
-</blockquote>
-<p>$head\rightarrow [head] [pointer]\rightarrow null$</p>
-<p>code</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="c1">//ListNode
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ListNode</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">using</span> <span class="n">ListNodePosition</span> <span class="o">=</span> <span class="n">ListNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">*</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ListNode</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">T</span> <span class="n">data</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">successor</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//List without headNode
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">using</span> <span class="n">Rank</span> <span class="o">=</span> <span class="kt">int</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">List</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">_size</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>address data</p>
-<p>code</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">T</span> <span class="o">&amp;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="k">operator</span><span class="p">[](</span><span class="n">Rank</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">head</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>insert node</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="c1">//data
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">ListNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">insertAsSuccessor</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span><span class="n">Val</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">{</span><span class="n">Val</span><span class="p">,</span> <span class="n">successor</span><span class="p">};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">successor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//node
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">ListNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">insertAsSuccessor</span><span class="p">(</span><span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">listNodePosition</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">listNodePosition</span><span class="o">-&gt;</span><span class="n">successor</span> <span class="o">=</span> <span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">successor</span> <span class="o">=</span> <span class="n">listNodePosition</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">listNodePosition</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>delete</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="c1">//by the rank
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">Delete</span><span class="p">(</span><span class="n">Rank</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">record</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span> <span class="o">=</span> <span class="n">record</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span> <span class="n">record</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">_size</span><span class="o">--</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="circular-singly-linked-list">Circular, singly linked list</h4>
-<blockquote>
-<p>A Feature of the circulated linked lists&mdash;the next pointer of the last node points to the head, so the linked list becomes a circle</p>
-<p>Any node can be found from any given node</p>
-</blockquote>
-<p>structure</p>
-<blockquote>
-<p>without head node</p>
-</blockquote>
-<p>$head(pointer) \rightarrow [a_1] [pointer]\rightarrow [a_2] [pointer]\rightarrow &hellip;&hellip;\rightarrow [a_n] [pointer]\rightarrow head, tail \rightarrow [a_n]$</p>
-<blockquote>
-<p>empty list</p>
-</blockquote>
-<p>$head\rightarrow head, tail\rightarrow head$</p>
-<blockquote>
-<p>with head node</p>
-</blockquote>
-<p>$head(pointer)\rightarrow [head] [pointer]\rightarrow [a_1] [pointer]\rightarrow [a_2] [pointer]\rightarrow &hellip;&hellip;\rightarrow[a_n] [pointer]\rightarrow [a_0]$</p>
-<blockquote>
-<p>empty list</p>
-</blockquote>
-<p>$head\rightarrow [head] [pointer]\rightarrow [head]$</p>
-<p>code</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span><span class="lnt">80
-</span><span class="lnt">81
-</span><span class="lnt">82
-</span><span class="lnt">83
-</span><span class="lnt">84
-</span><span class="lnt">85
-</span><span class="lnt">86
-</span><span class="lnt">87
-</span><span class="lnt">88
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">Rank</span> <span class="o">=</span> <span class="kt">int</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ListCircle</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="k">protected</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ListNodePosition</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">_size</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ListCircle</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">ListCircle</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="na">[[nodiscard]]</span> <span class="n">Rank</span> <span class="n">size</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">clear</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="nf">DeleteNode</span><span class="p">(</span><span class="n">Rank</span> <span class="n">index</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">traverse</span><span class="p">(</span><span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="n">visit</span><span class="p">)(</span><span class="n">T</span> <span class="o">&amp;</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="o">~</span><span class="n">ListCircle</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">ListCircle</span><span class="p">()</span> <span class="o">:</span><span class="n">head</span><span class="p">{</span><span class="k">new</span> <span class="n">ListNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">{</span><span class="n">T</span><span class="p">{},</span> <span class="k">nullptr</span><span class="p">}},</span> <span class="n">_size</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">head</span><span class="o">-&gt;</span><span class="n">successor</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">ListCircle</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">)</span> <span class="o">:</span><span class="n">ListCircle</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">_size</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Rank</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">begin</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">iter</span><span class="o">-&gt;</span><span class="n">insertAsSuccessor</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">begin</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">        <span class="n">iter</span> <span class="o">=</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="n">iter</span><span class="o">-&gt;</span><span class="n">successor</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">Rank</span> <span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">size</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">_size</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">clear</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">head</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="k">auto</span> <span class="n">record</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="k">delete</span> <span class="n">record</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="n">_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::~</span><span class="n">ListCircle</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">clear</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="n">Rank</span> <span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">DeleteNode</span><span class="p">(</span><span class="n">Rank</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">record</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span> <span class="o">=</span> <span class="n">record</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span> <span class="n">record</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">_size</span><span class="o">--</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">index</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="n">ListCircle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">traverse</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">visit</span><span class="p">)(</span><span class="n">T</span> <span class="o">&amp;</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Empty List&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">auto</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">head</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="n">Rank</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">successor</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">visit</span><span class="p">(</span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="doubly-linked-list">Doubly linked list</h4>
-<blockquote>
-<p>The feature of double linked lists &mdash;- There are two pointer fields in one node, one points to the predecessor, another to the successor</p>
-<p>Any node in the list can be found by tracing back and forth from any given node.</p>
-</blockquote>
-<p>structure</p>
-<p>$[a_{i-1}]^\rightarrow_\leftarrow[prior] [data] [next]^\rightarrow_\leftarrow[a_{i + 1}]$</p>
-<blockquote>
-<p>no empty list</p>
-</blockquote>
-<p>$L\rightarrow[head]\rightarrow[a_1]^\rightarrow_\leftarrow[a_2]^\rightarrow_\leftarrow&hellip;&hellip;^\rightarrow_\leftarrow[a_n]\rightarrow null\newline$
-$head.prior\rightarrow[a_n]\newline$</p>
-<blockquote>
-<p>empty list</p>
-</blockquote>
-<p>$L\rightarrow prior = L\rightarrow next = null$</p>
-<p>delete</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">remove</span> <span class="p">(</span> <span class="n">ListNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">p</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="n">T</span> <span class="n">e</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="n">p</span><span class="o">-&gt;</span><span class="n">pred</span><span class="o">-&gt;</span><span class="n">succ</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">succ</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">   <span class="n">p</span><span class="o">-&gt;</span><span class="n">succ</span><span class="o">-&gt;</span><span class="n">pred</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pred</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="k">delete</span> <span class="n">p</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">   <span class="n">_size</span><span class="o">--</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">e</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>insert</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">bool</span> <span class="nf">ListInsert_DuL</span><span class="p">(</span><span class="n">DuLinklist</span> <span class="o">&amp;</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">ElemType</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">DuLinklist</span> <span class="n">s</span><span class="p">,</span><span class="n">p</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">GetElemP_DuL</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">i</span><span class="p">)))</span> 
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ERROR</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">DuLinklist</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">DuLNode</span><span class="p">))))</span> 
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ERROR</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">e</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">    <span class="n">s</span><span class="o">-&gt;</span><span class="n">prior</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">prior</span><span class="p">;</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span> <span class="n">prior</span> <span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">prior</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">OK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="circular-doubly-linked-list">Circular, doubly linked list</h4>
-<p>structure</p>
-<blockquote>
-<p>without head</p>
-</blockquote>
-<p>$head\rightarrow prior = [a_n]\ a_n\rightarrow next = head$</p>
-<blockquote>
-<p>empty</p>
-</blockquote>
-<p>$head\rightarrow prior = head\rightarrow next = head$</p>
-<p>Summary</p>
-<p>Advantage</p>
-<ol>
-<li>store items &ldquo;sequentially&rdquo; without restrictions on location</li>
-<li>insert new item without shifting</li>
-<li>delete existing item without shifting</li>
-<li>size can expand/contract throughout use</li>
-</ol>
-<p>Disadvantage</p>
-<ol>
-<li>overhead of links: used only internally, pure overhead</li>
-<li>no longer have direct access to each element of the list. O(1)
-access becomes O(n) access since we must go through first element, and then second, and then third, etc.</li>
-</ol>
-<h2 id="select-arrayedlist-or-linkedlist">Select ArrayedList or LinkedList?</h2>
-<p>Array-Based List:</p>
-<ol>
-<li>Insertion and deletion are O(n).</li>
-<li>Direct access are O(1).</li>
-<li>Array must be allocated in advance.</li>
-<li>No overhead if all array positions are full.</li>
-</ol>
-<p>Linked List:</p>
-<ol>
-<li>Insertion and deletion are O(1).</li>
-<li>Direct access are O(n).</li>
-<li>Space grows with number of elements.</li>
-<li>Every element requires overhead.</li>
-</ol>
-<p>Contiguous storage is generally preferable:</p>
-<ol>
-<li>when the entries are individually very small;</li>
-<li>when the size of the list is known when the program is written;</li>
-<li>when few insertions or deletions need to be made except at the end of the list;</li>
-<li>when random access is important.</li>
-</ol>
-<p>Linked storage proves superior</p>
-<ol>
-<li>when the entries are large;</li>
-<li>when the size of the list is not known in advance</li>
-<li>when flexibility is needed in inserting, deleting, and
-rearranging the entries.</li>
-</ol>
-<h3 id="othercursor-implementation-of-linked-list">Other:Cursor Implementation of Linked List</h3>
-<blockquote>
-<p>implementation in a consecutive storage, and the next is not a pointer but a Rank to search next node</p>
-</blockquote>
-<ol>
-<li>You still need to allocate a large space beforehand;</li>
-<li>But in the linear table insert and delete operations do not need to move elements, only need to modify the cursor (pointer), so it still has the main advantages of chain storage structure;</li>
-<li>A linked list described by an array is called a static linked list.</li>
-</ol>
-<p>Application of Linked list:</p>
-<p>Example: Polynomials</p>
-<p>$P(x) = a_0 + a_1x + a_2x^2 + &hellip; + a_nx^n$</p>
-<blockquote>
-<p>Array-based implementation:Disadvantage: for sparse polynomials
--&gt;waste memory!</p>
-<p>Linked list implementation can solve the problem</p>
-</blockquote>
-<h3 id="about-homework">About Homework</h3>
-<p>you can use Singly linked list like a stack (push and pop)</p>
 ]]></description>
 </item>
 </channel>
