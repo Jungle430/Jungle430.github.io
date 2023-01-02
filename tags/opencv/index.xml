@@ -4,7 +4,759 @@
         <link>https://Jungle430.github.io/tags/opencv/</link>
         <description>OpenCV - 标签 - Jungle&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Fri, 30 Dec 2022 21:52:20 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/tags/opencv/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Mon, 02 Jan 2023 15:42:13 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/tags/opencv/" rel="self" type="application/rss+xml" /><item>
+    <title>OpenCV Chapter2</title>
+    <link>https://Jungle430.github.io/posts/opencv/opencv-chapter2/</link>
+    <pubDate>Mon, 02 Jan 2023 15:42:13 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter2/</guid>
+    <description><![CDATA[<h1 id="opencv">OpenCV</h1>
+<h2 id="图像平滑处理">图像平滑处理</h2>
+<h3 id="前导知识卷积convolution">前导知识：卷积$(convolution)$</h3>
+<h4 id="离散卷积">离散卷积</h4>
+<p>主要应用：数字图像处理</p>
+<p>先导：如何计算两个骰子分别向外投掷一次不同和数的概率</p>
+<p>怎么计算两个和数？</p>
+<p>转置数组，从左向右移动，依次对齐计算</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-1.png" title="/img/Opencv/chapter2-1.png" data-thumbnail="/img/Opencv/chapter2-1.png" data-sub-html="<h2>image(卷积计算方法)</h2>">
+        
+    </a><figcaption class="image-caption">image(<code>卷积计算方法</code>)</figcaption>
+    </figure>
+<p>但是如果每一面的概率不一样，而不是像之前那样都是$\frac{1}{6}\newline$了呢？</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-2.png" title="/img/Opencv/chapter2-2.png" data-thumbnail="/img/Opencv/chapter2-2.png" data-sub-html="<h2>卷积(概率非均匀分布)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>概率非均匀分布</code>)</figcaption>
+    </figure>
+<p>求概率的时候不再是$\frac {情况数}{组合总数}$了，而是使用纯概率计算</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-3.png" title="/img/Opencv/chapter2-3.png" data-thumbnail="/img/Opencv/chapter2-3.png" data-sub-html="<h2>卷积(公式化纯概率计算)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>公式化纯概率计算</code>)</figcaption>
+    </figure>
+<p>公式化</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-4.png" title="/img/Opencv/chapter2-4.png" data-thumbnail="/img/Opencv/chapter2-4.png" data-sub-html="<h2>卷积(公式化计算)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>公式化计算</code>)</figcaption>
+    </figure>
+<p>表格化，将每一条对角线上面的数求和，就得到了新的一组数（与上面一个原理，不过变成了可视化表格）</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-5.png" title="/img/Opencv/chapter2-5.png" data-thumbnail="/img/Opencv/chapter2-5.png" data-sub-html="<h2>卷积(转化为表格计算)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>转化为表格计算</code>)</figcaption>
+    </figure>
+<p>$$
+\begin{align}
+&amp;(a * b)\ is\ a\ new\ array\newline
+&amp;and\ (a * b)[n]=\sum_{i, j, i + j = n}a_i\ b_j\newline
+\end{align}
+$$</p>
+<p>$Example:\newline$</p>
+<p>$$
+\begin{align}
+&amp;(1,2,3) * (4, 5, 6)\newline
+&amp;=(1 * 4, 1 * 5 + 2 * 4, 1 * 6 + 2 * 5 + 3 * 4, 2 * 6 + 3 * 5,3 * 6)\newline
+&amp;=(4, 13, 28, 27, 18)\newline
+\end{align}
+$$</p>
+<h5 id="python科学计算库numpy中的使用">python科学计算库numpy中的使用</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输出</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-latex" data-lang="latex"><span class="line"><span class="cl">[ 4 13 28 27 18]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一个长的<code>data list</code>和一个短的概率<code>array</code>组合（权重可以不同，但是求和要等于1），概率数组从左往右滑动，同时求和 $\rightarrow$ 在求小窗口数据里面的平均值</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-6.png" title="/img/Opencv/chapter2-6.png" data-thumbnail="/img/Opencv/chapter2-6.png" data-sub-html="<h2>卷积(短数组与长数组)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>短数组与长数组</code>)</figcaption>
+    </figure>
+<p>应用与图像处理</p>
+<p>(3X3)的矩阵扫描，用来求该矩阵下的加权平均值（RGB三个通道都是），实现了对图像的模糊化</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-7.png" title="/img/Opencv/chapter2-7.png" data-thumbnail="/img/Opencv/chapter2-7.png" data-sub-html="<h2>卷积(RGB三个通道分别计算)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>RGB三个通道分别计算</code>)</figcaption>
+    </figure>
+<p>形象描述</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-8.png" title="/img/Opencv/chapter2-8.png" data-thumbnail="/img/Opencv/chapter2-8.png" data-sub-html="<h2>卷积(图像模糊)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>图像模糊</code>)</figcaption>
+    </figure>
+<h4 id="高斯分布">高斯分布</h4>
+<p>通过控制权重使得模糊的时候，权重从中心到两边逐渐变小，这样模糊出来的图像视觉效果更好</p>
+<p>维基百科</p>
+<blockquote>
+<p><strong>正态分布</strong>（中国大陆作<strong>正态分布</strong>，香港作<strong>正态分布</strong>，台湾作<strong>常态分布</strong>，英语：Normal distribution），又名<strong>高斯分布</strong>（英语：Gaussian distribution）、<strong>正规分布</strong>，是一个非常常见的<a href="https://zh.wikipedia.org/wiki/%e6%a6%82%e7%8e%87%e5%88%86%e5%b8%83" target="_blank" rel="noopener noreffer">连续概率分布</a>。正态分布在<a href="https://zh.wikipedia.org/wiki/%e7%bb%9f%e8%ae%a1%e5%ad%a6" target="_blank" rel="noopener noreffer">统计学</a>上十分重要，经常用在<a href="https://zh.wikipedia.org/wiki/%e8%87%aa%e7%84%b6%e7%a7%91%e5%ad%a6" target="_blank" rel="noopener noreffer">自然</a>和<a href="https://zh.wikipedia.org/wiki/%e7%a4%be%e4%bc%9a%e7%a7%91%e5%ad%a6" target="_blank" rel="noopener noreffer">社会科学</a>来代表一个不明的随机变量。</p>
+<p>若<a href="https://zh.wikipedia.org/wiki/%e9%9a%a8%e6%a9%9f%e8%ae%8a%e6%95%b8" target="_blank" rel="noopener noreffer">随机变量</a>服从一个位置参数为、尺度参数为的正态分布，记为：</p>
+<p>$X \sim N(\mu, \sigma^2)\newline$</p>
+<p>则其<a href="https://zh.wikipedia.org/wiki/%e6%a9%9f%e7%8e%87%e5%af%86%e5%ba%a6%e5%87%bd%e6%95%b8" target="_blank" rel="noopener noreffer">概率密度函数</a>为 $f(x)=\frac {1}{\sigma \sqrt{2\pi}}e^{-\frac {(x-\mu)^2}{2\sigma^2}}\newline$</p>
+<p>正态分布的<a href="https://zh.wikipedia.org/wiki/%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9b" target="_blank" rel="noopener noreffer">数学期望</a>值或<a href="https://zh.wikipedia.org/wiki/%e6%9c%9f%e6%9c%9b%e5%80%bc" target="_blank" rel="noopener noreffer">期望值</a>等于位置参数，决定了分布的位置；其<a href="https://zh.wikipedia.org/wiki/%e6%96%b9%e5%b7%ae" target="_blank" rel="noopener noreffer">方差</a>$\sigma^2$的开平方或<a href="https://zh.wikipedia.org/wiki/%e6%a8%99%e6%ba%96%e5%b7%ae" target="_blank" rel="noopener noreffer">标准差</a>$\sigma$等于尺度参数，决定了分布的幅度。</p>
+<p><a href="https://zh.wikipedia.org/wiki/%e4%b8%ad%e5%bf%83%e6%9e%81%e9%99%90%e5%ae%9a%e7%90%86" target="_blank" rel="noopener noreffer">中心极限定理</a>指出，在特定条件下，一个具有有限<a href="https://zh.wikipedia.org/wiki/%e5%9d%87%e5%80%bc" target="_blank" rel="noopener noreffer">均值</a>和<a href="https://zh.wikipedia.org/wiki/%e6%96%b9%e5%b7%ae" target="_blank" rel="noopener noreffer">方差</a>的<a href="https://zh.wikipedia.org/wiki/%e9%9a%8f%e6%9c%ba%e5%8f%98%e9%87%8f" target="_blank" rel="noopener noreffer">随机变量</a>的多个<a href="https://zh.wikipedia.org/wiki/%e6%a0%b7%e6%9c%ac" target="_blank" rel="noopener noreffer">样本</a>(观察值)的平均值本身就是一个随机变量，其分布随着样本数量的增加而<a href="https://zh.wikipedia.org/wiki/%e6%94%b6%e6%95%9b" target="_blank" rel="noopener noreffer">收敛</a>于正态分布。因此，许多与独立过程总和有关的物理量，例如测量误差，通常可被近似为正态分布。</p>
+<p>正态分布的概率密度函数曲线呈钟形，因此人们又经常称之为<strong>钟形曲线</strong>（类似于寺庙里的<a href="https://zh.wikipedia.org/wiki/%e5%a4%a7%e9%92%9f" target="_blank" rel="noopener noreffer">大钟</a>，因此得名）。我们通常所说的<strong>标准正态分布</strong>是位置参数，尺度参数$\displaystyle \sigma ^{2}=1$的正态分布</p>
+</blockquote>
+<p>权值和不为1，且有负权重存在的情况</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-9.png" title="/img/Opencv/chapter2-9.png" data-thumbnail="/img/Opencv/chapter2-9.png" data-sub-html="<h2>卷积(不同的卷积核效果不同)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>不同的卷积核效果不同</code>)</figcaption>
+    </figure>
+<p>判别图像中所有竖向的边界</p>
+<p>通过不同的卷积核($Kernel$)(即矩阵)，就可以对图像做不同的处理</p>
+<p>卷积神经网络 $\rightarrow$ 用数据来算出应该选取什么样的核（取决于检测目标）</p>
+<p>notice:因为在纯数理论下算出来的卷积实际上总是要比原数组长的，所以在计算机科学中一般会把多余的值截掉</p>
+<h4 id="算法优化">算法优化</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">arr1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>  <span class="c1"># 10.330177783966064</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">scipy.signal</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">scipy</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">arr1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>  <span class="c1"># 10.330177783966064</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">arr4</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">9.904504299163818
+</span></span></span><span class="line"><span class="cl"><span class="s1">0.009002208709716797
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>计算速度飙升！</strong></p>
+<h5 id="什么是fftconvolve">什么是<code>fftconvolve</code>?</h5>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-10.png" title="/img/Opencv/chapter2-10.png" data-thumbnail="/img/Opencv/chapter2-10.png" data-sub-html="<h2>卷积(fftclovolve)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>fftclovolve</code>)</figcaption>
+    </figure>
+<p><strong>先建立一个表格存储计算完成的组合乘积</strong>，然后沿着对角线求和，把原来老算法里面需要重复计算组合乘积的弊病给解决了</p>
+<p>其他应用 $\rightarrow$ 多项式乘积</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter2-11.png" title="/img/Opencv/chapter2-11.png" data-thumbnail="/img/Opencv/chapter2-11.png" data-sub-html="<h2>卷积(多项式乘积)</h2>">
+        
+    </a><figcaption class="image-caption">卷积(<code>多项式乘积</code>)</figcaption>
+    </figure>
+<h4 id="代码部分">代码部分</h4>
+<h5 id="均值滤波与方框滤波">均值滤波与方框滤波</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 均值滤波</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 简单的平均卷积操作，第二个元组参数指定卷积核的大小，维度通常用奇数</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方框滤波</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 基本和均值一样，可以选择归一化，第二个参数是目标图像深度，一般使用-1（表示与原始图像深度相同）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 第三个参数表示卷积核大小</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxFilter</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 只要越界，就变成255</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img4</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxFilter</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img4</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>有关$normalize$:(<code>K</code>为卷积核)</p>
+<p>$$
+\begin{align}
+&amp;K=\alpha
+\begin{bmatrix}
+&amp;1, 1, 1, \dots, 1, 1, 1\newline
+&amp;1, 1, 1, \dots, 1, 1, 1\newline
+&amp;\dots \dots\newline
+&amp;1, 1, 1, \dots, 1, 1, 1\newline
+\end{bmatrix}
+\end{align}
+$$</p>
+<p>$$
+\alpha=\begin{cases}
+&amp;\frac {1}{ksize.width * ksize.height}\ when\ normalize=True, is\ equal\ to\ the\ K\ of\ blur\newline
+&amp;1\ otherwise
+\end{cases}
+$$</p>
+<h5 id="高斯滤波">高斯滤波</h5>
+<p>维基百科</p>
+<blockquote>
+<p>Mathematically, applying a Gaussian blur to an image is the same as <a href="https://en.wikipedia.org/wiki/Convolution" target="_blank" rel="noopener noreffer">convolving</a> the image with a <a href="https://en.wikipedia.org/wiki/Gaussian_function" target="_blank" rel="noopener noreffer">Gaussian function</a>. This is also known as a two-dimensional <a href="https://en.wikipedia.org/wiki/Weierstrass_transform" target="_blank" rel="noopener noreffer">Weierstrass transform</a>. By contrast, convolving by a circle (i.e., a circular <a href="https://en.wikipedia.org/wiki/Box_blur" target="_blank" rel="noopener noreffer">box blur</a>) would more accurately reproduce the <a href="https://en.wikipedia.org/wiki/Bokeh" target="_blank" rel="noopener noreffer">bokeh</a> effect.</p>
+<p>Since the <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank" rel="noopener noreffer">Fourier transform</a> of a Gaussian is another Gaussian, applying a Gaussian blur has the effect of reducing the image&rsquo;s high-frequency components; a Gaussian blur is thus a <a href="https://en.wikipedia.org/wiki/Low-pass_filter" target="_blank" rel="noopener noreffer">low-pass filter</a>.</p>
+<p>The Gaussian blur is a type of image-blurring filter that uses a Gaussian function (which also expresses the <a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="noopener noreffer">normal distribution</a> in statistics) for calculating the <a href="https://en.wikipedia.org/wiki/Transformation_%28mathematics%29" target="_blank" rel="noopener noreffer">transformation</a> to apply to each <a href="https://en.wikipedia.org/wiki/Pixel" target="_blank" rel="noopener noreffer">pixel</a> in the image. The formula of a Gaussian function in one dimension is</p>
+<p>$G(x)=\frac {1}{\sqrt {2\pi \sigma^2}}e^{-\frac {x^2}{2\sigma^2}}\newline$</p>
+<p>In two dimensions, it is the product of two such Gaussian functions, one in each dimension:</p>
+<p>$G(x, y)=\frac {1}{2\pi \sigma^2}e^{-\frac {x^2+y^2}{2\sigma^2}}\newline$</p>
+<p>where <em>x</em> is the distance from the origin in the horizontal axis, <em>y</em> is the distance from the origin in the vertical axis, and <em>σ</em> is the <a href="https://en.wikipedia.org/wiki/Standard_deviation" target="_blank" rel="noopener noreffer">standard deviation</a> of the Gaussian distribution. It is important to note that the origin on these axes are at the center (0, 0). When applied in two dimensions, this formula produces a surface whose <a href="https://en.wiktionary.org/wiki/contour" target="_blank" rel="noopener noreffer">contours</a> are <a href="https://en.wikipedia.org/wiki/Concentric_circles" target="_blank" rel="noopener noreffer">concentric circles</a> with a Gaussian distribution from the center point.</p>
+<p>Values from this distribution are used to build a <a href="https://en.wikipedia.org/wiki/Convolution" target="_blank" rel="noopener noreffer">convolution</a> matrix which is applied to the original image. This convolution process is illustrated visually in the figure on the right. Each pixel&rsquo;s new value is set to a <a href="https://en.wikipedia.org/wiki/Weighted_average" target="_blank" rel="noopener noreffer">weighted average</a> of that pixel&rsquo;s neighborhood. The original pixel&rsquo;s value receives the heaviest weight (having the highest Gaussian value) and neighboring pixels receive smaller weights as their distance to the original pixel increases. This results in a blur that preserves boundaries and edges better than other, more uniform blurring filters; see also <a href="https://en.wikipedia.org/wiki/Scale_space_implementation" target="_blank" rel="noopener noreffer">scale space implementation</a>.</p>
+</blockquote>
+<p><strong>“离中心点越近权重越大，反之则越小”</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># -&gt; src, Ksize, and sigma</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参数说明</p>
+<p>Parameters</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">GaussianBlur</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">ksize</span><span class="p">,</span> <span class="n">sigmaX</span><span class="p">,</span> <span class="n">sigmaY</span><span class="p">,</span> <span class="n">borderType</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th>src</th>
+<th>input image; the image can have any number of channels, which are processed independently, but the depth should be CV_8U, CV_16U, CV_16S, CV_32F or CV_64F.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dst</td>
+<td>output image of the same size and type as src.</td>
+</tr>
+<tr>
+<td>ksize</td>
+<td>Gaussian kernel size. ksize.width and ksize.height can differ but they both must be positive and odd. Or, they can be zero&rsquo;s and then they are computed from sigma.</td>
+</tr>
+<tr>
+<td>sigmaX</td>
+<td>Gaussian kernel standard deviation in X direction.</td>
+</tr>
+<tr>
+<td>sigmaY</td>
+<td>Gaussian kernel standard deviation in Y direction; if sigmaY is zero, it is set to be equal to sigmaX, if both sigmas are zeros, they are computed from ksize.width and ksize.height, respectively (see <a href="https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#gac05a120c1ae92a6060dd0db190a61afa" target="_blank" rel="noopener noreffer">getGaussianKernel</a> for details); to fully control the result regardless of possible future modifications of all this semantics, it is recommended to specify all of ksize, sigmaX, and sigmaY.</td>
+</tr>
+<tr>
+<td>borderType</td>
+<td>pixel extrapolation method, see <a href="https://docs.opencv.org/4.x/d2/de8/group__core__array.html#ga209f2f4869e304c82d07739337eae7c5" target="_blank" rel="noopener noreffer">BorderTypes</a>. <a href="https://docs.opencv.org/4.x/d2/de8/group__core__array.html#gga209f2f4869e304c82d07739337eae7c5a697c1b011884a7c2bdc0e5caf7955661" target="_blank" rel="noopener noreffer">BORDER_WRAP</a> is not supported.</td>
+</tr>
+</tbody>
+</table>
+<h5 id="中值滤波">中值滤波</h5>
+<p>对卷积核内部的像素进行排序，取中值作为新的像素点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">medianBlur</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意第二个参数发生了变化</p>
+<blockquote>
+<p>@param ksize aperture linear size; it must be odd and greater than 1, for example: 3, 5, 7 &hellip;</p>
+</blockquote>
+<p>去噪效果最好，但是也有相应的损失</p>
+<h5 id="连接图像">连接图像</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">img3</span><span class="p">,</span> <span class="o">...</span><span class="p">))</span> <span class="c1"># 横向拼接</span>
+</span></span><span class="line"><span class="cl"><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">img3</span><span class="p">,</span> <span class="o">...</span><span class="p">))</span> <span class="c1"># 纵向拼接</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>示例代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">medianBlur</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">res1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">img1</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="n">res2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">img1</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">res1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">res2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="腐蚀与膨胀">腐蚀与膨胀</h2>
+<p>腐蚀和膨胀为经典的两个数字形态学处理算法，一般用于二值图像，本质也是对于核的卷积</p>
+<h3 id="腐蚀">腐蚀</h3>
+<p>腐蚀操作也是用卷积核扫描图像，只不过<strong>腐蚀操作的卷积核一般都是1</strong>，如果卷积核内部所有像素点都是白色，那么中心点即为白色，否则为黑色，腐蚀效果强弱和卷积核的大小成正相关</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">erode</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">iterations</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="c1"># -&gt; 图像，卷积核，迭代次数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>获取核结构</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">getStructuringElement</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">ksize</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>shape:</p>
+<ul>
+<li>MORPH_RECT ：矩形元素</li>
+<li>MORPH_CROSS ：十字形元素</li>
+<li>MORPH_ELLIPSE：椭圆形元素</li>
+</ul>
+<p>ksize:矩阵大小</p>
+<h3 id="膨胀">膨胀</h3>
+<p>膨胀是腐蚀的相反操作，基本原理是<strong>只要保证卷积核的中心点是非零值</strong>，周边无论是零还是非零值，都会变成非零值</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">k</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_CROSS</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="c1"># -&gt; 图像，卷积核，迭代次数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="开闭运算">开闭运算</h2>
+<h3 id="开运算">开运算</h3>
+<p>先腐蚀，后膨胀</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kernel</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_RECT</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_OPEN</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span> <span class="c1"># -&gt; 通过选定参数来执行开运算</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="闭运算">闭运算</h3>
+<p>先膨胀，后腐蚀</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kernel</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_RECT</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_CLOSE</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span> <span class="c1"># -&gt; 通过选定参数来执行闭运算</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="梯度运算">梯度运算</h2>
+<p>原理：<code>膨胀</code> — <code>腐蚀</code> = <code>边界信息</code></p>
+<p>使用例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kernel</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_RECT</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_GRADIENT</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span> <span class="c1"># -&gt; cv2.MORPH_GRADIENT</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="礼帽与黑帽">礼帽与黑帽</h2>
+<p>原理：</p>
+<ul>
+<li><code>礼帽</code>  = <code>原始输入</code> - <code>开运算结果</code> $\rightarrow$ <code>腐蚀掉的部分</code></li>
+<li><code>黑帽</code> = <code>闭运算</code>-<code>原始输入</code>$\rightarrow$ <code>更强的的应该被腐蚀掉的部分（因为闭运算中先膨胀就无法腐蚀掉了），相减后没有了，得到的其实是原来图像的轮廓</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kernel</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_RECT</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 礼帽</span>
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_TOPHAT</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># hei&#39;mao</span>
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_BLACKHAT</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
     <title>OpenCV Chapter1</title>
     <link>https://Jungle430.github.io/posts/opencv/opencv-chapter1/</link>
     <pubDate>Fri, 30 Dec 2022 21:52:20 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter1/</guid>
