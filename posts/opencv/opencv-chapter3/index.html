@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>OpenCV Chapter3 - Jungle&#39;s Blog</title><meta name="description" content="Welcome to Jungle&#39;s blog."><meta property="og:title" content="OpenCV Chapter3" />
+<meta property="og:description" content="OpenCV 图像梯度 Sobel算子 主要目的：找出图像中有梯度的地方 主要思路 $\rightarrow$ 计算左右/上下数据 最终落实在卷积核上面（注意此时权重仍然与位置有关，类似高" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-01-02T23:22:32+08:00" />
+<meta property="article:modified_time" content="2023-01-02T23:22:32+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="OpenCV Chapter3"/>
+<meta name="twitter:description" content="OpenCV 图像梯度 Sobel算子 主要目的：找出图像中有梯度的地方 主要思路 $\rightarrow$ 计算左右/上下数据 最终落实在卷积核上面（注意此时权重仍然与位置有关，类似高"/>
+<meta name="application-name" content="Jungle&#39;s blog">
+<meta name="apple-mobile-web-app-title" content="Jungle&#39;s blog"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" /><link rel="prev" href="https://Jungle430.github.io/posts/opencv/opencv-chapter2/" /><link rel="stylesheet" href="/css/page.min.css"><link rel="stylesheet" href="/css/home.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "OpenCV Chapter3",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/Jungle430.github.io\/posts\/opencv\/opencv-chapter3\/"
+        },"genre": "posts","keywords": "OpenCV, Python","wordcount":  1819 ,
+        "url": "https:\/\/Jungle430.github.io\/posts\/opencv\/opencv-chapter3\/","datePublished": "2023-01-02T23:22:32+08:00","dateModified": "2023-01-02T23:22:32+08:00","publisher": {
+            "@type": "Organization",
+            "name": "Jungle"},"author": {
+                "@type": "Person",
+                "name": "Jungle"
+            },"description": ""
+    }
+    </script></head><body data-header-desktop="auto" data-header-mobile="auto"><script>(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Jungle&#39;s Blog">Jungle&#39;s Blog</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="#" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="#" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><div class="menu-item"><a href="javascript:void(0);" class="theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div></div>
+    </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single" data-toc="enable"><div class="single-card" ><h2 class="single-title animated flipInX">OpenCV Chapter3</h2><div class="post-meta">
+                <div class="post-meta-line"><span class="post-author"><a href="https://github.com/Jungle430" title="Author" target="_blank" rel="noopener noreffer author" class="author"><i class="fas fa-user-circle fa-fw"></i>Jungle</a></span>&nbsp;<span class="post-category">出版于  <a href="/categories/opencv/"><i class="far fa-folder fa-fw"></i>OpenCV</a></span></div>
+                <div class="post-meta-line"><span><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2023-01-02">2023-01-02</time></span>&nbsp;<span><i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1819 字</span>&nbsp;
+                    <span><i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟</span>&nbsp;</div>
+            </div>
+            
+            <hr><div class="details toc" id="toc-static"  data-kept="">
+                    <div class="details-summary toc-title">
+                        <span>目录</span>
+                        <span><i class="details-icon fas fa-angle-right"></i></span>
+                    </div>
+                    <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#图像梯度">图像梯度</a>
+      <ul>
+        <li><a href="#sobel算子">Sobel算子</a></li>
+        <li><a href="#scharr算子">Scharr算子</a></li>
+        <li><a href="#laplace算子">Laplace算子</a></li>
+      </ul>
+    </li>
+    <li><a href="#canny边缘检测">Canny边缘检测</a>
+      <ul>
+        <li><a href="#流程">流程</a></li>
+        <li><a href="#高斯滤波器">高斯滤波器</a></li>
+        <li><a href="#梯度和方向">梯度和方向</a></li>
+        <li><a href="#非极大值抑制">非极大值抑制</a></li>
+        <li><a href="#双阈值检测">双阈值检测</a></li>
+        <li><a href="#代码">代码</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+                </div><div class="content" id="content"><h1 id="opencv">OpenCV</h1>
+<h2 id="图像梯度">图像梯度</h2>
+<h3 id="sobel算子">Sobel算子</h3>
+<p>主要目的：找出图像中有梯度的地方</p>
+<p>主要思路 $\rightarrow$ 计算左右/上下数据</p>
+<p>最终落实在卷积核上面（注意此时权重仍然与位置有关，类似高斯滤波）(对应位置相加后求和)
+$$
+Kernel_x=\begin{bmatrix}
+&amp;-1\ 0\ +1\newline
+&amp;-2\ 0\ +2\newline
+&amp;-1\ 0\ +1\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-1\ -2\ -1\newline
+&amp;0\ 0\ 0\newline
+&amp;+1\ +2\ +1\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">ddepth</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">ksize</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>ddepth:图像的深度，通常为-1</p>
+</li>
+<li>
+<p>dx和dy分别表示水平和竖直方向</p>
+</li>
+<li>
+<p>ksize是Sobel算子的大小(一般为3x3或者5x5)</p>
+</li>
+</ul>
+<p>计算出来的数值如果越界会截断，只取范围内的最小或最大值</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会取负值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将负数转换为绝对值（否则在显示的时候会按照截断处理），防止因为计算方向带来的误差</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会对负值取绝对值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">[[ 0.  0.  0. ...  0.  0.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  1.  0. ...  0. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0. -1. -1. ...  0.  1.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> ...
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0. -1.  2. ...  2. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  0. -1. ... -1. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  0.  0. ...  0.  0.  0.]]
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">[[0 0 0 ... 0 0 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 0 ... 0 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 1 ... 0 1 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> ...
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 2 ... 2 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 0 1 ... 1 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 0 0 ... 0 0 0]]
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>效果</p>
+<p>原二值图</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-1.png" title="/img/Opencv/chapter3-1.png" data-thumbnail="/img/Opencv/chapter3-1.png" data-sub-html="<h2>Sobel(原图)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Opencv/chapter3-1.png"
+            data-srcset="/img/Opencv/chapter3-1.png, /img/Opencv/chapter3-1.png 1.5x, /img/Opencv/chapter3-1.png 2x"
+            data-sizes="auto"
+            alt="/img/Opencv/chapter3-1.png" />
+    </a><figcaption class="image-caption">Sobel(<code>原图</code>)</figcaption>
+    </figure>
+<p>第一次使用Sobel算子</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-2.png" title="/img/Opencv/chapter3-2.png" data-thumbnail="/img/Opencv/chapter3-2.png" data-sub-html="<h2>Sobel(第一次使用Sobel算子)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Opencv/chapter3-2.png"
+            data-srcset="/img/Opencv/chapter3-2.png, /img/Opencv/chapter3-2.png 1.5x, /img/Opencv/chapter3-2.png 2x"
+            data-sizes="auto"
+            alt="/img/Opencv/chapter3-2.png" />
+    </a><figcaption class="image-caption">Sobel(<code>第一次使用Sobel算子</code>)</figcaption>
+    </figure>
+<p>取绝对值</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-3.png" title="/img/Opencv/chapter3-3.png" data-thumbnail="/img/Opencv/chapter3-3.png" data-sub-html="<h2>Sobel(取绝对值)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Opencv/chapter3-3.png"
+            data-srcset="/img/Opencv/chapter3-3.png, /img/Opencv/chapter3-3.png 1.5x, /img/Opencv/chapter3-3.png 2x"
+            data-sizes="auto"
+            alt="/img/Opencv/chapter3-3.png" />
+    </a><figcaption class="image-caption">Sobel(<code>取绝对值</code>)</figcaption>
+    </figure>
+<p>使用不同的方式求和</p>
+<p>分别给0.5的权重</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会对负值取绝对值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img4</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img5</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img6</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">img3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">img5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 最后一个参数是初值 -&gt; a1*x+b*y+c(最后一个参数)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img6</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为什么不同时设置$dx=1,dy=1$一起直接计算呢 $\rightarrow$ 直接计算效果不好（主要是融合效果不好），而且融合的时不如分开计算的自由度高</p>
+<h3 id="scharr算子">Scharr算子</h3>
+<p>权重与距离中心点的距离相关性更大，相比于<code>Sobel</code>算子来说更加准确敏感，可以看成是<code>Sobel</code>的改进
+$$
+Kernel_x=\begin{bmatrix}
+&amp;-3\ 0\ +3\newline
+&amp;-10\ 0\ +10\newline
+&amp;-3\ 0\ +3\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-3\ -10\ -3\newline
+&amp;0\ 0\ 0\newline
+&amp;+3\ +10\ +3\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$
+使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Scharr</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="laplace算子">Laplace算子</h3>
+<p>原理：二阶导数，对噪音点比较敏感,一般需要和其他方法配合使用
+$$
+Kernel=\begin{bmatrix}
+&amp;0\ 1\ 0\newline
+&amp;1\ -4\ 1\newline
+&amp;0\ 1\ 0\newline
+\end{bmatrix}\newline
+G=\sum_{1 \leq i \leq size, 1 \leq j \leq size}Kernel_{i, j} \times image_{i, j}\newline
+$$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Laplacian</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="canny边缘检测">Canny边缘检测</h2>
+<h3 id="流程">流程</h3>
+<ol>
+<li>使用高斯滤波器，以平滑图像，滤除噪声</li>
+<li>计算图像中每个像素点的梯度强度和方向</li>
+<li>应用非极大值(<code>Non-Maximum Suppression</code>)抑制，以消除边缘检测带来的杂散响应</li>
+<li>应用双阈值(<code>Double-Threshold</code>)检测来确定真实的和潜在的边缘</li>
+<li>通过抑制孤立的弱边缘最终完成检测</li>
+</ol>
+<h3 id="高斯滤波器">高斯滤波器</h3>
+<p>$$
+G(x, y)=\frac{1}{2\pi \sigma^2}e^{-\frac {x^2+y^2}{2\sigma^2}}\newline
+$$</p>
+<p>$$
+H=\begin{bmatrix}
+&amp;0.0924\ 0.1192\ 0.0924\newline
+&amp;0.1192\ 0.1538\ 0.1192\newline
+&amp;0.0924\ 0.1192\ 0.0924\newline
+\end{bmatrix}\newline
+$$</p>
+<p>$$
+e=H * A = \begin{bmatrix}
+&amp;h_{11}\ h_{12}\ h_{13}\newline
+&amp;h_{21}\ h_{22}\ h_{23}\newline
+&amp;h_{31}\ h_{32}\ h_{33}\newline
+\end{bmatrix} * \begin{bmatrix}
+&amp;a\ b\ c\newline
+&amp;d\ e\ f\newline
+&amp;g\ h\ i\newline
+\end{bmatrix}=\sum_{1 \leq i \leq size, 1 \leq j \leq size}^{i, j} \begin{bmatrix}
+&amp;a\times h_{11}\ b\times h_{12}\ c\times h_{13}\newline
+&amp;d\times h_{21}\ e\times h_{22}\ f\times h_{23}\newline
+&amp;g\times h_{31}\ h\times h_{32}\ i\times h_{33}\newline
+\end{bmatrix}
+$$</p>
+<h3 id="梯度和方向">梯度和方向</h3>
+<p>使用<code>Sobel</code>算子</p>
+<p>$$
+Kernel_x=\begin{bmatrix}
+&amp;-1\ 0\ +1\newline
+&amp;-2\ 0\ +2\newline
+&amp;-1\ 0\ +1\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-1\ -2\ -1\newline
+&amp;0\ 0\ 0\newline
+&amp;+1\ +2\ +1\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+\begin{align}
+&amp;G=\sqrt{G_x^2+G_y^2}\newline
+&amp;\theta=arctan(\frac {G_y}{G_x})\newline
+\end{align}\newline
+$$</p>
+<h3 id="非极大值抑制">非极大值抑制</h3>
+<p>在所有框里面选出相关性最大的，同时还会比较该框和周围框的相关性</p>
+<p>算法：遍历图像中的所有像素点，判断当前像素点是否是周围像素点中具有相同方向（此时会给$\theta$ 划分区间，同区间视为相同就行）梯度的最大值。如果是梯度最大的像素点，就保留，否则就抑制</p>
+<p>这一步可以将模糊的边界变得清晰</p>
+<h3 id="双阈值检测">双阈值检测</h3>
+<p>$$
+\begin{align}
+\begin{cases}
+梯度值&gt;maxVal:处理为边界\newline
+minVal&lt;梯度值&lt;maxVal:如果该点可以通过线连到边界点（即大于阈值的点）则保留，否则舍弃\newline
+梯度值&lt;minVal:舍弃\newline
+\end{cases}
+\end{align}
+$$</p>
+<p><code>minVal</code>越小，条件越松，越多的边界会被检测到，反之则要求变高，检测的到边缘越少</p>
+<p><code>maxVal</code>越大，条件越高，反之越松</p>
+<h3 id="代码">代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span> <span class="c1"># -&gt; src, minVal, maxVal</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原图|(80, 150)|(50, 100)对比</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-4.png" title="/img/Opencv/chapter3-4.png" data-thumbnail="/img/Opencv/chapter3-4.png" data-sub-html="<h2>Canny(不同阈值下的效果（第一张是原图,第二张为（80， 150），第三张为（50， 100）)</h2>">
+        <img
+            class="lazyload"
+            src="/svg/loading.min.svg"
+            data-src="/img/Opencv/chapter3-4.png"
+            data-srcset="/img/Opencv/chapter3-4.png, /img/Opencv/chapter3-4.png 1.5x, /img/Opencv/chapter3-4.png 2x"
+            data-sizes="auto"
+            alt="/img/Opencv/chapter3-4.png" />
+    </a><figcaption class="image-caption">Canny(<code>不同阈值下的效果（第一张是原图,第二张为（80， 150），第三张为（50， 100）</code>)</figcaption>
+    </figure>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info"><div class="post-info-tag"><span><a href="/tags/opencv/">OpenCV</a>
+                </span><span><a href="/tags/python/">Python</a>
+                </span></div><div class="post-info-line"><div class="post-info-mod">
+                <span>更新于 2023-01-02</span>
+            </div><div class="post-info-mod"></div>
+        </div><div class="post-info-share">
+            <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3" data-hashtags="OpenCV,Python"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-hashtag="OpenCV"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3" data-web><i class="fab fa-whatsapp fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3"><i class="fab fa-line fa-fw"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3"><i class="fab fa-weibo fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Myspace" data-sharer="myspace" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3" data-description=""><i data-svg-src="/lib/simple-icons/icons/myspace.min.svg"></i></a><a href="javascript:void(0);" title="分享到 Blogger" data-sharer="blogger" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3" data-description=""><i class="fab fa-blogger fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://Jungle430.github.io/posts/opencv/opencv-chapter3/" data-title="OpenCV Chapter3"><i class="fab fa-evernote fa-fw"></i></a></span>
+        </div></div><div class="post-nav"><a href="/posts/opencv/opencv-chapter2/" class="prev" rel="prev" title="OpenCV Chapter2"><i class="fas fa-angle-left fa-fw"></i>Previous Post</a></div></div>
+</div></article></div>
+            </main>
+            <footer class="footer"><div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.105.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/khusika/FeelIt" target="_blank" rel="noopener noreffer" title="FeelIt 1.0.1"><i class="fas fa-hand-holding-heart fa-fw"></i> FeelIt</a>
+        </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2022 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="https://github.com/Jungle430">Jungle</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/sw.min.js?version=0.0.1', { scope: '/' })
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Registered');
+        }, err => console.error('Jungle\u0027s Blog\u00A0Service Worker registration failed: ', err));
+
+    navigator.serviceWorker
+        .ready
+        .then(() => {
+            console.info('Jungle\u0027s Blog\u00A0Service Worker Ready');
+        });
+}
+</script>
+</footer>
+        </div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-chevron-up fa-fw"></i>
+            </a></div><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><link rel="stylesheet" href="/lib/katex/katex.min.css"><link rel="stylesheet" href="/lib/katex/copy-tex.min.css"><script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.fill%2CArray.prototype.find%2CArray.from%2CIntersectionObserver%2CMath.sign%2CObject.assign%2CPromise%2CObject.entries%2Chtml5shiv%2CObject.values%2Cfetch%2CElement.prototype.after"></script><script src="/lib/autocomplete/autocomplete.min.js"></script><script src="/lib/algoliasearch/algoliasearch-lite.umd.min.js"></script><script src="/lib/lazysizes/lazysizes.min.js"></script><script src="/lib/clipboard/clipboard.min.js"></script><script src="/lib/sharer/sharer.min.js"></script><script src="/lib/katex/katex.min.js"></script><script src="/lib/katex/auto-render.min.js"></script><script src="/lib/katex/copy-tex.min.js"></script><script src="/lib/katex/mhchem.min.js"></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"algoliaAppID":"","algoliaIndex":"","algoliaSearchKey":"","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script src="/js/theme.min.js"></script></body></html>

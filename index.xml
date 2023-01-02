@@ -4,9 +4,469 @@
         <link>https://Jungle430.github.io/</link>
         <description>Welcome to Jungle&#39;s blog.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Mon, 02 Jan 2023 15:42:13 &#43;0800</lastBuildDate>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Mon, 02 Jan 2023 23:22:32 &#43;0800</lastBuildDate>
             <atom:link href="https://Jungle430.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>OpenCV Chapter3</title>
+    <link>https://Jungle430.github.io/posts/opencv/opencv-chapter3/</link>
+    <pubDate>Mon, 02 Jan 2023 23:22:32 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter3/</guid>
+    <description><![CDATA[<h1 id="opencv">OpenCV</h1>
+<h2 id="图像梯度">图像梯度</h2>
+<h3 id="sobel算子">Sobel算子</h3>
+<p>主要目的：找出图像中有梯度的地方</p>
+<p>主要思路 $\rightarrow$ 计算左右/上下数据</p>
+<p>最终落实在卷积核上面（注意此时权重仍然与位置有关，类似高斯滤波）(对应位置相加后求和)
+$$
+Kernel_x=\begin{bmatrix}
+&amp;-1\ 0\ +1\newline
+&amp;-2\ 0\ +2\newline
+&amp;-1\ 0\ +1\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-1\ -2\ -1\newline
+&amp;0\ 0\ 0\newline
+&amp;+1\ +2\ +1\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">ddepth</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">ksize</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>ddepth:图像的深度，通常为-1</p>
+</li>
+<li>
+<p>dx和dy分别表示水平和竖直方向</p>
+</li>
+<li>
+<p>ksize是Sobel算子的大小(一般为3x3或者5x5)</p>
+</li>
+</ul>
+<p>计算出来的数值如果越界会截断，只取范围内的最小或最大值</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会取负值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将负数转换为绝对值（否则在显示的时候会按照截断处理），防止因为计算方向带来的误差</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会对负值取绝对值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">[[ 0.  0.  0. ...  0.  0.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  1.  0. ...  0. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0. -1. -1. ...  0.  1.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> ...
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0. -1.  2. ...  2. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  0. -1. ... -1. -2.  0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [ 0.  0.  0. ...  0.  0.  0.]]
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">[[0 0 0 ... 0 0 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 0 ... 0 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 1 ... 0 1 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> ...
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 1 2 ... 2 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 0 1 ... 1 2 0]
+</span></span></span><span class="line"><span class="cl"><span class="s1"> [0 0 0 ... 0 0 0]]
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>效果</p>
+<p>原二值图</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-1.png" title="/img/Opencv/chapter3-1.png" data-thumbnail="/img/Opencv/chapter3-1.png" data-sub-html="<h2>Sobel(原图)</h2>">
+        
+    </a><figcaption class="image-caption">Sobel(<code>原图</code>)</figcaption>
+    </figure>
+<p>第一次使用Sobel算子</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-2.png" title="/img/Opencv/chapter3-2.png" data-thumbnail="/img/Opencv/chapter3-2.png" data-sub-html="<h2>Sobel(第一次使用Sobel算子)</h2>">
+        
+    </a><figcaption class="image-caption">Sobel(<code>第一次使用Sobel算子</code>)</figcaption>
+    </figure>
+<p>取绝对值</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-3.png" title="/img/Opencv/chapter3-3.png" data-thumbnail="/img/Opencv/chapter3-3.png" data-sub-html="<h2>Sobel(取绝对值)</h2>">
+        
+    </a><figcaption class="image-caption">Sobel(<code>取绝对值</code>)</figcaption>
+    </figure>
+<p>使用不同的方式求和</p>
+<p>分别给0.5的权重</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># 使用cv2.CV_64F,会对负值取绝对值，如果是-1则做截断处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img4</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img5</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img6</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">img3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">img5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># 最后一个参数是初值 -&gt; a1*x+b*y+c(最后一个参数)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img6</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">img6</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为什么不同时设置$dx=1,dy=1$一起直接计算呢 $\rightarrow$ 直接计算效果不好（主要是融合效果不好），而且融合的时不如分开计算的自由度高</p>
+<h3 id="scharr算子">Scharr算子</h3>
+<p>权重与距离中心点的距离相关性更大，相比于<code>Sobel</code>算子来说更加准确敏感，可以看成是<code>Sobel</code>的改进
+$$
+Kernel_x=\begin{bmatrix}
+&amp;-3\ 0\ +3\newline
+&amp;-10\ 0\ +10\newline
+&amp;-3\ 0\ +3\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-3\ -10\ -3\newline
+&amp;0\ 0\ 0\newline
+&amp;+3\ +10\ +3\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$
+使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Scharr</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="laplace算子">Laplace算子</h3>
+<p>原理：二阶导数，对噪音点比较敏感,一般需要和其他方法配合使用
+$$
+Kernel=\begin{bmatrix}
+&amp;0\ 1\ 0\newline
+&amp;1\ -4\ 1\newline
+&amp;0\ 1\ 0\newline
+\end{bmatrix}\newline
+G=\sum_{1 \leq i \leq size, 1 \leq j \leq size}Kernel_{i, j} \times image_{i, j}\newline
+$$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Laplacian</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">img2</span><span class="p">))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="canny边缘检测">Canny边缘检测</h2>
+<h3 id="流程">流程</h3>
+<ol>
+<li>使用高斯滤波器，以平滑图像，滤除噪声</li>
+<li>计算图像中每个像素点的梯度强度和方向</li>
+<li>应用非极大值(<code>Non-Maximum Suppression</code>)抑制，以消除边缘检测带来的杂散响应</li>
+<li>应用双阈值(<code>Double-Threshold</code>)检测来确定真实的和潜在的边缘</li>
+<li>通过抑制孤立的弱边缘最终完成检测</li>
+</ol>
+<h3 id="高斯滤波器">高斯滤波器</h3>
+<p>$$
+G(x, y)=\frac{1}{2\pi \sigma^2}e^{-\frac {x^2+y^2}{2\sigma^2}}\newline
+$$</p>
+<p>$$
+H=\begin{bmatrix}
+&amp;0.0924\ 0.1192\ 0.0924\newline
+&amp;0.1192\ 0.1538\ 0.1192\newline
+&amp;0.0924\ 0.1192\ 0.0924\newline
+\end{bmatrix}\newline
+$$</p>
+<p>$$
+e=H * A = \begin{bmatrix}
+&amp;h_{11}\ h_{12}\ h_{13}\newline
+&amp;h_{21}\ h_{22}\ h_{23}\newline
+&amp;h_{31}\ h_{32}\ h_{33}\newline
+\end{bmatrix} * \begin{bmatrix}
+&amp;a\ b\ c\newline
+&amp;d\ e\ f\newline
+&amp;g\ h\ i\newline
+\end{bmatrix}=\sum_{1 \leq i \leq size, 1 \leq j \leq size}^{i, j} \begin{bmatrix}
+&amp;a\times h_{11}\ b\times h_{12}\ c\times h_{13}\newline
+&amp;d\times h_{21}\ e\times h_{22}\ f\times h_{23}\newline
+&amp;g\times h_{31}\ h\times h_{32}\ i\times h_{33}\newline
+\end{bmatrix}
+$$</p>
+<h3 id="梯度和方向">梯度和方向</h3>
+<p>使用<code>Sobel</code>算子</p>
+<p>$$
+Kernel_x=\begin{bmatrix}
+&amp;-1\ 0\ +1\newline
+&amp;-2\ 0\ +2\newline
+&amp;-1\ 0\ +1\newline
+\end{bmatrix}\newline
+G_x = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_x[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+Kernel_y=\begin{bmatrix}
+&amp;-1\ -2\ -1\newline
+&amp;0\ 0\ 0\newline
+&amp;+1\ +2\ +1\newline
+\end{bmatrix}\newline
+G_y = \sum_{1 \leq i \leq size, 1 \leq j \leq size} Kernel_y[i][j] \times image[i][j]\newline
+$$</p>
+<p>$$
+\begin{align}
+&amp;G=\sqrt{G_x^2+G_y^2}\newline
+&amp;\theta=arctan(\frac {G_y}{G_x})\newline
+\end{align}\newline
+$$</p>
+<h3 id="非极大值抑制">非极大值抑制</h3>
+<p>在所有框里面选出相关性最大的，同时还会比较该框和周围框的相关性</p>
+<p>算法：遍历图像中的所有像素点，判断当前像素点是否是周围像素点中具有相同方向（此时会给$\theta$ 划分区间，同区间视为相同就行）梯度的最大值。如果是梯度最大的像素点，就保留，否则就抑制</p>
+<p>这一步可以将模糊的边界变得清晰</p>
+<h3 id="双阈值检测">双阈值检测</h3>
+<p>$$
+\begin{align}
+\begin{cases}
+梯度值&gt;maxVal:处理为边界\newline
+minVal&lt;梯度值&lt;maxVal:如果该点可以通过线连到边界点（即大于阈值的点）则保留，否则舍弃\newline
+梯度值&lt;minVal:舍弃\newline
+\end{cases}
+\end{align}
+$$</p>
+<p><code>minVal</code>越小，条件越松，越多的边界会被检测到，反之则要求变高，检测的到边缘越少</p>
+<p><code>maxVal</code>越大，条件越高，反之越松</p>
+<h3 id="代码">代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span> <span class="c1"># -&gt; src, minVal, maxVal</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">show</span><span class="p">(</span><span class="n">img3</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原图|(80, 150)|(50, 100)对比</p>
+<figure><a class="lightgallery" href="/img/Opencv/chapter3-4.png" title="/img/Opencv/chapter3-4.png" data-thumbnail="/img/Opencv/chapter3-4.png" data-sub-html="<h2>Canny(不同阈值下的效果（第一张是原图,第二张为（80， 150），第三张为（50， 100）)</h2>">
+        
+    </a><figcaption class="image-caption">Canny(<code>不同阈值下的效果（第一张是原图,第二张为（80， 150），第三张为（50， 100）</code>)</figcaption>
+    </figure>
+]]></description>
+</item>
+<item>
     <title>OpenCV Chapter2</title>
     <link>https://Jungle430.github.io/posts/opencv/opencv-chapter2/</link>
     <pubDate>Mon, 02 Jan 2023 15:42:13 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter2/</guid>
@@ -8206,380 +8666,6 @@ If there is no such edge, then D[i]= +$\infty\newline$</p>
 </span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">LongestCommonSubsequenceByDynamicProgramming</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-    <title>String</title>
-    <link>https://Jungle430.github.io/posts/data-structures-and-algorithms/string/</link>
-    <pubDate>Sun, 06 Nov 2022 22:37:05 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/data-structures-and-algorithms/string/</guid>
-    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
-<h2 id="string">String</h2>
-<h3 id="structurerightarrow-list">$Structure\rightarrow list$</h3>
-<ol>
-<li>linked String</li>
-<li>Arrayed String</li>
-</ol>
-<h3 id="general-concepts-of-string">General Concepts of String</h3>
-<ol>
-<li>$Null\ String(\emptyset)：Nothing\ in\ the\ string, the\ length\ is\ zero.$</li>
-<li>$Blank(Space)string：Only\ includes\ one\ or\ more\ blanks(spaces)in\ the\ string.$</li>
-<li>$Substring: sub-sequence\ of\ one\ string.$</li>
-</ol>
-<h3 id="adt">ADT</h3>
-<p>{</p>
-<pre><code>ADT String {Data Object：D＝{ ai | ai∈CharacterSet,i=1,2,...n, n≥0 }
-Data Relationship：R1＝{ &lt; ai-1, ai &gt; | ai-1, ai∈D,i=2,...,n }
-Operation： ……
-</code></pre>
-<p>} ADT String</p>
-<h3 id="operations">Operations</h3>
-<p>{</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl">    <span class="n">StrAssign</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="p">,</span> <span class="n">chars</span><span class="p">)</span> <span class="c1">//string assignment
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">chars</span> <span class="n">are</span> <span class="n">character</span> <span class="n">constant</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">assign</span> <span class="n">chars</span> <span class="n">to</span> <span class="n">T</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrCopy</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span> <span class="c1">//String Copy
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">S</span> <span class="n">string</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Copy</span> <span class="n">S</span> <span class="n">string</span> <span class="n">to</span> <span class="n">T</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">DestroyString</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Initial</span><span class="err">：</span><span class="n">S</span> <span class="n">String</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Destroy</span> <span class="n">S</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">ClearString</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Initial</span><span class="err">：</span><span class="n">S</span> <span class="n">String</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Change</span> <span class="n">S</span> <span class="n">into</span> <span class="n">Null</span> <span class="n">string</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrEmpty</span> <span class="p">(</span><span class="n">S</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Initial</span><span class="err">：</span><span class="n">S</span> <span class="n">String</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">If</span> <span class="n">S</span> <span class="n">is</span> <span class="n">null</span> <span class="n">string</span><span class="err">，</span><span class="k">return</span> <span class="n">TRUE</span><span class="err">，</span><span class="n">otherwise</span><span class="p">,</span> <span class="k">return</span> <span class="n">FALSE</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrCompare</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span> <span class="c1">//String comparison
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">S</span> <span class="n">and</span> <span class="n">T</span> <span class="n">Strings</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">If</span> <span class="n">S</span><span class="o">&gt;</span><span class="n">T</span><span class="err">，</span><span class="n">the</span> <span class="k">return</span> <span class="n">value</span> <span class="n">is</span> <span class="n">greater</span> <span class="n">than</span> <span class="mi">0</span><span class="err">；</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">S</span><span class="o">=</span><span class="n">T</span><span class="err">，</span><span class="n">the</span> <span class="k">return</span> <span class="n">value</span> <span class="n">is</span> <span class="mi">0</span><span class="err">；</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">S</span><span class="o">&lt;</span><span class="n">T</span><span class="err">，</span><span class="n">the</span> <span class="k">return</span> <span class="n">value</span> <span class="n">is</span> <span class="n">less</span> <span class="n">than</span> <span class="mf">0.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrLength</span> <span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="c1">// get string length
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span> <span class="err">：</span><span class="n">S</span> <span class="n">String</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">The</span> <span class="n">number</span> <span class="n">of</span> <span class="n">characters</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">Concat</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="p">,</span><span class="n">S1</span><span class="p">,</span><span class="n">S2</span><span class="p">)</span> <span class="c1">//String Concatenation
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S1</span> <span class="n">and</span> <span class="n">S2</span><span class="err">。</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Concatenate</span> <span class="n">S1</span> <span class="n">and</span> <span class="n">S2</span> <span class="n">and</span> <span class="n">put</span> <span class="n">the</span> <span class="k">new</span> <span class="n">string</span> <span class="n">into</span> <span class="n">T</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">SubString</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">Sub</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span> <span class="c1">//Get substring
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span><span class="err">，</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="n">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">len</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="o">-</span> <span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Return</span> <span class="n">substring</span> <span class="n">of</span> <span class="n">string</span><span class="p">,</span> <span class="n">which</span> <span class="n">from</span> <span class="n">pos</span> <span class="n">to</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span> <span class="n">position</span> <span class="n">of</span> <span class="n">S</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">Index</span> <span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span> <span class="c1">//String index
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span> <span class="n">and</span> <span class="n">T</span><span class="err">，</span><span class="n">T</span> <span class="n">is</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span><span class="p">,</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nl">Output</span><span class="p">:</span> <span class="n">If</span> <span class="n">the</span> <span class="n">there</span> <span class="n">is</span> <span class="n">a</span> <span class="n">substring</span> <span class="n">T</span> <span class="n">in</span> <span class="n">S</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">the</span> <span class="n">position</span> <span class="n">of</span> <span class="n">sub</span><span class="o">-</span><span class="n">string</span> <span class="n">T</span> <span class="n">occurs</span> <span class="n">first</span> <span class="n">time</span> <span class="n">after</span> <span class="n">pos</span><span class="p">,</span> <span class="n">otherwise</span> <span class="k">return</span> <span class="mf">0.</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">Replace</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span> <span class="c1">//String replacement
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="n">and</span> <span class="n">V</span><span class="p">,</span> <span class="n">T</span> <span class="n">is</span> <span class="n">non</span><span class="o">-</span><span class="n">empty</span><span class="p">.</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Replace</span> <span class="n">non</span><span class="o">-</span><span class="n">overlapped</span> <span class="n">substring</span> <span class="n">T</span> <span class="n">of</span> <span class="n">S</span> <span class="n">with</span> <span class="n">V</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrInsert</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span> <span class="n">and</span> <span class="n">T</span><span class="err">，</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="err">＋</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Insert</span> <span class="n">String</span> <span class="n">T</span> <span class="n">before</span> <span class="n">the</span> <span class="n">pos</span> <span class="n">character</span> <span class="n">of</span> <span class="n">string</span> <span class="n">S</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">StrDelete</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">S</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Initial</span><span class="err">：</span><span class="n">String</span> <span class="n">S</span> <span class="err">，</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">StrLength</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="o">-</span> <span class="n">len</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Output</span><span class="err">：</span><span class="n">Delete</span> <span class="n">a</span> <span class="n">sub</span><span class="o">-</span><span class="n">string</span> <span class="n">with</span> <span class="n">len</span> <span class="n">length</span> <span class="n">from</span> <span class="n">pos</span> <span class="n">character</span> <span class="n">in</span> <span class="n">string</span> <span class="n">S</span><span class="p">.</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>}</p>
-<blockquote>
-<p>The StrAssign,Strcopy,StrCompare,StrLength,Concat and SubString are called as Minimum Operation Set of string type.</p>
-<p>That is, these operations can not be implemented with other string operations, But the other string operations can be implemented with these 6 basic string operations.</p>
-</blockquote>
-<h3 id="string-pattern-matching">String Pattern Matching</h3>
-<h4 id="forcematch">ForceMatch</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">Rank</span> <span class="nf">ForceMatch</span><span class="p">(</span><span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">,</span> <span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">n</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">i</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">i</span> <span class="o">-=</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>$n = T.length(),and\ m = P.length(), T=O(mn)$</p>
-<h4 id="kmp">KMP</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">int</span> <span class="o">*</span><span class="nf">BuildNext</span><span class="p">(</span><span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="p">.</span><span class="n">length</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="o">*</span><span class="n">N</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">m</span><span class="p">]{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">?</span> <span class="n">N</span><span class="p">[</span><span class="o">++</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">++</span><span class="nl">t</span> <span class="p">:</span> <span class="n">t</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="n">t</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">N</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">Rank</span> <span class="nf">KMPFirst</span><span class="p">(</span><span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">,</span> <span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="o">*</span><span class="n">next</span> <span class="o">=</span> <span class="n">BuildNext</span><span class="p">(</span><span class="n">P</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">n</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">i</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span> <span class="o">=</span> <span class="n">next</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span><span class="p">[]</span><span class="n">next</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>$n = T.length(),and\ m = P.length(), T=O(m+n)$</p>
-<h4 id="optimization-kmp">Optimization KMP</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">int</span> <span class="o">*</span><span class="nf">buildNext</span><span class="p">(</span><span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="p">.</span><span class="n">length</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="o">*</span><span class="n">N</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="p">[</span><span class="n">m</span><span class="p">]{};</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">t</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">N</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">?</span> <span class="n">N</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">:</span> <span class="n">t</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span>
-</span></span><span class="line"><span class="cl">            <span class="n">t</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="n">t</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">N</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">Rank</span> <span class="nf">KMPEnd</span><span class="p">(</span><span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">P</span><span class="p">,</span> <span class="k">const</span> <span class="n">String</span> <span class="o">&amp;</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="o">*</span><span class="n">next</span> <span class="o">=</span> <span class="n">buildNext</span><span class="p">(</span><span class="n">P</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">n</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Rank</span> <span class="n">m</span> <span class="o">=</span> <span class="n">P</span><span class="p">.</span><span class="n">length</span><span class="p">(),</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">P</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="n">i</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span><span class="o">++</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span> <span class="o">=</span> <span class="n">next</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">delete</span><span class="p">[]</span><span class="n">next</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="n">j</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="supplement">supplement</h4>
-<p>for ppt use python</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">KMP</span><span class="p">(</span><span class="n">Str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Str</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Next</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">)]</span>
-</span></span><span class="line"><span class="cl">    <span class="n">j</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">Str</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">Str</span><span class="p">[</span><span class="n">t</span><span class="p">]:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">        <span class="n">Next</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
-</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">=</span> <span class="n">Next</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Next</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Next</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Next</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>in list</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">KMP</span><span class="p">(</span><span class="n">Str</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Str</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">Next</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_size</span><span class="p">)]</span>
-</span></span><span class="line"><span class="cl">    <span class="n">j</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">Str</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">Str</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">Str</span><span class="p">[</span><span class="n">t</span><span class="p">]:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">t</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">            <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl">            <span class="n">Next</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
-</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">t</span> <span class="o">=</span> <span class="n">Next</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">Next</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
