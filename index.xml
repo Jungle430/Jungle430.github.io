@@ -4,9 +4,417 @@
         <link>https://Jungle430.github.io/</link>
         <description>Welcome to Jungle&#39;s blog.</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Wed, 04 Jan 2023 18:54:56 &#43;0800</lastBuildDate>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Sat, 07 Jan 2023 13:43:02 &#43;0800</lastBuildDate>
             <atom:link href="https://Jungle430.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
+    <title>OpenCV Chapter6</title>
+    <link>https://Jungle430.github.io/posts/opencv/opencv-chapter6/</link>
+    <pubDate>Sat, 07 Jan 2023 13:43:02 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter6/</guid>
+    <description><![CDATA[<h1 id="opencv">OpenCV</h1>
+<h2 id="图像特征-harris角点检测">图像特征-harris角点检测</h2>
+<h3 id="角点定义">角点定义</h3>
+<p>角点检测又称为特征点检测，是图像处理和计算机视觉中用来获取局部特征点的一类方法，广泛应用于运动检测、图像匹配、视频跟踪等领域。角点可以简单地定义为轮廓之间的交点，严格地定义是在两个主方向上的特征点，即在两个方向上灰度变化剧烈。通常具有以下特征：</p>
+<ul>
+<li>角点附近的像素点不论在梯度方向上还是梯度幅值上都存在着较大的变化</li>
+<li>对于某一场景，当视角发生变化时，其任具备稳定性质的特征</li>
+</ul>
+<h3 id="算法原理">算法原理</h3>
+<p>角点检测的基本思想就是用固定窗口在图像上沿各个方向进行滑动，比较滑动前后窗口中像素点的灰度变化，如果在任意方向上滑动窗口内都存在较大的灰度变化，则认为该窗口中存在角点；如果任何方向上都不变化，则是均匀区域；如果灰度只在一个方向上变化，则可能是图像边缘。</p>
+<p>对于图像$I(x, y)$（主要指的是卷积核部分的区域）,当在点$(x, y)$处平移$(\Delta x,\Delta y)$后的相似性:</p>
+<p>$c(x, y;\Delta x, \Delta y) = \sum_{(u, v) \in W(x, y)}W(u, v)(I(u, v)-I(u + \Delta x, v + \Delta y))^2\newline$</p>
+<p>基于泰勒展开，对图像$I(x, y)$在平移$(\Delta x, \Delta y)$后进行一阶近似</p>
+<p>$I(u+\Delta x, v + \Delta y)=I(u, v)+I_x(u, v)\Delta x+I_y(u, v)\Delta y + O(\Delta x^2, \Delta y^2) \approx I(u, v)+I_x(u, v)\Delta x+I_y(u, v)\Delta y\newline$</p>
+<p>其中$I_x, I_y$是$I(x, y)$的偏导数</p>
+<p>近似可得:</p>
+<p>$c(x, y;\Delta x, \Delta y)\approx \sum_w(I_x(u, v)\Delta x+I_y(u, v)\Delta y)^2=[\Delta x, \Delta y]M(x, y)\begin{bmatrix}\Delta x\newline\Delta y\end{bmatrix}\newline$</p>
+<p>其中$M$</p>
+<p>$$
+M(x, y)=\sum_w\begin{bmatrix}I_x(x, y)^2\ \  I_x(x, y)I_y(x, y)\newline I_x(x, y)I_y(x, y)\ \ I_y(x, y)^2\end{bmatrix}=\begin{bmatrix}\sum_w I_x(x, y)^2\ \ \sum_w I_x(x, y)I_y(x, y)\newline \sum_w I_x(x, y)I_y(x, y)\ \ \sum_w I_y(x, y)^2\end{bmatrix}=\begin{bmatrix}A\ \ C\newline C\ \ B\end{bmatrix}\newline
+$$</p>
+<p>化简可得$c(x, y;\Delta x, \Delta y)\approx A\Delta x^2+2C\Delta x\Delta y+B\Delta y^2\newline$</p>
+<p>其中$A=\sum_w I_x^2, B=\sum_wI_y^2, C=\sum_wI_xI_y\newline$</p>
+<p>二次项函数本质上就是一个椭圆函数，椭圆方程为：$[\Delta x, \Delta y]M(x, y)\begin{bmatrix}\Delta x\newline\Delta y\end{bmatrix}=1\newline$</p>
+<p>$W(x, y)$是以点$(x, y)$为中心的窗口，既可以是函数，也可以是高斯加权函数</p>
+<ul>
+<li>平坦区域：在各方向移动，窗口内像素值均没有太大变化</li>
+<li>边缘特征，如果沿着水平方向移动(梯度方向)，像素值会发生跳变；如果沿着边缘移动(平行于边缘) ，像素值不会发生变化</li>
+<li>角：不管你把它朝哪个方向移动，像素值都会发生很大变化</li>
+</ul>
+<h3 id="算法流程">算法流程</h3>
+<ol>
+<li>滤波、平滑，避免出现阶跃函数。</li>
+<li>计算图像梯度。</li>
+<li>计算每个像素位置的Harris矩阵M。</li>
+<li>计算每个像素位置的角点响应函数R。</li>
+<li>设置门限R，寻找响应函数的局部最大值(非最大抑制)</li>
+</ol>
+<h3 id="代码">代码</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">cornerHarris</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">blockSize</span><span class="p">,</span> <span class="n">ksize</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">borderType</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参数说明：
+src： 输入图像，须为float32型的单通道8位图像
+blockSize： 邻域大小，即滑动窗口的尺寸
+ksize： Sobel求导中使用的窗口大小，注意必须为奇数
+k： Harris角点检测方程中的自由参数,推荐范围为[0.04, 0.06]，基本0.04</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;img shape = </span><span class="si">{</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span> <span class="c1"># (512, 512, 3)</span>
+</span></span><span class="line"><span class="cl"><span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>  <span class="c1"># 转化成灰度图</span>
+</span></span><span class="line"><span class="cl"><span class="n">gray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dst</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cornerHarris</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;dst shape = </span><span class="si">{</span><span class="n">dst</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span> <span class="c1"># (512, 512)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span><span class="p">[</span><span class="n">dst</span> <span class="o">&gt;</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">dst</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>  <span class="c1"># 筛选出来符合值</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;dst&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Opencv/chapter6-1.png" title="/img/Opencv/chapter6-1.png" data-thumbnail="/img/Opencv/chapter6-1.png" data-sub-html="<h2>OpenCV(角点检测)</h2>">
+        
+    </a><figcaption class="image-caption">OpenCV(<code>角点检测</code>)</figcaption>
+    </figure>
+<p><strong>以上转载部分来自于CSDN幼儿园刘大壮的文章<a href="https://blog.csdn.net/qq_53751944/article/details/125993416" target="_blank" rel="noopener noreffer">《图像特征-Harris角点检测》</a>，侵删</strong></p>
+<h2 id="scale-invariant-feature-transformsift">Scale Invariant Feature Transform(SIFT)</h2>
+<h3 id="图像尺度空间">图像尺度空间</h3>
+<p>在一定的范围内，无论物体是大还是小，人眼都可以分辨出来，然而计算机要有相同的能力却很难，所以要让机器能够对物体在不同尺度下有一个统一的认知，就需要考虑图像在不同尺度下都存在的特点</p>
+<p>尺度空间的获取通常使用<strong>高斯模糊</strong>来实现</p>
+<p>$I(x, y)$是一个图像
+$$
+\begin{align}
+&amp;L(x, y, \sigma)=G(x, y, \sigma) * I(x, y)\newline
+&amp;G(x, y, \sigma)=\frac {1}{2\pi \sigma^2}e^{-\frac{x^2+y^2}{2\sigma^2}}\newline
+\end{align}
+$$
+$\sigma$控制模糊的程度,越大模糊效果越强</p>
+<h3 id="高斯差分金字塔difference-of-gaussian">高斯差分金字塔（Difference of Gaussian)</h3>
+<ul>
+<li>首先先对图像进行差分</li>
+</ul>
+<figure><a class="lightgallery" href="/img/Opencv/chapter6-2.png" title="/img/Opencv/chapter6-2.png" data-thumbnail="/img/Opencv/chapter6-2.png" data-sub-html="<h2>OpenCV(图像差分)</h2>">
+        
+    </a><figcaption class="image-caption">OpenCV(<code>图像差分</code>)</figcaption>
+    </figure>
+<p>$DOG$定义公式</p>
+<p>$$
+D(x, y, \sigma)=[G(x, y, k\sigma)-G(x, y, \sigma)] * I(x, y)=L(x, y, k\sigma)-L(x, y, \sigma)\newline
+$$</p>
+<h3 id="dog空间极值检测">DOG空间极值检测</h3>
+<p>为了寻找尺度空间的极值点，每个像素点要和其图像域（同一尺度空间）和尺度域（相邻的尺度空间）的所有相邻点进行比较，当其大于（或者小于）所有相邻点时，该点就是极值点。比如如果核的大小是$3\times 3$,中间的检测点就要和所在图像的$3\times 3$领域8个像素点，以及其相邻的上下两层的$3\times 3$领域18个像素点，共26个像素点进行比较</p>
+<h3 id="关键点的精确定位">关键点的精确定位</h3>
+<p>这些候选关键点是$DOG$空间的局部极值点，而且这些极值点均为离散的点，精确定位极值点的一种方法是，对尺度空间$DOG$函数进行曲线拟合，计算其极值点，从而实现关键点的精确定位</p>
+<p>可以用泰勒级数进行展开,离散的导数用差分代替微分计算
+$$
+f(x)\approx f(0)+f^`(0)x+\frac{f^{``}(0)}{2}x^2\newline
+$$</p>
+<h3 id="消除边界响应">消除边界响应</h3>
+<p>$$
+Hessian\ matrix\rightarrow H(x, y)=\begin{bmatrix}&amp;D_{xx}(x, y)\ D_{xy}(x, y)\newline&amp;D_{xy}(x, y)\ D_{yy}(x, y)\newline\end{bmatrix}\newline
+$$</p>
+<p>令$\alpha=\lambda_{max}$为最大的特征值，$\beta=\lambda_{min}$为最小的特征值
+$$
+\begin{align}
+&amp;T_r(H)=D_{xx}+D_{yy}=\alpha+\beta\newline
+&amp;Det(H)=D_{xx}D_{yy}-(D_{xy})^2=\alpha\beta\newline
+&amp;\frac {T_r(H)^2}{Det(H)}=\frac {(\alpha+\beta)^2}{\alpha\beta}=\frac {(\gamma + 1)^2}{\gamma}\newline
+\end{align}
+$$
+$Lowe$在论文中给出了$\gamma=10$，也就是说对于主曲率比值大于10的特征点将会被删除</p>
+<h3 id="特征点的主方向">特征点的主方向</h3>
+<p>每个点$L(x, y)$的梯度的模$m(x, y)$以及方向$\theta(x, y)$
+$$
+\begin{align}
+&amp;m(x, y)=\sqrt{[L(x+1, y)-L(x-1, y)]^2+[L(x, y+1)-L(x,, y-1)]^2}\newline
+&amp;\theta(x, y)=\arctan(\frac {L(x, y+1)-L(x,, y-1)}{L(x+1, y)-L(x-1, y)})\newline
+\end{align}
+$$
+每个特征点可以得到三个信息$((x, y), \sigma, \theta)$,即位置，尺度和方向，具有多个方向的关键点可以被复制成多份，然后将方向值分别赋给复制后的特征点，一个特征点产生了多个坐标，尺度相等，但是方向不同的特征点</p>
+<h3 id="生成特征描述">生成特征描述</h3>
+<p>在完成关键点的梯度计算后，使用直方图统计邻域内像素和梯度的方向</p>
+<p>为了保证特征矢量的旋转不变性，要以特征点为中心，在附近邻域内将坐标旋转$\theta$角度，即将坐标轴旋转为特征点的主方向</p>
+<p>$$
+\begin{bmatrix}
+&amp;x^&rsquo;\newline
+&amp;y^&rsquo;\newline
+\end{bmatrix}=\begin{bmatrix}
+&amp;\cos \theta\ -\sin \theta\newline
+&amp;\sin \theta\ \cos \theta\newline
+\end{bmatrix}\begin{bmatrix}
+&amp;x\newline
+&amp;y\newline
+\end{bmatrix}
+$$</p>
+<p>旋转之后的主方向为中心取$8\times 8$的窗口，求每个像素的梯度值和方向，箭头方向代表梯度方向，长度代表梯度幅值，然后利用高斯窗口对其进行加权运算，最后在每个$4\times 4$的小块上绘制8个方向的梯度直方图，计算每个梯度方向的累加值，即可形成一个种子点，即每个特征由四个种子点组成，每个种子点会有8个方向的向量信息</p>
+<p>论文中建议对每个关键点使用$4\times 4$共16个种子点来描述，这样一个关键点就会产生128$[4(h),4(w),8(number\ of\ the\ vector)]$维的$SIFT$特征向量</p>
+<h3 id="opencv中的sift函数">OpenCV中的SIFT函数</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>  <span class="c1"># 4.6.0 not use the xfeatures2d.SIFT_create()</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># -&gt;(The patent has expired and the function has been deprecated), use the SIFT_create()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img path&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>  <span class="c1"># 转化成灰度图</span>
+</span></span><span class="line"><span class="cl"><span class="n">sift</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">kp</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># 关键点</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">drawKeypoints</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">kp</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;drawKeyPoints&#39;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Opencv/chapter6-3.png" title="/img/Opencv/chapter6-3.png" data-thumbnail="/img/Opencv/chapter6-3.png" data-sub-html="<h2>OpenCV(SIFT)</h2>">
+        
+    </a><figcaption class="image-caption">OpenCV(<code>SIFT</code>)</figcaption>
+    </figure>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 计算特征</span>
+</span></span><span class="line"><span class="cl"><span class="n">kp</span><span class="p">,</span> <span class="n">des</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">kp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kp</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">des</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">des</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">output
+</span></span></span><span class="line"><span class="cl"><span class="s1">(789,)
+</span></span></span><span class="line"><span class="cl"><span class="s1">(789, 128)
+</span></span></span><span class="line"><span class="cl"><span class="s1">[ 47.  55.   9.  35. 117.  37.   0.   0. 143. 143.   2.   2.   2.   1.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   0.   0.  23.  23.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   0.   0.   0.   0.  36.  38.  64. 143.  40.   7.   1.   5. 143. 143.
+</span></span></span><span class="line"><span class="cl"><span class="s1">  11.   8.   2.   0.   0.   9. 118.  23.   0.   0.   0.   0.   0.   1.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   1.   0.   0.   0.   0.   0.   0.   0.  36.   3.   9.  23.   7.  28.
+</span></span></span><span class="line"><span class="cl"><span class="s1">  45.  68. 143.   8.   1.   0.   0.   0.   5. 143. 124.   1.   0.   0.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   0.   0.   0.  25.   1.   0.   0.   0.   0.   0.   0.   0.  52.   3.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   0.   0.   0.   4.  23. 119.  91.   0.   0.   0.   0.   0.   3. 143.
+</span></span></span><span class="line"><span class="cl"><span class="s1">  26.   0.   0.   0.   0.   0.   1.  30.   0.   0.   0.   0.   0.   0.
+</span></span></span><span class="line"><span class="cl"><span class="s1">   0.   0.]
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="特征匹配">特征匹配</h2>
+<h3 id="brute-force蛮力匹配">Brute-Force蛮力匹配</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img1 path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img2 path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sift</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># function -&gt; 特征点，特征向量</span>
+</span></span><span class="line"><span class="cl"><span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">crossCheck表示两个特征点要互相匹配，例如A中的第i个特征点与B中第j个特征点最近的
+</span></span></span><span class="line"><span class="cl"><span class="s1">并且B中的第j个特征点到A中的第i个特征点也是(1对1)
+</span></span></span><span class="line"><span class="cl"><span class="s1">此时计算方法为归一化数组(欧几里得距离) -&gt; 默认参数:NORM_L2
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bf</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BFMatcher_create</span><span class="p">(</span><span class="n">crossCheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 一对一的匹配</span>
+</span></span><span class="line"><span class="cl"><span class="n">matches</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">matches</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">drawMatches</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">kp1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">kp2</span><span class="p">,</span> <span class="n">matches</span><span class="p">[:</span><span class="mi">50</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Opencv/chapter6-4.png" title="/img/Opencv/chapter6-4.png" data-thumbnail="/img/Opencv/chapter6-4.png" data-sub-html="<h2>蛮力匹配(一对一)</h2>">
+        
+    </a><figcaption class="image-caption">蛮力匹配(<code>一对一</code>)</figcaption>
+    </figure>
+<h3 id="k对最佳匹配">K对最佳匹配</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cv2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img1 path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">img2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&#34;img2 path&#34;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sift</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># function -&gt; 特征点，特征向量</span>
+</span></span><span class="line"><span class="cl"><span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bf</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BFMatcher_create</span><span class="p">(</span><span class="n">crossCheck</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># k对匹配，注意上面的crossCheck要修正为False,否则1对1与下面k对匹配不符</span>
+</span></span><span class="line"><span class="cl"><span class="n">matches</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">knnMatch</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">good</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.75</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">distance</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">good</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">m</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">img3</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">drawMatchesKnn</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">kp1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">kp2</span><span class="p">,</span> <span class="n">good</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&#34;result&#34;</span><span class="p">,</span> <span class="n">img3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果希望在数据结构方面优化，可以使用cv2.FlannBasedMatcher</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><figure><a class="lightgallery" href="/img/Opencv/chapter6-5.png" title="/img/Opencv/chapter6-5.png" data-thumbnail="/img/Opencv/chapter6-5.png" data-sub-html="<h2>蛮力匹配K对)</h2>">
+        
+    </a><figcaption class="image-caption">蛮力匹配<code>K对</code>)</figcaption>
+    </figure>
+<p>缺点：会出现一些匹配错误的点</p>
+<h3 id="随机抽样一致算法random-sample-consensusransac">随机抽样一致算法($Random\ sample\ consensus,RANSAC$)</h3>
+<p>数据拟合</p>
+<ul>
+<li>最小二乘法$\rightarrow$尽可能多的满足所有的数据点，部分异常数据（放在识别上就是异常点）会影响线的走向</li>
+<li>$RANSAC\rightarrow$能够减少异常点的干扰，得到的拟合线更符合实际</li>
+</ul>
+<h4 id="原理">原理</h4>
+<ul>
+<li>选择初始样本点进行拟合，给定一个容忍范围，不断进行迭代</li>
+<li>每一次拟合后，容差范围内都由对应的数据点数，找出数据点个数最多的情况，就是最终的拟合效果</li>
+</ul>
+<h3 id="单应性矩阵">单应性矩阵</h3>
+<p>$$
+H=\begin{bmatrix}
+&amp;h_{11}\ h_{12}\ h_{13}\newline
+&amp;h_{21}\ h_{22}\ h_{23}\newline
+&amp;h_{31}\ h_{32}\ 1\newline
+\end{bmatrix}
+$$</p>
+<p>$$
+\begin{bmatrix}
+&amp;x^&rsquo;\newline
+&amp;y^&rsquo;\newline
+&amp;1
+\end{bmatrix}=\begin{bmatrix}
+&amp;h_{11}\ h_{12}\ h_{13}\newline
+&amp;h_{21}\ h_{22}\ h_{23}\newline
+&amp;h_{31}\ h_{32}\ 1\newline
+\end{bmatrix}\begin{bmatrix}
+&amp;x\newline
+&amp;y\newline
+&amp;1\newline
+\end{bmatrix}
+$$</p>
+<p>由线性代数知识可得，至少需要4对$(x^&rsquo;,y^&rsquo;)$的数据才能解该方程，为了防止误差点的干扰，筛选这些点需要使用$RANSAC$算法</p>
+]]></description>
+</item>
+<item>
     <title>OpenCV Chapter5</title>
     <link>https://Jungle430.github.io/posts/opencv/opencv-chapter5/</link>
     <pubDate>Wed, 04 Jan 2023 18:54:56 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter5/</guid>
@@ -6874,1115 +7282,6 @@ $$</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
-</item>
-<item>
-    <title>Searching</title>
-    <link>https://Jungle430.github.io/posts/data-structures-and-algorithms/searching/</link>
-    <pubDate>Fri, 18 Nov 2022 14:47:32 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/data-structures-and-algorithms/searching/</guid>
-    <description><![CDATA[<h1 id="data-structure">Data Structure</h1>
-<h2 id="searching">Searching</h2>
-<h3 id="read-map">Read Map</h3>
-<h4 id="static-search-table">Static Search Table</h4>
-<blockquote>
-<p>Sequential Search</p>
-<p>Binary Search</p>
-<p>Indexing Search</p>
-</blockquote>
-<h4 id="binary-search-trees-dynamic-search-table">Binary Search Trees (Dynamic Search Table)</h4>
-<blockquote>
-<p>Binary search tree</p>
-<p>AVL tree</p>
-<p>B-Tree</p>
-</blockquote>
-<h4 id="hash-table">Hash Table</h4>
-<blockquote>
-<p>What is hashing</p>
-<p>Hash Function</p>
-<p>Collision Resolution</p>
-<p>Closed Hashing</p>
-<p>Open Hashing</p>
-<p>Analysis of Hashing</p>
-</blockquote>
-<h3 id="search-table">Search Table</h3>
-<h4 id="definition">Definition</h4>
-<p>A set of the same type of data elements</p>
-<h4 id="key">Key</h4>
-<p>The value of <strong>data item</strong> in the data element. It is used to identify the data elements</p>
-<blockquote>
-<p>Primary Key and Second Key</p>
-</blockquote>
-<h4 id="searching-1">Searching</h4>
-<p>Based on the search value of key find out the element whose key value is same as search value</p>
-<p>It <strong>returns the position of the element</strong> located in</p>
-<h4 id="operations-on-searching-table">Operations on searching table</h4>
-<ol>
-<li>
-<p>Search a given element in the search table</p>
-</li>
-<li>
-<p>Get attributes of a given element</p>
-</li>
-<li>
-<p>Insert an element into the search table</p>
-</li>
-<li>
-<p>Delete an element from the search table</p>
-</li>
-</ol>
-<h4 id="static-search-table-1">Static Search Table</h4>
-<p>Only do search on the search table</p>
-<h4 id="dynamic-search-table">Dynamic Search Table</h4>
-<p>Need do search and insertion and deletion on the search table</p>
-<h3 id="basic-concepts">Basic concepts</h3>
-<blockquote>
-<p>Given: Distinct keys $k_1 , k_2 , …, k_n$ and collection T of n records of the form $((k_1 , I_1 ), (k_2 , I_2 ), …, (k_n , I_n ))\newline$</p>
-<p>where $I_j$ is the information associated with key $k_j\ for\ 1 \leq j \leq n\newline$</p>
-</blockquote>
-<h4 id="search-problem">Search Problem</h4>
-<p>For key value K, locate the record $(k_j , I_j)$ in T such that $k_j = K\newline$</p>
-<h4 id="search">Search</h4>
-<p>Searching is a systematic method for locating the $record(s)$ with key value $k_j = K\newline$</p>
-<h4 id="successful-vs-unsuccessful">Successful vs Unsuccessful</h4>
-<p>A <strong>successful</strong> search is one in which a record with key $k_j = K$ is found</p>
-<p>An <strong>unsuccessful</strong> search is one in which no record with $k_j = K$ is found (and presumably no such record exists)</p>
-<blockquote>
-<p>We often ask how many times one key is compared with another during a search.</p>
-<p>This gives us a good measure of the total amount of work that the algorithm will do</p>
-</blockquote>
-<h3 id="approaches-to-search">Approaches to Search</h3>
-<ol>
-<li>
-<p>Sequential and list methods (lists, tables, arrays).</p>
-</li>
-<li>
-<p>Tree indexing methods</p>
-</li>
-<li>
-<p>Direct access by key value (hashing)</p>
-</li>
-</ol>
-<div class="mermaid" id="id-1"></div>
-<h3 id="static-search-table-2">Static Search Table</h3>
-<h4 id="sequential-search">Sequential Search</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">constexpr</span> <span class="k">auto</span> <span class="n">LIST_SIZE</span> <span class="mi">20</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">KeyType</span> <span class="n">key</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="n">OtherType</span> <span class="n">other_data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ElemType</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="n">ElemType</span> <span class="o">*</span><span class="n">elem</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">SSTable</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="general-idea">General Idea</h5>
-<p>Begin at one end of the list and scan down it until the desired key is found or the end is reached</p>
-<blockquote>
-<p>A successful search returns the position of the record</p>
-<p>An unsuccessful search returns 0</p>
-</blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">S_search</span><span class="p">(</span><span class="n">SSTable</span> <span class="n">ST</span><span class="p">[],</span> <span class="n">KeyType</span> <span class="n">K</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span><span class="p">{};</span>
-</span></span><span class="line"><span class="cl">    <span class="n">ST</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">key</span> <span class="o">=</span> <span class="n">K</span><span class="p">;</span><span class="cm">/*a sentinel,storage the Key Value*/</span>
-</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span> <span class="n">ST</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">key</span> <span class="o">!=</span> <span class="n">K</span><span class="p">;</span> <span class="n">i</span> <span class="o">--</span><span class="p">);</span><span class="cm">/*compare backwards*/</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">i</span><span class="p">;</span><span class="cm">/*return the position, or 0*/</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="analysis">Analysis</h5>
-<blockquote>
-<p>To analyze the behavior of an algorithm that makes comparisons of keys</p>
-<p>we shall use the count of these key comparisons as our measure of the work done</p>
-</blockquote>
-<h5 id="average-search-lengthasl">Average Search Length(ASL)</h5>
-<p>$$
-ASL=P_1C_1+P_2C_2+&hellip;+P_nC_n=\sum_{i=1}^nP_iC_i\newline
-$$
-$Where\ P_i\ is\ probability(frequency)\ of\ search\ i^{th}\ record\newline$
-$and\ C_i\ is\ the\ count\ of\ key\ comparisons\ when\ search\ it\newline$</p>
-<p>$for\ sequential\ search$
-$$
-\begin{align}
-&amp;success\rightarrow\newline
-&amp;best\ case:\ 1\ comparison\newline
-&amp;worst\ case:n\ comparisons\newline
-&amp;average\ case:ASL_{sq}=\sum^n_{i=1}P_iC_i=\sum^n_{i=1}\frac {1}{n}(n-i+1)=\frac {n+1}{2}\newline\newline
-&amp;unsuccessful\ search:\rightarrow n+1\ comparisons\newline
-\end{align}
-$$</p>
-<h4 id="binary-search">Binary Search</h4>
-<h5 id="ordered-list">Ordered List</h5>
-<p>An ordered list is a list in which each entry contains a key, such that <strong>the keys are in order</strong></p>
-<p>That is, if entry $i$ comes before entry $j$ in the list, then the key of entry $i$ is less than or equal to the key of entry $j$ .</p>
-<h5 id="idea">Idea</h5>
-<p>In searching an ordered list, first compare the target to the key in the center of the list.</p>
-<p>If it is <strong>smaller</strong>, restrict the <strong>search to the left half</strong>. <strong>otherwise restrict the search to the right half</strong></p>
-<p>and repeat. In this way, <strong>at each step we reduce the length of the list to be searched by half</strong></p>
-<p>Initialization: <strong>Set Low=1 and High= Length of List</strong></p>
-<p>Repeat the following
-$$
-\begin{align}
-&amp;If\ Low &gt; High, Return\ 0\ to\ indicate\ Item\ not\ found\newline
-&amp;mid=\frac{low+high}{2}\newline
-&amp;if\ (K&lt;ST[mid])\rightarrow high=mid - 1\newline
-&amp;else\ if\ (K&gt;ST[mid])\rightarrow low = mid + 1\newline
-&amp;else\ return\ mid\ as\ location\ of\ the\ target\newline
-\end{align}
-$$</p>
-<h5 id="code">code</h5>
-<p>URL $\rightarrow$ <a href="https://zhuanlan.zhihu.com/p/565438258" target="_blank" rel="noopener noreffer">https://zhuanlan.zhihu.com/p/565438258</a></p>
-<p>$Three\ editions:\ 《Data\ Structure》\ from\ Tsinghua\ University\ -\ Deng\ Junhui\newline$</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cm">/******************************************************************************************
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Data Structures in C++
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * ISBN: 7-302-33064-6 &amp; 7-302-33065-3 &amp; 7-302-29652-2 &amp; 7-302-26883-3
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Junhui DENG, deng@tsinghua.edu.cn
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Computer Science &amp; Technology, Tsinghua University
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2003-2021. All rights reserved.
-</span></span></span><span class="line"><span class="cl"><span class="cm"> ******************************************************************************************/</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="cp">#pragma once
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="c1">//[lo, hi) and 0 &lt;= lo &lt;= hi &lt;= _size
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="k">static</span> <span class="n">Rank</span> <span class="n">binSearch</span> <span class="p">(</span> <span class="n">T</span><span class="o">*</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">      <span class="n">Rank</span> <span class="n">mi</span> <span class="o">=</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">hi</span> <span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">      <span class="k">if</span>      <span class="p">(</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="p">)</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">mi</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">      <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span> <span class="n">S</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">e</span> <span class="p">)</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">mi</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">      <span class="k">else</span>                  <span class="k">return</span> <span class="n">mi</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="p">}</span> 
-</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl"><span class="p">}</span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cm">/******************************************************************************************
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Data Structures in C++
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * ISBN: 7-302-33064-6 &amp; 7-302-33065-3 &amp; 7-302-29652-2 &amp; 7-302-26883-3
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Junhui DENG, deng@tsinghua.edu.cn
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Computer Science &amp; Technology, Tsinghua University
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2003-2021. All rights reserved.
-</span></span></span><span class="line"><span class="cl"><span class="cm"> ******************************************************************************************/</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="cp">#pragma once
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="c1">//[lo, hi) and 0 &lt;= lo &lt; hi &lt;= _size
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="k">static</span> <span class="n">Rank</span> <span class="n">binSearch</span> <span class="p">(</span> <span class="n">T</span><span class="o">*</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="n">Rank</span> <span class="n">mi</span> <span class="o">=</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">hi</span> <span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">(</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="p">)</span> <span class="o">?</span> <span class="n">hi</span> <span class="o">=</span> <span class="nl">mi</span> <span class="p">:</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">mi</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">   <span class="p">}</span> 
-</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">[</span><span class="n">lo</span><span class="p">]</span> <span class="o">?</span> <span class="n">lo</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">:</span> <span class="n">lo</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl"><span class="p">}</span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cm">/******************************************************************************************
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Data Structures in C++
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * ISBN: 7-302-33064-6 &amp; 7-302-33065-3 &amp; 7-302-29652-2 &amp; 7-302-26883-3
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Junhui DENG, deng@tsinghua.edu.cn
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Computer Science &amp; Technology, Tsinghua University
-</span></span></span><span class="line"><span class="cl"><span class="cm"> * Copyright (c) 2003-2021. All rights reserved.
-</span></span></span><span class="line"><span class="cl"><span class="cm"> ******************************************************************************************/</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="cp">#pragma once
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="c1">//[lo, hi) and 0 &lt;= lo &lt;= hi &lt;= _size
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="k">static</span> <span class="n">Rank</span> <span class="n">binSearch</span> <span class="p">(</span> <span class="n">T</span><span class="o">*</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">e</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">lo</span><span class="p">,</span> <span class="n">Rank</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="k">while</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="n">hi</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="n">Rank</span> <span class="n">mi</span> <span class="o">=</span> <span class="p">(</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">hi</span> <span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">      <span class="p">(</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">[</span><span class="n">mi</span><span class="p">]</span> <span class="p">)</span> <span class="o">?</span> <span class="n">hi</span> <span class="o">=</span> <span class="nl">mi</span> <span class="p">:</span> <span class="n">lo</span> <span class="o">=</span> <span class="n">mi</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">   <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">lo</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl"><span class="p">}</span> 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="analysis-1">Analysis</h5>
-<p>$$
-\begin{align}
-&amp;T(n)=T(\frac{n}{2})+O(1)\newline
-&amp;T(n)=T(\frac{n}{2})+O(1)=T(\frac{n}{4})+O(2)=T(\frac{n}{8})+O(3)=&hellip;=O(\log n)\newline
-\end{align}
-$$</p>
-<h5 id="decision-tree">Decision Tree</h5>
-<h6 id="definition-1">definition</h6>
-<blockquote>
-<p>The decision tree (also called comparison tree or search tree) of an algorithm is obtained by tracing the action of binary search algorithm, representing each comparison of keys by a node of the tree (which we draw as a circle)</p>
-</blockquote>
-<p>Branches (lines) drawn down from the circle represent the possible outcomes of the comparison. When the algorithm terminates, we put either F (for failure) or the location where the target is found at the end of the appropriate branch, and draw as a square</p>
-<h6 id="example">Example</h6>
-<p>$$
-array:[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]\newline
-$$</p>
-<div class="mermaid" id="id-2"></div>
-<h6 id="analysis-by-decision-tree">Analysis by decision tree</h6>
-<p>$$
-\begin{align}
-&amp;The\ best\ case:1\ comparison\newline
-&amp;The\ worst\ case:the\ depth\ of\ a\ decision\ tree\ h\newline
-&amp;The\ depth\ of\ a\ decision\ tree\rightarrow h=\lfloor \log_2n \rfloor+1\newline
-&amp;O(\log_2 n)\newline
-&amp;Average\ case(ASL): O(\log_2 n)\newline
-&amp;ASL_{bn}=\sum^n_{i=1}P_iC_i=\frac {1}{n}[1 * 2^0 + 2 * 2^1 + 3 * 2^2 + &hellip; + h * 2^{h-1}]\newline
-&amp;=\frac {n+1}{n}\log_2(n+1)-1 \approx \log_2(n+1)-1=O(log_2 n)\newline
-\end{align}
-$$</p>
-<h4 id="indexing-search">Indexing Search</h4>
-<h5 id="data-structure-1">Data Structure</h5>
-<p>Divided a search list R[n] into b sublist.</p>
-<p><strong>Each sublist may not be ordered by key</strong>, but <strong>the maximal key in the front sublist must be lower than the minimal key in the next successor list</strong></p>
-<p>An indexing table ID[b]. ID[i] stores the maximal key in i-th list. ID[b] is an ordered list</p>
-<h5 id="idea-1">Idea</h5>
-<ol>
-<li>Search in ID[b] to determine the possible sublist <strong>(Sequential search or binary search can be used)</strong></li>
-<li>Search in R[n] <strong>(Only sequential search can be used)</strong></li>
-</ol>
-<h5 id="analysis-2">Analysis</h5>
-<p>$ASL=ASL_{Index\ table}+ASL_{Sublist}\newline$</p>
-<p>For search list of length n, it is divided into b sublist and the length of a sublist is $s = \frac {n}{b}\newline$</p>
-<blockquote>
-<p>If using binary search in indexing table, the Average Search Length will be $log_2 (1 + \frac {n+1}{s})-1 + \frac {s + 1}{2}\newline$</p>
-</blockquote>
-<blockquote>
-<p>If using sequential search in indexing table, the Average Search Length will be $\frac {b+1}{2} + \frac {s+1}{2} = \frac {s^2 + 2s + n}{2s}\newline$</p>
-</blockquote>
-<p>For list of length 10000,</p>
-<p>Sequential search: $ASL=\frac {n+1}{2}=5000\newline$</p>
-<p>Indexing search (s=100):</p>
-<p>$ASL= log_2 (b+1)-1+ \frac {S+1}{2} &lt;57\newline$</p>
-<p>$or ASL= \frac {b+1}{2} + \frac {S+1}{2} = 101\newline$</p>
-<p>Binary search: $ASL=log_2 (n+1)-1 &lt; 14\newline$</p>
-<h4 id="summary-and-comparison">Summary and Comparison</h4>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Sequential Search</th>
-<th>Binary Search</th>
-<th>Indexing Search</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ASL</td>
-<td>Largest</td>
-<td>Smallest</td>
-<td>Middle</td>
-</tr>
-<tr>
-<td>List Structure</td>
-<td>Ordered Unordered</td>
-<td>Ordered</td>
-<td>Ordered indexing table</td>
-</tr>
-<tr>
-<td>Storage Structure</td>
-<td>Array or Linked List</td>
-<td>Array</td>
-<td>Array or Linked List</td>
-</tr>
-</tbody>
-</table>
-<h3 id="binary-search-trees-dynamic-search-table-1">Binary Search Trees (Dynamic search table)</h3>
-<h4 id="binary-search-tree">Binary Search Tree</h4>
-<h5 id="definition-2">Definition</h5>
-<p>Binary Search Tree (BST) is a binary tree in which</p>
-<ol>
-<li>
-<p>Every element has a unique key.</p>
-</li>
-<li>
-<p>The keys in a nonempty left subtree (right subtree) are smaller (larger) than the key in the root of subtree.</p>
-</li>
-<li>
-<p>The left and right subtrees are also Binary Search Trees.</p>
-</li>
-</ol>
-<p>Note that this tree is <strong>ordered</strong>!</p>
-<ol>
-<li>
-<p>Each element to the <strong>left</strong> of the root is <strong>less than the root</strong></p>
-</li>
-<li>
-<p>Each element to the <strong>right</strong> of the root is <strong>greater than the root</strong></p>
-</li>
-</ol>
-<h5 id="example-1">Example</h5>
-<div class="mermaid" id="id-3"></div>
-<h5 id="search-path">Search path</h5>
-<p>$Search\ path\ is\ a\ path\ from\ root\ to\ a\ node.\ The\ number\ of\ comparisons\ is\ the\ level\ of\ the\ node.\newline$</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">BiTree</span> <span class="nf">SearchBST</span> <span class="p">(</span><span class="n">BiTree</span> <span class="n">T</span> <span class="p">,</span> <span class="n">keytype</span> <span class="n">k</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">    <span class="c1">// T is the root of the binary search tree
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">T</span> <span class="o">||</span> <span class="p">(</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="n">k</span><span class="p">))</span> 
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">T</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">key</span><span class="p">)</span> 
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">SearchBST</span> <span class="p">(</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span> <span class="c1">//Searching in left subtree
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">else</span> 
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">SearchBST</span><span class="p">(</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">//Searching in right subtree
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p>The searching efficiency is affected by the shape of Binary Search Tree</p>
-</blockquote>
-<p>The worst case(one node per level, binary search degenerates to sequential search):$ASL=\frac {n+1}{2}\newline$</p>
-<p>The best case (n nodes should have $\lfloor \log_2n\rfloor +1$ levels) :$ASL=\log_2 (n+1)-1\newline$</p>
-<h5 id="insertion-into-bst">Insertion into BST</h5>
-<p>When search is <strong>not successful</strong>, the new data is inserted into BST</p>
-<p><strong>The new node must be a leaf of BST,</strong> and it is inserted into the position of searching fault</p>
-<figure><a class="lightgallery" href="/img/CreateBST.png" title="/img/CreateBST.png" data-thumbnail="/img/CreateBST.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<h5 id="deletion-from-bst">Deletion from BST</h5>
-<ol>
-<li>
-<p>The deleted node is a leaf node &ndash; delete node, reset link from parent to Null</p>
-</li>
-<li>
-<p>The deleted node with 1 child &ndash; delete node, reset link from parent to point to child</p>
-</li>
-<li>
-<p>The deleted node with 2 children</p>
-<blockquote>
-<p>Let left subtree of P as left subtree of F;</p>
-<p>Or Replace node with inorder predecessor (successor) S</p>
-<p>Delete S (which has 0 or 1 child)</p>
-</blockquote>
-</li>
-</ol>
-<figure><a class="lightgallery" href="/img/DeletionFromBST1.png" title="/img/DeletionFromBST1.png" data-thumbnail="/img/DeletionFromBST1.png" data-sub-html="<h2>case1 (image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1 (<code>image1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/DelectionFromBST2.png" title="/img/DelectionFromBST2.png" data-thumbnail="/img/DelectionFromBST2.png" data-sub-html="<h2>case2 (image2)</h2>">
-        
-    </a><figcaption class="image-caption">case2 (<code>image2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/DelectFromBST3.png" title="/img/DelectFromBST3.png" data-thumbnail="/img/DelectFromBST3.png" data-sub-html="<h2>case3 (image3)</h2>">
-        
-    </a><figcaption class="image-caption">case3 (<code>image3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/DelectFromBST4.png" title="/img/DelectFromBST4.png" data-thumbnail="/img/DelectFromBST4.png" data-sub-html="<h2>case4 (image4)</h2>">
-        
-    </a><figcaption class="image-caption">case4 (<code>image4</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/DelectFromBST5.png" title="/img/DelectFromBST5.png" data-thumbnail="/img/DelectFromBST5.png" data-sub-html="<h2>case5 (image5)</h2>">
-        
-    </a><figcaption class="image-caption">case5 (<code>image5</code>)</figcaption>
-    </figure>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">Status</span> <span class="nf">DeleteBST</span> <span class="p">(</span><span class="n">BiTree</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">,</span> <span class="n">keytype</span> <span class="n">k</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">    <span class="c1">// If there is an element whose key-word EQ key, delete the element, then return true
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//otherwise return false
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">T</span><span class="p">)</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="c1">//The key does not exist
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">EQ</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">.</span><span class="n">key</span><span class="p">))</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">Delete</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
-</span></span><span class="line"><span class="cl">	<span class="c1">//Find out the element whose keywork is key
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">LT</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">.</span><span class="n">key</span><span class="p">))</span> 
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">DeleteBST</span><span class="p">(</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">,</span><span class="n">key</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">	<span class="k">else</span> 
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">DeleteBST</span><span class="p">(</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">//DeleteBST
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">Status</span> <span class="nf">Delete</span> <span class="p">(</span><span class="n">BiTree</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">    <span class="c1">// Delete node p from BST, and reconnect its right/left child node 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="n">q</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">        <span class="n">free</span><span class="p">(</span><span class="n">q</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">		<span class="n">q</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">        <span class="n">free</span><span class="p">(</span><span class="n">q</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">else</span><span class="p">{</span> 
-</span></span><span class="line"><span class="cl">		<span class="n">q</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">		<span class="n">s</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">		<span class="k">while</span> <span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">)</span> <span class="p">{</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">q</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">rchild</span><span class="p">;</span> 
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">//s is the predecessor of the node p 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">p</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">q</span> <span class="o">!=</span> <span class="n">p</span><span class="p">)</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">q</span><span class="o">-&gt;</span><span class="n">rchild</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">;</span> <span class="c1">//connect the right subtree of q
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">else</span> 
-</span></span><span class="line"><span class="cl">            <span class="n">q</span><span class="o">-&gt;</span><span class="n">lchild</span> <span class="o">=</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">lchild</span><span class="p">;</span> <span class="c1">//connect the left subtree of q
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">free</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">//Delete
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><figure><a class="lightgallery" href="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_02.png" title="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_02.png" data-thumbnail="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_02.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_03.png" title="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_03.png" data-thumbnail="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_03.png" data-sub-html="<h2>case2(image2)</h2>">
-        
-    </a><figcaption class="image-caption">case2(<code>image2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_04.png" title="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_04.png" data-thumbnail="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_04.png" data-sub-html="<h2>case3(image3)</h2>">
-        
-    </a><figcaption class="image-caption">case3(<code>image3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_05.png" title="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_05.png" data-thumbnail="/img/06.BST.B3.algorithm.remove/06.BST.B3.algorithm.remove_05.png" data-sub-html="<h2>case4(image4)</h2>">
-        
-    </a><figcaption class="image-caption">case4(<code>image4</code>)</figcaption>
-    </figure>
-<h4 id="avl-tree">AVL Tree</h4>
-<h5 id="tree-balancing">Tree Balancing</h5>
-<p><strong>Binary Search Trees(BST) are designed for fast searching!</strong></p>
-<blockquote>
-<p>But the order of insertion into a BST determines the shape of the tree and hence the efficiency with which tree can be searched.</p>
-</blockquote>
-<blockquote>
-<p>If it grows so that the tree is <strong>as “fat” as possible</strong> (fewest levels) then it can be <strong>searched most</strong> <strong>efficiently</strong>. If the tree grows “lopsided”, with many more items in one subtree than another, then the search efficiency will degrade.</p>
-</blockquote>
-<h6 id="for-avldifferent-in-bst">For AVL(different in BST)</h6>
-<p>An AVL tree is a binary tree that is <strong>height balanced</strong></p>
-<p>$\rightarrow The\ difference\ in\ height\ between\ the\ left\ and\ right\ subtrees\ at\ any\ point\ in\ the\ tree\ is\ restricted\newline$</p>
-<h5 id="balance-factor">Balance Factor</h5>
-<h6 id="definition-3">Definition</h6>
-<p>The balance factor of node x to be the height of x’s left subtree minus the height of its right subtree.</p>
-<p>$balFac(v)=height(lc(v))-height(rc(v))\newline$</p>
-<p>An AVL tree is a BST in which <strong>the balance factor of each node is 0, -1, or 1</strong></p>
-<p>Example</p>
-<figure><a class="lightgallery" href="/img/Sample%20Trees.png" title="/img/Sample Trees.png" data-thumbnail="/img/Sample Trees.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<h5 id="insert">insert</h5>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">AVL</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">insert</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">e</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span> <span class="n">e</span> <span class="p">);</span> <span class="k">if</span> <span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="k">return</span> <span class="n">x</span><span class="p">;</span> <span class="c1">//若目标尚不存在
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">xx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BinNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span> <span class="n">e</span><span class="p">,</span> <span class="n">_hot</span> <span class="p">);</span> <span class="n">_size</span><span class="o">++</span><span class="p">;</span> <span class="c1">//则创建新节点
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 此时，若x的父亲_hot增高，则祖父有可能失衡
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">_hot</span><span class="p">;</span> <span class="n">g</span><span class="p">;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="p">)</span> <span class="c1">//从_hot起，逐层检查各代祖先g
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="n">AvlBalanced</span><span class="p">(</span> <span class="o">*</span><span class="n">g</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span> <span class="c1">//一旦发现g失衡，则通过调整恢复平衡
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">FromParentTo</span><span class="p">(</span><span class="o">*</span><span class="n">g</span><span class="p">)</span> <span class="o">=</span> <span class="n">rotateAt</span><span class="p">(</span> <span class="n">tallerChild</span><span class="p">(</span> <span class="n">tallerChild</span><span class="p">(</span> <span class="n">g</span> <span class="p">)</span> <span class="p">)</span> <span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span> <span class="c1">//局部子树复衡后，高度必然复原；其祖先亦必如此，故调整结束
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span> <span class="k">else</span> <span class="c1">//否则（g仍平衡）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">updateHeight</span><span class="p">(</span> <span class="n">g</span> <span class="p">);</span> <span class="c1">//只需更新其高度（注意：即便g未失衡，高度亦可能增加）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">xx</span><span class="p">;</span> <span class="c1">//返回新节点位置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="remove">remove</h5>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="kt">bool</span> <span class="n">AVL</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">remove</span><span class="p">(</span> <span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">e</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span> <span class="n">e</span> <span class="p">);</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">x</span> <span class="p">)</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="c1">//若目标的确存在
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">removeAt</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="n">_hot</span> <span class="p">);</span> <span class="n">_size</span><span class="o">--</span><span class="p">;</span> <span class="c1">//则在按BST规则删除之后，_hot及祖先均有可能失衡
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 以下，从_hot出发逐层向上，依次检查各代祖先g
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">_hot</span><span class="p">;</span> <span class="n">g</span><span class="p">;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span> <span class="n">AvlBalanced</span><span class="p">(</span> <span class="o">*</span><span class="n">g</span> <span class="p">)</span> <span class="p">)</span> <span class="c1">//一旦发现g失衡，则通过调整恢复平衡
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">g</span> <span class="o">=</span> <span class="n">FromParentTo</span><span class="p">(</span> <span class="o">*</span><span class="n">g</span> <span class="p">)</span> <span class="o">=</span> <span class="n">rotateAt</span><span class="p">(</span> <span class="n">tallerChild</span><span class="p">(</span> <span class="n">tallerChild</span><span class="p">(</span> <span class="n">g</span> <span class="p">)</span> <span class="p">)</span> <span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="n">updateHeight</span><span class="p">(</span> <span class="n">g</span> <span class="p">);</span> <span class="c1">//更新高度（注意：即便g未曾失衡或已恢复平衡，高度均可能降低）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="c1">//可能需做过(logn)次调整；无论是否做过调整，全树高度均可能下降
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span> <span class="c1">//删除成功
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="refactoring-34">refactoring-&gt;”3+4”</h5>
-<figure><a class="lightgallery" href="/img/3&#43;4.png" title="/img/3&#43;4.png" data-thumbnail="/img/3&#43;4.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> 
-</span></span><span class="line"><span class="cl"><span class="n">BST</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">connect34</span><span class="p">(</span><span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">b</span><span class="p">,</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">,</span><span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T0</span><span class="p">,</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T1</span><span class="p">,</span><span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T2</span><span class="p">,</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T3</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">a</span><span class="o">-&gt;</span><span class="n">lc</span> <span class="o">=</span> <span class="n">T0</span><span class="p">;</span> <span class="k">if</span> <span class="p">(</span><span class="n">T0</span><span class="p">)</span> <span class="n">T0</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">a</span><span class="o">-&gt;</span><span class="n">rc</span> <span class="o">=</span> <span class="n">T1</span><span class="p">;</span> <span class="k">if</span> <span class="p">(</span><span class="n">T1</span><span class="p">)</span> <span class="n">T1</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">lc</span> <span class="o">=</span> <span class="n">T2</span><span class="p">;</span> <span class="k">if</span> <span class="p">(</span><span class="n">T2</span><span class="p">)</span> <span class="n">T2</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">-&gt;</span><span class="n">rc</span> <span class="o">=</span> <span class="n">T3</span><span class="p">;</span> <span class="k">if</span> <span class="p">(</span><span class="n">T3</span><span class="p">)</span> <span class="n">T3</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">lc</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span> <span class="n">a</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">rc</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">updateHeight</span><span class="p">(</span><span class="n">a</span><span class="p">);</span> <span class="n">updateHeight</span><span class="p">(</span><span class="n">c</span><span class="p">);</span> <span class="n">updateHeight</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> 
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">removeAt</span> <span class="p">(</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">hot</span> <span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">//实际被摘除的节点，初值同x
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">succ</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">//实际被删除节点的接替者
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">HasLChild</span> <span class="p">(</span> <span class="o">*</span><span class="n">x</span> <span class="p">)</span> <span class="p">)</span> <span class="c1">//若*x的左子树为空，则可
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">succ</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">-&gt;</span><span class="n">rc</span><span class="p">;</span> <span class="c1">//直接将*x替换为其右子树
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">HasRChild</span> <span class="p">(</span> <span class="o">*</span><span class="n">x</span> <span class="p">)</span> <span class="p">)</span> <span class="c1">//若右子树为空，则可
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">succ</span> <span class="o">=</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">-&gt;</span><span class="n">lc</span><span class="p">;</span> <span class="c1">//对称地处理——注意：此时succ != NULL
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">else</span> <span class="p">{</span> <span class="c1">//若左右子树均存在，则选择x的直接后继作为实际被摘除节点，为此需要
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">succ</span><span class="p">();</span> <span class="c1">//（在右子树中）找到*x的直接后继*w
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">swap</span> <span class="p">(</span> <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">data</span> <span class="p">);</span> <span class="c1">//交换*x和*w的数据元素
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">BinNodePosi</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">u</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">(</span> <span class="p">(</span> <span class="n">u</span> <span class="o">==</span> <span class="n">x</span> <span class="p">)</span> <span class="o">?</span> <span class="n">u</span><span class="o">-&gt;</span><span class="nl">rc</span> <span class="p">:</span> <span class="n">u</span><span class="o">-&gt;</span><span class="n">lc</span> <span class="p">)</span> <span class="o">=</span> <span class="n">succ</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">rc</span><span class="p">;</span> <span class="c1">//隔离节点*w
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="p">}</span>
-</span></span><span class="line"><span class="cl">   <span class="n">hot</span> <span class="o">=</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">;</span> <span class="c1">//记录实际被删除节点的父亲
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">if</span> <span class="p">(</span> <span class="n">succ</span> <span class="p">)</span> <span class="n">succ</span><span class="o">-&gt;</span><span class="n">parent</span> <span class="o">=</span> <span class="n">hot</span><span class="p">;</span> <span class="c1">//并将被删除节点的接替者与hot相联
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">release</span> <span class="p">(</span> <span class="n">w</span><span class="o">-&gt;</span><span class="n">data</span> <span class="p">);</span> <span class="n">release</span> <span class="p">(</span> <span class="n">w</span> <span class="p">);</span> <span class="k">return</span> <span class="n">succ</span><span class="p">;</span> <span class="c1">//释放被摘除节点，返回接替者
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="c1">//release()负责释放复杂结构，与算法无直接关系，具体实现详见代码包
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="summary">summary</h5>
-<figure><a class="lightgallery" href="/img/AVL_summary.png" title="/img/AVL_summary.png" data-thumbnail="/img/AVL_summary.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<h4 id="b-tree">B-Tree</h4>
-<p>Goals of Indexing</p>
-<ol>
-<li>
-<p>Store large files</p>
-</li>
-<li>
-<p>Support multiple search keys</p>
-</li>
-<li>
-<p>Support efficient insert, delete, and range queries</p>
-</li>
-</ol>
-<p>Difficulties when storing tree index on disk</p>
-<ol>
-<li>Tree must be balanced</li>
-<li>Each path from root to leaf should cover few disk pages</li>
-</ol>
-<p>The B-Tree is now the standard file organization for applications requiring insertion, deletion, and key range searches</p>
-<h5 id="definition-4">Definition</h5>
-<p>B-Tree of order <strong>m</strong> has these properties</p>
-<ol>
-<li>
-<p>The <strong>root</strong> is either a leaf or has at least two children</p>
-</li>
-<li>
-<p>Each node, except for the root and the leaves, has between $\lceil \frac {m}{2} \rceil and\ m$ children</p>
-</li>
-<li>
-<p><strong>The number of Keys in each node</strong>(except for the root) <strong>is</strong> between $\lceil \frac {m}{2} \rceil-1\ and\ m-1\newline$</p>
-</li>
-<li>
-<p>All leaves are at the same level in the tree, so <strong>the tree is always height balanced</strong></p>
-</li>
-</ol>
-<p>Example</p>
-<p>$B-Tree\ m=5\newline$</p>
-<figure><a class="lightgallery" href="/img/B-Tree%20For%20m%20equal%205.png" title="/img/B-Tree For m equal 5.png" data-thumbnail="/img/B-Tree For m equal 5.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<h5 id="application">Application</h5>
-<p>B-Tree node is usually selected to <strong>match the size of a disk block</strong></p>
-<h5 id="b-tree-search">B-Tree Search</h5>
-<p>Search in a B-Tree is similar with search in BST</p>
-<ol>
-<li>
-<p>Search keys in current node. If search key is found, then return record. If current node is a leaf node and key is not found, then report unsuccessful</p>
-</li>
-<li>
-<p>Otherwise, follow the proper branch and repeat the process</p>
-</li>
-</ol>
-<h5 id="b-tree-insertion">B-Tree Insertion</h5>
-<p>To insert value X into a B-tree, there are 3 steps</p>
-<ol>
-<li>
-<p>using the SEARCH procedure for M-way trees (described above) find the leaf node to which X should be added</p>
-</li>
-<li>
-<p>add X to this node in the appropriate place among the values already there. Being a leaf node there are no subtrees to worry about</p>
-</li>
-<li>
-<p>if there are M-1 or fewer values in the node after adding X,then we are finished. If there are M values after adding X, we say the node has <strong>overflowed</strong>.</p>
-<p>To repair this, we <strong>split the node</strong> into three parts:</p>
-<ol>
-<li>
-<p>Left: the first $\frac {M-1}{2}$ values</p>
-</li>
-<li>
-<p>Middle: the middle value $(position\ 1+(\frac {M-1}{2}))\newline$</p>
-</li>
-<li>
-<p>Right: the last $\frac {M-1}{2}$ values</p>
-</li>
-</ol>
-</li>
-</ol>
-<h5 id="b-tree-deletion">B-Tree Deletion</h5>
-<ol>
-<li>
-<p>How many values might there be in this combined node?</p>
-</li>
-<li>
-<p>The parent node contributes 1 value</p>
-</li>
-<li>
-<p>The node that underflowed contributes exactly $\frac {M-1}{2}-1$ values</p>
-</li>
-<li>
-<p>The neighboring node contributes somewhere between $\frac {M-1}{2}\ and\ M-1$ values</p>
-</li>
-</ol>
-<h6 id="case-1">case 1</h6>
-<p>Suppose that the neighboring node contains more than (M-1)/2 values. In this case, the total number of values in the combined node is strictly greater than 1 + ((M-1)/2 - 1) + ((M-1)/2)</p>
-<h6 id="case-2">case 2</h6>
-<p>Suppose, on the other hand, that the neighboring node contains exactly (M-1)/2 values. Then the total number of values in the combined node is 1 + ((M-1)/2 - 1) + ((M-1)/2) = (M-1)。</p>
-<h3 id="hash-table-1">Hash Table</h3>
-<h4 id="what-is-hashing">What is hashing</h4>
-<p>$Linear\ Search\ \rightarrow O(n)\newline$</p>
-<p>$Binary\ Search\rightarrow O(\log_2n)\newline$</p>
-<ol>
-<li>
-<p>Both depend on comparisons of item sought and elements in container</p>
-</li>
-<li>
-<p>Hash tables place data so that the location of an item is determined directly as a function of the item itself</p>
-</li>
-<li>
-<p>With a good hash function, searching a hash table takes O(1) time. that is, it is a constant and does not depend on the number of items stored.</p>
-</li>
-</ol>
-<p>$Address(a_i)=Hash(a_i.key)\newline$</p>
-<p>Here</p>
-<p>$a_i\ is\ an\ element\newline$</p>
-<p>$Address(a_i)\ stores\ the\ address\ of\ a_i\newline$</p>
-<p>$a_i.key\ is\ the\ key\ of\ a_i\ element\newline$</p>
-<div class="mermaid" id="id-4"></div>
-<h4 id="general-idea-1">General Idea</h4>
-<p>One problem with hash tables is collisions:</p>
-<p>$\rightarrow $when more than one item map to the same location in the hash table</p>
-<p>$\downarrow \newline$</p>
-<p>$\rightarrow $Some strategy is needed to resolve such collisions</p>
-<p>The <strong>hash function</strong> and <strong>data set</strong> determine the <strong>number of collisions</strong></p>
-<p>The <strong>strategy</strong> used to handle collisions affect <strong>the performance of searching for an arbitrary item</strong></p>
-<h4 id="hash-function">Hash Function</h4>
-<p>Hashing: The process of mapping a key value to a position in a table</p>
-<p>​	A hash function maps key values to positions in the hash table. It is denoted by <strong>h</strong>.</p>
-<p>​	A hash table is an array that holds the records. It is denoted by <strong>HT</strong></p>
-<p>​	<strong>HT</strong> has <em>m</em> slots, indexed from <em>0</em> to m-1</p>
-<p>For any value <em>K</em> in the key range and hash function <strong>h</strong>, <strong>h</strong>(<em>K</em>)=<em>i</em>, 0&lt;=<em>i</em> &lt;<em>m</em>, such that <strong>HT</strong>[i].key = <em>K</em></p>
-<h5 id="choosing-a-hash-function">Choosing a Hash Function</h5>
-<ol>
-<li>
-<p>A hash function should be EASY and QUICK to compute</p>
-</li>
-<li>
-<p>A hash function MUST return a value within the hash table range</p>
-</li>
-<li>
-<p>To be practical, a hash function SHOULD evenly distribute the records stored among the hash table slots</p>
-</li>
-<li>
-<p>Ideally, the hash function should distribute records with equal probability to all hash table slots. In practice, success depends on distribution of actual records stored</p>
-</li>
-<li>
-<p>If we know nothing about the incoming key distribution, evenly distribute the key range over the hash table slots while avoiding obvious opportunities for clustering</p>
-</li>
-</ol>
-<h5 id="example-2">Example</h5>
-<ol>
-<li>
-<p>$Hash(key)=a * key+b\ [a, b\ are\ constants]\newline$</p>
-</li>
-<li>
-<p><strong>Digital Analysis</strong> <strong>:</strong> All the keys are known in advance. Select <em>m</em> digits from <em>n</em></p>
-</li>
-</ol>
-<blockquote>
-<p>Criterion: Delete the digits having the most skewed distributions</p>
-</blockquote>
-<ol start="3">
-<li>$Hash(key)=key$ % $p\ p \leq m\newline$</li>
-</ol>
-<blockquote>
-<p><strong>Modular arithmetic:</strong> We may convert the key to an integer, divide by the size of the index range, and take the remainder as the result</p>
-<p>Assuming the address range is 0 to m - 1, let p is a prime which is less than/equal m  We can map the keys into addresses with the Hash function</p>
-</blockquote>
-<ol start="4">
-<li>
-<p>Mid-square method: Square the key value, take the middle r bits from the result for a hash table of $2^r$ slots</p>
-</li>
-<li>
-<p>$Hash(key)=\lfloor n * (A * key $ % $1)\rfloor \rightarrow A * key $%$ 1 = A * key - \lfloor A * key\rfloor\newline$</p>
-</li>
-<li>
-<p>Folding</p>
-</li>
-</ol>
-<blockquote>
-<p>Partition the key into several parts</p>
-<p>All parts except for the last one have the same length</p>
-<p>Combine the parts in a convenient way to obtain the hash address</p>
-<p>Two possibilities:</p>
-<blockquote>
-<p>Shift folding</p>
-<p>Folding at the boundaries</p>
-</blockquote>
-</blockquote>
-<h4 id="collisions">Collisions</h4>
-<p>Given: hash function <strong>h</strong> with keys $k_1$ and $k_2$ .$\beta$ is a slot in the hash table</p>
-<p>$If\ h(k_1 ) = \beta = h(k_2), then\ k_1\ and\ k_2\ have\ a\ collision\ at\ \beta\ under\ h\newline$</p>
-<p>Collisions are <strong>inevitable</strong> in most applications</p>
-<p>To use hashing we must</p>
-<ol>
-<li>
-<p>find good hash functions</p>
-</li>
-<li>
-<p>determine how to resolve collisions</p>
-</li>
-</ol>
-<p>Store or search for the record with key K</p>
-<ol>
-<li>
-<p>Compute the table location h(K)</p>
-</li>
-<li>
-<p>Starting with slot <strong>h</strong>(<em>K</em>), locate the record containing key <em>K</em> using (if necessary) a collision resolution policy</p>
-</li>
-</ol>
-<h5 id="collision-resolution">Collision Resolution</h5>
-<p>Collisions are inevitable in most applications, so some strategies are needed to resolve such collisions</p>
-<ol>
-<li>
-<p>Need to be able to place an element when its mapped location is full</p>
-</li>
-<li>
-<p>Need to be able to retrieve the element when it&rsquo;s not placed directly according to the hash function</p>
-</li>
-</ol>
-<p>The goal of collision resolution is to find a free slot in the HT. The new slot is found by a collision resolution policy</p>
-<p>Search must follow the same policy to find records not in their home slots</p>
-<h5 id="closed-hashing">Closed hashing</h5>
-<p>If a collision occurs, alternative slots are tried until an empty slot is found</p>
-<p>Probe sequence : The series of slots visited during insert/search by following a collision resolution policy</p>
-<p>Open Addressing</p>
-<ol>
-<li>
-<p>Linear Probing</p>
-</li>
-<li>
-<p>Quadratic Probing</p>
-</li>
-<li>
-<p>Random Probing</p>
-</li>
-</ol>
-<p>Rehashing</p>
-<h6 id="linear-probing">Linear Probing</h6>
-<p>Linear probing starts with the hash address and searches <strong>sequentially</strong> for the target key or an empty position.</p>
-<p><strong>The array should be considered circular</strong></p>
-<p>So that when the last location is reached, the search proceeds to the first location of the array</p>
-<p>$H_i=(Hash(key)+d_i)\ mod\ m\ (1 \leq i &lt;m)\newline$</p>
-<p>where: Hash (key) is hash function</p>
-<p>m is the length of hash table</p>
-<p>Probe sequence $d_i$ is 1,2,……,m-1 and $d_i = i\newline$</p>
-<p>Problem</p>
-<p><strong>Keys tend to cluster together</strong></p>
-<blockquote>
-<p>Records tend to cluster in the table under linear probing since the probabilities for which slot to use next are not the same for all slots</p>
-</blockquote>
-<p><strong>Adjacent cluster tend to coalesce</strong></p>
-<blockquote>
-<p>If the first hash addresses of two keys are different, but following the same probe sequence, they tend to the same slot, this is called <strong>secondary clustering</strong></p>
-</blockquote>
-<blockquote>
-<p>To avoid secondary clustering, need probe sequence to be a function of the original key value, not just the home position</p>
-</blockquote>
-<p><strong>Increase the search time</strong></p>
-<h6 id="quadratic-probing">Quadratic probing</h6>
-<p>Quadratic probing uses a quadratic function of $i$ as the increment</p>
-<p>$H_i=(Hash(key)+d_i)\ mod\ m\newline$</p>
-<p>$Hash(key)\ is\ hash\ function\newline$</p>
-<p>$m\ is\ the\ length\ of\ hash\ table\newline$</p>
-<p>$Proble\ sequenece\ d_i:1^2, -1^2, 2^2, -2^2, &hellip;q^2, -q^2, q \leq \frac {m-1}{2}\newline$</p>
-<h6 id="random-problem">Random problem</h6>
-<p>The ideal probe function would select the next slot on the probe sequence at random</p>
-<p>$H_i=(Hash(key)+d_i)\ mod\ m\newline$</p>
-<p>Probe sequence is a (random) permutation of the numbers from 1 to M-1: $r_1, r_2, &hellip; r_M\newline$</p>
-<p>$M \leq\ the\ length\ of\ table\ and\ M\ is\ a\ prime\ number\newline$</p>
-<h6 id="rehashing">Rehashing</h6>
-<p>$H_i=ReHash_i(key)\newline$</p>
-<p>$ReHash_i(key)$ is a <strong>different hash function</strong> from Hash(key)</p>
-<p>Try $h_1 (K), h_2 (K), …, h_m(K)$ if collision occurs</p>
-<p>Be sure that all different hash functions $h_i (K)$ are relatively prime to M</p>
-<h5 id="open-hashing">Open Hashing</h5>
-<h6 id="separate-chaining">Separate Chaining</h6>
-<p>Chaining: use a hash table that is an array of linked lists to store the items</p>
-<blockquote>
-<p>The hash table itself can be smaller than the number of records; If the records are large, a chained hash table can save space</p>
-</blockquote>
-<blockquote>
-<p>Collision resolution with chaining is simple. When a collision occurs, we simply insert the new item into the appropriate linked list. Clustering is no problem</p>
-</blockquote>
-<p>Searching such a hash table is straightforward</p>
-<blockquote>
-<p>apply the hash function to the item sought and then use one of the search algorithms for linked lists</p>
-</blockquote>
-<h5 id="analysis-of-hashing">Analysis of Hashing</h5>
-<h6 id="searching-2">Searching</h6>
-<p>To determine if a specified value is in this hash table,apply the hash function to compute the location for this value</p>
-<ol>
-<li>if location is empty, value not in the table</li>
-<li>if location contains the specified value, the search is successful</li>
-<li>if location contains a different value, <em>must rule out</em> <em>collision,</em> begin a “circular” search at this location and continue until either item is found or empty or starting location reached (item not in table)</li>
-</ol>
-<p>Comparison is needed in hash searching because of collision. We can use <strong>ASL</strong> to analyze hashing</p>
-<p>For hashing, the following factors may <strong>affects the efficiency</strong></p>
-<ol>
-<li>
-<p>Hash function: The behavior of the hash function affects the frequency of collisions</p>
-</li>
-<li>
-<p>Collision resolution policy</p>
-</li>
-<li>
-<p>Loading factor ($\alpha$): The load factor of the table is $\alpha = \frac {n}{m}$ , where n positions are occupied out of a total of m positions in the table</p>
-</li>
-</ol>
-<figure><a class="lightgallery" href="/img/Hash_ASL.png" title="/img/Hash_ASL.png" data-thumbnail="/img/Hash_ASL.png" data-sub-html="<h2>case1(image1)</h2>">
-        
-    </a><figcaption class="image-caption">case1(<code>image1</code>)</figcaption>
-    </figure>
-<h5 id="summary-1">Summary</h5>
-<p>Comparison between Binary Search Trees and Hash Tables</p>
-<ol>
-<li>
-<p>difficult to find the minimum (or maximum) element in a hash table</p>
-</li>
-<li>
-<p>Can not find a range of elements in a hash table</p>
-</li>
-<li>
-<p>$O(\log_2n)$ is not necessarily much more than $O(1)$,since there are no multiplications or divisions by BSTs</p>
-</li>
-<li>
-<p>Sorted input can make BSTs perform poorly</p>
-</li>
-</ol>
-]]></description>
 </item>
 </channel>
 </rss>
