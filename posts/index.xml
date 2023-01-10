@@ -4,7 +4,578 @@
         <link>https://Jungle430.github.io/posts/</link>
         <description>所有文章 | Jungle&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1239946358@qq.com (Jungle)</managingEditor>
-            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Mon, 09 Jan 2023 14:20:53 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>1239946358@qq.com (Jungle)</webMaster><lastBuildDate>Tue, 10 Jan 2023 22:17:58 &#43;0800</lastBuildDate><atom:link href="https://Jungle430.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Computer Organization and Architecture Introduction</title>
+    <link>https://Jungle430.github.io/posts/computer-organization-and-architecture/computer-organization-and-architecture-introduction/</link>
+    <pubDate>Tue, 10 Jan 2023 22:17:58 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/computer-organization-and-architecture/computer-organization-and-architecture-introduction/</guid>
+    <description><![CDATA[<h1 id="computer-organization-and-architecture">Computer Organization and Architecture</h1>
+<h2 id="introduction">Introduction</h2>
+<h3 id="content">content</h3>
+<p>It includes two parts: <strong>computer composition principle</strong> and <strong>computer architecture</strong></p>
+<ul>
+<li>
+<p>The principle of composition mainly discusses the various components of computer systems and their working mechanisms</p>
+</li>
+<li>
+<p>Architecture studies computer instruction sets, I/O mechanisms, addressing techniques, and more</p>
+</li>
+</ul>
+<h3 id="preface">Preface</h3>
+<p><strong>The characteristics of this course:</strong></p>
+<ul>
+<li>
+<p>core basic course of computer major</p>
+</li>
+<li>
+<p>Fundamental</p>
+</li>
+<li>
+<p>Abstractness</p>
+</li>
+<li>
+<p>Modularization</p>
+</li>
+<li>
+<p>Relevance</p>
+</li>
+<li>
+<p>Hierarchy</p>
+</li>
+<li>
+<p>One of the required subjects for postgraduate entrance examination</p>
+</li>
+</ul>
+<h3 id="outline">Outline</h3>
+<ul>
+<li>
+<p>Introduction of Computer and this course</p>
+</li>
+<li>
+<p>Why Study Computer Organization and Architecture?</p>
+</li>
+<li>
+<p>Organization and Architecture</p>
+</li>
+<li>
+<p>Structure and Function</p>
+</li>
+</ul>
+<h3 id="introduction-of-computer-and-this-course">Introduction of Computer and this course</h3>
+<h4 id="main-parts-of-the-computer">Main parts of the computer</h4>
+<ul>
+<li>
+<p>Network card</p>
+</li>
+<li>
+<p>sound card</p>
+</li>
+<li>
+<p>GPU</p>
+</li>
+<li>
+<p>memory</p>
+</li>
+<li>
+<p>CPU</p>
+</li>
+<li>
+<p>air fan</p>
+</li>
+<li>
+<p>mainboard (motherboard)</p>
+</li>
+<li>
+<p>Data line</p>
+</li>
+<li>
+<p>Optical Disk Driver</p>
+</li>
+<li>
+<p>Hard disk</p>
+</li>
+<li>
+<p>floppy disk drive</p>
+</li>
+</ul>
+<h4 id="computing-devices-then">Computing devices then</h4>
+<h5 id="edsac">EDSAC</h5>
+<p>$EDSAC$: <strong>Electronic Delay Storage Automatic Calculator</strong>,University of Cambridge, UK, 1949</p>
+<ul>
+<li>
+<p><strong>First stored program</strong></p>
+</li>
+<li>
+<p>About 3000 vacuum tubes ，arranged on 12 cabinets, covering an area of 5 × 4 meters</p>
+</li>
+<li>
+<p>Power consumption 12 kW</p>
+</li>
+<li>
+<p><strong>Consists of five parts: arithmetic unit (ALU), controller, memory, input and output</strong></p>
+</li>
+<li>
+<p>About 650 instructions per second</p>
+</li>
+</ul>
+<h4 id="rapid-change-of-underlying-technology">Rapid Change of Underlying Technology</h4>
+<blockquote>
+<p>With the continuous improvement of the integration of <strong>integrated circuits</strong>, more components can be packed into chips of the same size</p>
+</blockquote>
+<p>Computers becomes</p>
+<ul>
+<li>
+<p>Performance ：faster</p>
+</li>
+<li>
+<p>Memory capacity ：larger</p>
+</li>
+<li>
+<p>Volume ：smaller</p>
+</li>
+</ul>
+<p>Computer technology</p>
+<ul>
+<li>
+<p>Integrated circuit technology</p>
+</li>
+<li>
+<p>Parallel organization</p>
+</li>
+<li>
+<p>……</p>
+</li>
+</ul>
+<h4 id="development-trend-of-computer">Development trend of computer</h4>
+<p>$Gordon\ Moore, Electronics, 1965\newline$</p>
+<p>$\downarrow \downarrow \downarrow \downarrow\newline$</p>
+<ul>
+<li>
+<p>Number of <em>transistor on the chip</em> <strong>doubles every certain time</strong></p>
+</li>
+<li>
+<p>Processor performance is getting <strong>stronger and smaller</strong></p>
+</li>
+</ul>
+<h4 id="content-of-this-course">Content of this course</h4>
+<div class="mermaid" id="id-1"></div>
+<h4 id="how-does-computer-work">How does computer work?</h4>
+<ul>
+<li>How does a basic instruction execute in CPU?</li>
+</ul>
+<p>Example $\rightarrow$​ <strong>Add R1, R2</strong> (add content of <code>R1</code> and content of <code>R2</code>, place result in <code>R1</code>)</p>
+<h5 id="execution-steps-of-add-r1r2">Execution steps of Add R1,R2</h5>
+<p>The “possible” micro-execution steps are:</p>
+<ol>
+<li>
+<p>$ALU_1 \leftarrow\ [R1]$				{content of R1 is moved to ALU1 }</p>
+</li>
+<li>
+<p>$ALU_2 \leftarrow [R2]$                 {content of R2 is moved to ALU2 }</p>
+</li>
+<li>
+<p>$ADD$                                 {content of ALU1 + ALU2 = ALU3 }</p>
+</li>
+<li>
+<p>$R1 \leftarrow [ALU_3]$                 {Result of addition is moved to R1}</p>
+</li>
+</ol>
+<p>If, each micro-step is executed in “one” clock-cycle, then  this Add instruction <strong>needs 4 clock-cycles</strong></p>
+<h5 id="how-to-reduce-execution-time">How to reduce execution time?</h5>
+<ul>
+<li>
+<p>Need 4 clock-cycles</p>
+</li>
+<li>
+<p>Data transfer takes 75% of the time (1, 2, 4)</p>
+</li>
+<li>
+<p>With single bus, it is slow, since in each “clock” only one transfer could be executed</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>Is there any other way to “improve” the speed?
+<ul>
+<li>Dual bus processor may be faster</li>
+<li>Additional processor cost</li>
+</ul>
+</li>
+</ul>
+<h6 id="dual-bus-processor">Dual bus processor</h6>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-1.png" title="/img/Computer Organization and Architecture/chapter1-1.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-1.png" data-sub-html="<h2>Solve(Dual bus processor)</h2>">
+        
+    </a><figcaption class="image-caption">Solve(<code>Dual bus processor</code>)</figcaption>
+    </figure>
+<h5 id="how-about-cpu-memory-connection"><strong>How about CPU-Memory Connection?</strong></h5>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>
+<p>CPU can transfer 16/32/64 bit data or instruction (from one CPU unit to another) in <strong>less than one nanosecond</strong>$ (for\ CPU\ with &gt; 1\ Ghz\ clock) \newline$</p>
+</li>
+<li>
+<p>Memory unit/system, transfers 16/32/64 bit data or instruction in 40 to 60 nanoseconds (for memory w/40-60 nanosecond cycle time)</p>
+</li>
+</ul>
+<p><strong>CPU has to wait more than 50 CPU clocks</strong>, waiting for data/instruction from memory to be available</p>
+<hr>
+<p><strong>Solve the problem:</strong></p>
+<ul>
+<li>We can overcome (partly) the CPU-Memory bottleneck by inserting cache memory between CPU and Main Memory</li>
+</ul>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-2.png" title="/img/Computer Organization and Architecture/chapter1-2.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-2.png" data-sub-html="<h2>Solve(Cache)</h2>">
+        
+    </a><figcaption class="image-caption">Solve(<code>Cache</code>)</figcaption>
+    </figure>
+<p><strong>Other way to improve speed</strong></p>
+<ul>
+<li>
+<p>Is there any other way to improve instruction execution speed (increasing performance)? <strong>Pipelining</strong></p>
+</li>
+<li>
+<p>Are these improvements need extra cost? $(cost\ vs\ performance\ issue)\newline$</p>
+</li>
+<li>
+<p>Balance</p>
+</li>
+</ul>
+<h4 id="main-content-of-this-course">Main content of this course</h4>
+<ul>
+<li>
+<p>PART ONE: OVERVIEW</p>
+</li>
+<li>
+<p>PART TWO: THE COMPUTER SYSTEM</p>
+</li>
+<li>
+<p>PART THREE: THE CENTRAL PROCESSING UNIT</p>
+</li>
+<li>
+<p>PART FOUR: THE CONTROL UNIT</p>
+</li>
+<li>
+<p>PART FIVE: PARALLEL ORGANIZATION</p>
+</li>
+</ul>
+<h3 id="why-study-computer-organization-and-architecture">Why Study Computer Organization and Architecture?</h3>
+<h4 id="in-this-course-we-will-learn">In this course, we will learn</h4>
+<ul>
+<li>
+<p>What parts does the computer consist of?</p>
+</li>
+<li>
+<p>How does each part work?</p>
+</li>
+<li>
+<p>How are these parts connected?</p>
+</li>
+<li>
+<p>What are the key factors affecting computer performance?</p>
+</li>
+<li>
+<p>What methods are used to improve the performance of the computer?</p>
+</li>
+</ul>
+<p><strong>Example:</strong></p>
+<ul>
+<li>
+<p>Balance</p>
+<ul>
+<li>
+<p>Inserting cache memory</p>
+</li>
+<li>
+<p>Selection of the number of registers: not only enough, but also not too many</p>
+</li>
+<li>
+<p>cost vs performance</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Parallel</p>
+<ul>
+<li>
+<p>Internal of CPU: pipeline, superscalar</p>
+</li>
+<li>
+<p>On chip: multicore</p>
+</li>
+<li>
+<p>Internal of machine: SMP,NUMA</p>
+</li>
+<li>
+<p>Multi-machine: cluster</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="after-this-course-we-will-know">After this course, we will know</h4>
+<ul>
+<li>
+<p>We are able to analyze the inter relation among design of instructions, its implementation in a processor and the performance issues</p>
+</li>
+<li>
+<p>Learn about the computer design and organization issues, namely hardware of a computer</p>
+</li>
+</ul>
+<h4 id="what-is-the-context-of-this-course">What is the context of this course?</h4>
+<p>$UML\newline$</p>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-3.png" title="/img/Computer Organization and Architecture/chapter1-3.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-3.png" data-sub-html="<h2>course(UML)</h2>">
+        
+    </a><figcaption class="image-caption">course(<code>UML</code>)</figcaption>
+    </figure>
+<h4 id="significance-of-this-course">Significance of this course</h4>
+<ul>
+<li>
+<p>The computer lies at the heart of computing. Without it most of the computing disciplines today would be a branch of theoretical mathematics</p>
+</li>
+<li>
+<p>To be a professional in any field of computing today, one should not regard the computer as just a black box that executes programs by magic</p>
+</li>
+<li>
+<p>All students of computing should acquire some understanding and appreciation of a computer system’s functional components, their characteristics, their performance, and their interactions. There are practical implications as well</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>We need to understand computer architecture in order to structure a program so that it runs more efficiently on a real machine</p>
+</li>
+<li>
+<p>In selecting a system to use, we should to able to understand the tradeoff among various components, such as CPU clock speed vs. memory size</p>
+</li>
+</ul>
+<h4 id="role-of-the-computer-architect">Role of the computer architect</h4>
+<ul>
+<li>
+<p>Look backward : examine old code</p>
+</li>
+<li>
+<p>Look forward : Listen to the dreamers</p>
+</li>
+<li>
+<p>Look Up : Nature of the problems</p>
+</li>
+<li>
+<p>Look down : predict the future of the technology</p>
+</li>
+</ul>
+<h3 id="organization-and-architecture">Organization and Architecture</h3>
+<h4 id="architecture">Architecture</h4>
+<ul>
+<li>
+<p><strong>Architecture is those attributes visible to the programmer</strong></p>
+<ul>
+<li>
+<p><strong>Instruction set , number of bits used for data representation, I/O mechanisms, addressing techniques</strong></p>
+</li>
+<li>
+<p>e.g. Is there a multiply instruction?</p>
+</li>
+<li>
+<p>How best is memory handled by the OS?</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="organization">Organization</h4>
+<ul>
+<li>
+<p>Organization is how features are implemented</p>
+<ul>
+<li>
+<p><strong>Control signals, interfaces, memory technology</strong></p>
+</li>
+<li>
+<p>e.g. Is there a hardware multiply unit or is it done by repeated addition?</p>
+</li>
+<li>
+<p>What type of non-volatile memory is used to store the BIOS?</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="importance-of-the-distinction">Importance of the distinction</h4>
+<ul>
+<li>
+<p><strong>A family of computer models: All with the same architecture but with differences in organization</strong></p>
+<ul>
+<li>
+<p>The different models in the family have different price and performance characteristics</p>
+</li>
+<li>
+<p>The organization of a particular architecture changing with changing technology</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<ul>
+<li>
+<p>All Intel x86 family share the same basic architecture</p>
+</li>
+<li>
+<p>The IBM System/370 family share the same basic architecture</p>
+</li>
+<li>
+<p>This gives code compatibility at least backwards</p>
+</li>
+<li>
+<p>Organization differs between different versions</p>
+</li>
+</ul>
+<h4 id="definition-of-architecture">Definition of architecture</h4>
+<h5 id="traditional-definitionisa-only">Traditional definition——ISA-only</h5>
+<blockquote>
+<p>The term <strong>architecture</strong> is used here to describe the attributes of a system as seen by the programmer, i.e., the conceptual structure and functional behavior as distinct from the organization of the dataflow and controls, the logic design, and the physical implementation	<em>——Gene Amdahl</em>, IBM Journal of R&amp;D, April 1964</p>
+</blockquote>
+<h5 id="isa--implementation">ISA + implementation</h5>
+<blockquote>
+<p>The science and art of designing, selecting, and interconnecting hardware components and designing the hardware/software interface to create a computing system that meets functional, performance, energy consumption, cost, and other specific goals</p>
+</blockquote>
+<h4 id="organization-and-hardware">Organization and Hardware</h4>
+<ul>
+<li>
+<p>Operation units and their interconnection to realize structural specifications</p>
+<ul>
+<li>
+<p>Internal CPU,including Arithmetic, logic, branch, data transfer are implemented</p>
+</li>
+<li>
+<p>Memory system</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>
+<p>Hardware used to refer to specific of a machine</p>
+<ul>
+<li>
+<p>Detailed logic design</p>
+</li>
+<li>
+<p>Packaging technology of machine</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="structure-and-function">Structure and Function</h3>
+<h4 id="hierarchical-thought">Hierarchical thought</h4>
+<ul>
+<li>
+<p>The modern computer uses the hierarchical to design, and the hierarchical characteristics are the basis of designing and describing them</p>
+</li>
+<li>
+<p>In each layer, the system consists of a set of components and their interrelations</p>
+</li>
+<li>
+<p>The behavior of each layer only depends on the simpler abstract features of the next layer of the system</p>
+</li>
+<li>
+<p>Designers care about the structure and function of each layer</p>
+</li>
+</ul>
+<h4 id="hierarchical-method---bottom-up">Hierarchical method - Bottom up</h4>
+<blockquote>
+<p>Bottom up: build a complete description from the bottom up. It starts from the most basic part of the system implementation, from simple to complex, build up layer by layer, until finally get the required system</p>
+</blockquote>
+<h4 id="hierarchical-method--top-down">Hierarchical method – Top down</h4>
+<blockquote>
+<p>Top down: starting from the top level, decompose the system into several sub parts. The essence is to decompose complex big problems into relatively simple small problems, find out the key and key points of each problem, and then describe the problem qualitatively and quantitatively with accurate thinking. Its core essence is &ldquo;decomposition&rdquo;</p>
+</blockquote>
+<p><strong>Top-down approach is the clearest and most effective.</strong></p>
+<h4 id="structure--function">Structure &amp; Function</h4>
+<ul>
+<li>
+<p>Structure is the way in which components relate to each other</p>
+</li>
+<li>
+<p>Function is the operation of individual components as part of the structure</p>
+</li>
+</ul>
+<h5 id="function">Function</h5>
+<p>All computer functions are</p>
+<ul>
+<li>
+<p>Data processing</p>
+</li>
+<li>
+<p>Data storage</p>
+</li>
+<li>
+<p>Data movement</p>
+</li>
+<li>
+<p>Control</p>
+</li>
+</ul>
+<h6 id="function-view">Function View</h6>
+<div class="mermaid" id="id-2"></div>
+<p><strong>Operation type 1 — data movement</strong></p>
+<div class="mermaid" id="id-3"></div>
+<p><strong>Operation type 2 — storage</strong></p>
+<div class="mermaid" id="id-4"></div>
+<p><strong>Operation type 3 — processing from/to storage</strong></p>
+<div class="mermaid" id="id-5"></div>
+<p><strong>Operation type 4 — processing from storage to I/O</strong></p>
+<div class="mermaid" id="id-6"></div>
+<h4 id="structure---top-level">Structure - Top level</h4>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-4.png" title="/img/Computer Organization and Architecture/chapter1-4.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-4.png" data-sub-html="<h2>Structure(Top Level)</h2>">
+        
+    </a><figcaption class="image-caption">Structure(<code>Top Level</code>)</figcaption>
+    </figure>
+<h4 id="structure---cpu">Structure - CPU</h4>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-5.png" title="/img/Computer Organization and Architecture/chapter1-5.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-5.png" data-sub-html="<h2>Structure(CPU)</h2>">
+        
+    </a><figcaption class="image-caption">Structure(<code>CPU</code>)</figcaption>
+    </figure>
+<h4 id="structure--control-unit">Structure – Control Unit</h4>
+<figure><a class="lightgallery" href="/img/Computer%20Organization%20and%20Architecture/chapter1-6.png" title="/img/Computer Organization and Architecture/chapter1-6.png" data-thumbnail="/img/Computer Organization and Architecture/chapter1-6.png" data-sub-html="<h2>Structure(Control)</h2>">
+        
+    </a><figcaption class="image-caption">Structure(<code>Control</code>)</figcaption>
+    </figure>
+<h3 id="key-terms">Key terms</h3>
+<table>
+<thead>
+<tr>
+<th>Computer</th>
+<th style="text-align:left">Computer Organization</th>
+<th>Computer Architecture</th>
+<th>Family of Computer models</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hierarchical System</td>
+<td style="text-align:left">Structure</td>
+<td>Function</td>
+<td>Peripheral</td>
+</tr>
+<tr>
+<td>Data Processing</td>
+<td style="text-align:left">Data Storage</td>
+<td>Data Movement</td>
+<td>Control</td>
+</tr>
+<tr>
+<td>Central Processing Unit</td>
+<td style="text-align:left">Main Memory</td>
+<td>I/O</td>
+<td>System Interconnection</td>
+</tr>
+<tr>
+<td>Control Unit</td>
+<td style="text-align:left">Arithmetic and Logic Unit</td>
+<td>Registers</td>
+<td>CPU Interconnection</td>
+</tr>
+</tbody>
+</table>
+]]></description>
+</item>
+<item>
     <title>OpenCV Chapter7</title>
     <link>https://Jungle430.github.io/posts/opencv/opencv-chapter7/</link>
     <pubDate>Mon, 09 Jan 2023 14:20:53 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/opencv/opencv-chapter7/</guid>
@@ -6424,207 +6995,6 @@ $\rightarrow$ <a href="https://en.wikipedia.org/wiki/Segmentation_fault" target=
 </span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
-</item>
-<item>
-    <title>Operating System Chapter1</title>
-    <link>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</link>
-    <pubDate>Fri, 30 Dec 2022 16:27:09 &#43;0800</pubDate><author>1239946358@qq.com (Jungle)</author><guid>https://Jungle430.github.io/posts/operating-system/operating-system-chapter1/</guid>
-    <description><![CDATA[<h1 id="operating-system">Operating System</h1>
-<p>$Nanjing\ University\rightarrow Yanyan\ Jiang\newline$</p>
-<h2 id="操作系统概述">操作系统概述</h2>
-<p>$Overvier\newline$</p>
-<ul>
-<li>为什么要学操作系统? $(why)\newline$</li>
-<li>到底什么是操作系统? $(what)\newline$</li>
-<li>怎么学操作系统? $(how)\newline$</li>
-</ul>
-<h3 id="为什么学操作系统whynewline">为什么学操作系统?$(why)\newline$</h3>
-<ul>
-<li>
-<p>每天都在用的东西你没搞明白 $\rightarrow$ 窗口是怎么创建的？ 为什么$Ctrl-C$有时不能退出程序？</p>
-</li>
-<li>
-<p>组里的服务器有128个处理器，而你的程序却只能用一个 😂</p>
-</li>
-<li>
-<p>你每天都在用的东西，却实现不出来🤡 $\rightarrow$ 浏览器，编译器，$IDE$，游戏/外挂，任务管理器，杀毒软件，病毒…</p>
-</li>
-</ul>
-<p>学完：</p>
-<p>悟性好 $\rightarrow$ 系统方向“毕业”，具有编写一切“能写出来”程序的能力（具备阅读论文的能力）</p>
-<p>悟性差 $\rightarrow$ 内力大增， 可能在工作中的某一天想起上课的内容</p>
-<h3 id="什么是操作系统whatnewline">什么是操作系统?$(what)\newline$</h3>
-<blockquote>
-<p>Operating System: A body of software, in fact, that is responsible for <em>making it easy to run programs</em> (even allowing you to seemingly run many at the same time), allowing programs to share memory, enabling programs to interact with devices, and other fun stuff like that. (OSTEP)</p>
-</blockquote>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-1.png" title="/img/Operating System/chapter1-1.png" data-thumbnail="/img/Operating System/chapter1-1.png" data-sub-html="<h2>From PPT(什么是操作系统？)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>什么是操作系统？</code>)</figcaption>
-    </figure>
-<p>Question:操作系统如何从一开始变成现在这样的？</p>
-<p>$\rightarrow$ 三个重要的线索</p>
-<blockquote>
-<p>计算机（硬件）</p>
-<p>程序（软件）</p>
-<p>操作系统（管理软件的软件）</p>
-</blockquote>
-<h4 id="操作系统历史">操作系统历史</h4>
-<h5 id="1940s">1940s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-2.png" title="/img/Operating System/chapter1-2.png" data-thumbnail="/img/Operating System/chapter1-2.png" data-sub-html="<h2>From PPT(1940s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-3.jpg" title="/img/Operating System/chapter1-3.jpg" data-thumbnail="/img/Operating System/chapter1-3.jpg" data-sub-html="<h2>From PPT(1940s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-4.jpg" title="/img/Operating System/chapter1-4.jpg" data-thumbnail="/img/Operating System/chapter1-4.jpg" data-sub-html="<h2>From PPT(1940s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-5.png" title="/img/Operating System/chapter1-5.png" data-thumbnail="/img/Operating System/chapter1-5.png" data-sub-html="<h2>From PPT(1940s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1940s 4</code>)</figcaption>
-    </figure>
-<h5 id="1950s">1950s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-6.png" title="/img/Operating System/chapter1-6.png" data-thumbnail="/img/Operating System/chapter1-6.png" data-sub-html="<h2>From PPT(1950s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-7.png" title="/img/Operating System/chapter1-7.png" data-thumbnail="/img/Operating System/chapter1-7.png" data-sub-html="<h2>From PPT(1950s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 2</code>)</figcaption>
-    </figure>
-<p>Example code on ppt</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fortran" data-lang="fortran"><span class="line"><span class="cl"><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="k">PROGRAM </span><span class="n">READS</span><span class="w"> </span><span class="n">INPUT</span><span class="w"> </span><span class="n">FROM</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="n">CARD</span><span class="w"> </span><span class="n">READER</span><span class="p">,</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">INTEGERS</span><span class="w"> </span><span class="n">IN</span><span class="w"> </span><span class="n">EACH</span><span class="w"> </span><span class="n">CARD</span><span class="p">,</span><span class="w"> </span><span class="n">CALCULATE</span><span class="w"> </span><span class="nb">AND </span><span class="n">OUTPUT</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">C</span><span class="o">----</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="nb">SUM </span><span class="n">OF</span><span class="w"> </span><span class="n">THEM</span><span class="p">.</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="mi">100</span><span class="w"> </span><span class="k">READ</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="n">I1</span><span class="p">,</span><span class="w"> </span><span class="n">I2</span><span class="p">,</span><span class="w"> </span><span class="n">I3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="mi">10</span><span class="w"> </span><span class="k">FORMAT</span><span class="p">(</span><span class="mi">3</span><span class="n">I5</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">IF</span><span class="w"> </span><span class="p">(</span><span class="n">I1</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">AND</span><span class="p">.</span><span class="w"> </span><span class="n">I2</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="p">.</span><span class="nb">AND</span><span class="p">.</span><span class="w"> </span><span class="n">I3</span><span class="p">.</span><span class="n">EQ</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">GOTO</span><span class="w"> </span><span class="mi">200</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="n">ISUM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">I1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">I2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">I3</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">WRITE</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="n">I1</span><span class="p">,</span><span class="w"> </span><span class="n">I2</span><span class="p">,</span><span class="w"> </span><span class="n">I3</span><span class="p">,</span><span class="w"> </span><span class="n">ISUM</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="mi">20</span><span class="w"> </span><span class="k">FORMAT</span><span class="p">(</span><span class="mi">7</span><span class="n">HSUM</span><span class="w"> </span><span class="n">OF</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="n">H</span><span class="p">,</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">H</span><span class="w"> </span><span class="nb">AND</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I5</span><span class="p">,</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="o">*</span><span class="w">   </span><span class="mi">4</span><span class="n">H</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">I6</span><span class="p">)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">GOTO</span><span class="w"> </span><span class="mi">100</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="mi">200</span><span class="w"> </span><span class="k">STOP
-</span></span></span><span class="line"><span class="cl"><span class="k">      END</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><figure><a class="lightgallery" href="/img/Operating%20System/chapter1-8.png" title="/img/Operating System/chapter1-8.png" data-thumbnail="/img/Operating System/chapter1-8.png" data-sub-html="<h2>From PPT(1950s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-9.png" title="/img/Operating System/chapter1-9.png" data-thumbnail="/img/Operating System/chapter1-9.png" data-sub-html="<h2>From PPT(1950s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1950s 4</code>)</figcaption>
-    </figure>
-<h5 id="1960s">1960s</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-10.png" title="/img/Operating System/chapter1-10.png" data-thumbnail="/img/Operating System/chapter1-10.png" data-sub-html="<h2>From PPT(1960s 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-11.png" title="/img/Operating System/chapter1-11.png" data-thumbnail="/img/Operating System/chapter1-11.png" data-sub-html="<h2>From PPT(1960s 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-12.png" title="/img/Operating System/chapter1-12.png" data-thumbnail="/img/Operating System/chapter1-12.png" data-sub-html="<h2>From PPT(1960s 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 3</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-13.png" title="/img/Operating System/chapter1-13.png" data-thumbnail="/img/Operating System/chapter1-13.png" data-sub-html="<h2>From PPT(1960s 4)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1960s 4</code>)</figcaption>
-    </figure>
-<h5 id="1970s">1970s+</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-14.png" title="/img/Operating System/chapter1-14.png" data-thumbnail="/img/Operating System/chapter1-14.png" data-sub-html="<h2>From PPT(1970s&#43; 1)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 1</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-15.png" title="/img/Operating System/chapter1-15.png" data-thumbnail="/img/Operating System/chapter1-15.png" data-sub-html="<h2>From PPT(1970s&#43; 2)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 2</code>)</figcaption>
-    </figure>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-16.png" title="/img/Operating System/chapter1-16.png" data-thumbnail="/img/Operating System/chapter1-16.png" data-sub-html="<h2>From PPT(1970s&#43; 3)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>1970s+ 3</code>)</figcaption>
-    </figure>
-<h5 id="today">today</h5>
-<figure><a class="lightgallery" href="/img/Operating%20System/chapter1-17.png" title="/img/Operating System/chapter1-17.png" data-thumbnail="/img/Operating System/chapter1-17.png" data-sub-html="<h2>From PPT(today)</h2>">
-        
-    </a><figcaption class="image-caption">From PPT(<code>today</code>)</figcaption>
-    </figure>
-<h4 id="理解操作系统三个根本问题">理解操作系统：三个根本问题</h4>
-<p>操作系统服务谁？</p>
-<ul>
-<li><strong>程序 = 状态机</strong></li>
-<li>课程涉及：多线程 $Linux$ 应用程序</li>
-</ul>
-<hr>
-<p>(设计/应用视角) 操作系统为程序提供什么服务？</p>
-<ul>
-<li><strong>操作系统 = 对象 + $API\newline$</strong></li>
-<li>课程涉及：$POSIX$ + 部分$ Linux$ 特性</li>
-</ul>
-<hr>
-<p>(实现/硬件视角) 如何实现操作系统提供的服务？</p>
-<ul>
-<li><strong>操作系统 = C 程序</strong>
-<ul>
-<li>完成初始化后就成为 $interrupt/trap/fault handler\newline$</li>
-</ul>
-</li>
-<li>课程涉及：$xv6$, 自制迷你操作系统</li>
-</ul>
-<h3 id="怎么学操作系统hownewline">怎么学操作系统?$(how)\newline$</h3>
-<ol>
-<li>是一个合格的操作系统用户
-<ul>
-<li>会 $STFW/RTFM$ 自己动手解决问题</li>
-<li>不怕使用任何命令行工具
-<ul>
-<li>$vim, tmux, grep, gcc, binutils, &hellip;\newline$</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>不惧怕写代码
-<ul>
-<li>能管理一定规模 (数千行) 的代码</li>
-<li>能在出 bug 时默念 “机器永远是对的、我肯定能调出来的”
-<ul>
-<li>然后开始用正确的工具/方法调试</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<p>写代码 = 创造有趣的东西</p>
-<ul>
-<li>命令行 + 浏览器就是世界</li>
-</ul>
-<p>教科书:</p>
-<p>Remzi&rsquo;s <a href="https://pages.cs.wisc.edu/~remzi/OSTEP/" target="_blank" rel="noopener noreffer">Operating Systems: Three Easy Pieces</a></p>
-<p>顺序：并发 → 虚拟化 → 持久化</p>
-<p><strong>声明：本文章引用资料与图像均已做标注，如有侵权本人会马上删除</strong></p>
-]]></description>
 </item>
 </channel>
 </rss>
