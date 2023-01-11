@@ -383,8 +383,8 @@
 <h4 id="organization">Organization</h4>
 <ul>
 <li>
-<p>Organization is how features are implemented</p>
-<ul>
+<p><strong>Organization is how features are implemented</strong></p>
+</li>
 <li>
 <p><strong>Control signals, interfaces, memory technology</strong></p>
 </li>
@@ -393,8 +393,6 @@
 </li>
 <li>
 <p>What type of non-volatile memory is used to store the BIOS?</p>
-</li>
-</ul>
 </li>
 </ul>
 <h4 id="importance-of-the-distinction">Importance of the distinction</h4>
@@ -575,6 +573,43 @@
 </tr>
 </tbody>
 </table>
+<h3 id="summarize">summarize</h3>
+<ul>
+<li>
+<p><strong>Organization and Architecture</strong></p>
+<ul>
+<li>
+<p><strong>Architecture is those attributes visible to the programmer</strong></p>
+<ul>
+<li><strong>Instruction set , number of bits used for data representation, I/O mechanisms, addressing techniques</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>Organization is how features are implemented</strong></p>
+<ul>
+<li><strong>Control signals, interfaces, memory technology</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Structure &amp; Function</strong></p>
+<ul>
+<li>
+<p>Structure is the way in which components relate to each other</p>
+</li>
+<li>
+<p>Function is the operation of individual components as part of the structure</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The top level functions of a computer include data processing, data storage, data movement, and control.</p>
+</li>
+<li>
+<p>The components of a computer include: CPU, memory, I/O, interconnect bus.</p>
+</li>
+</ul>
 ]]></description>
 </item>
 <item>
